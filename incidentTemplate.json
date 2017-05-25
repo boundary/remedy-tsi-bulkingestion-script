@@ -1,0 +1,70 @@
+{
+	"config": {
+		"remedyHostName":"clm-aus-015321.bmc.com",
+   		"remedyPort":"",
+   		"remedyUserName":"vitiwari",
+   		"remedyPassword":"bmcAdm1n",
+  		"tsiApiKey":"",
+  		"chunkSize":5
+	},
+	"payload": {
+		"title": "@TITLE",
+		"fingerprintFields": [
+			"IncidentNumber"
+		],
+		"severity": "@SEVERITY",
+		"status": "@STATUS",
+		"properties": {
+			"Assignee": "@ASSIGNEE",
+			"IncidentNumber": "@INCIDENT_NUMBER",
+			"CI": "@CI",
+			"Priority": "@PRIORITY",
+			"PriorityWeight": "@WEIGHT",
+			"app_id": "BMC APPLICATION"
+		},
+		"createdAt": "@CREATED_AT",
+		"eventClass": "Incident",
+		"source": {
+			"name": "Remedy",
+			"type": "Remedy",
+			"ref": "Remedy"
+		},
+		"sender": {
+			"name": "Remedy",
+			"type": "Remedy",
+			"ref": "Remedy"
+		}
+	},
+	"@SEVERITY": {
+		"fieldId": 1000000164,
+		"valueMap":{
+			"1000": "Critical",
+			"2000": "High",
+			"3000": "Medium",
+			"4000": "Low"
+		}
+	},
+	"@PRIORITY": {
+		"fieldId": 1000000164,
+		"valueMap":{
+			"0": "Critical",
+			"1": "High",
+			"2": "Medium",
+			"3": "Low"
+		}
+	},
+	"@STATUS": {
+		"fieldId": 7,
+		"valueMap":{
+			"0":"New",
+			"1": "Assigned",
+			"2": "In Progress",
+			"3": "Pending",
+			"4": "Resolved",
+			"5": "Closed",
+			"6": "Cancelled"
+		}
+	},
+	"@INCIDENT_NUMBER":{"fieldId":1000000161}
+	
+}

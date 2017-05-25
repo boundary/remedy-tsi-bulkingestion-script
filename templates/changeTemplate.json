@@ -1,0 +1,58 @@
+{
+	"payload": {
+		"title": "@TITLE",
+		"fingerprintFields": ["ChangeID"],
+		"severity": "@SEVERITY",
+		"status": "@STATUS",
+		"properties": {
+			"Assignee": "@ASSIGNEE",
+			"ChangeID": "@CHANGE_ID",
+			"CI": "@CI",
+			"Priority": "@PRIORITY",
+			"Priority Weight": "@WEIGHT",
+			"app_id": "@APP_ID"
+		},
+		"createdAt": "@CREATED_AT",
+		"eventClass": "Change",
+		"source": {
+			"name": "Remedy",
+			"type": "Remedy",
+			"ref": "Remedy"
+		},
+		"sender": {
+			"name": "Remedy",
+			"type": "Remedy",
+			"ref": "Remedy"
+		}
+	},
+	"@SEVERITY": {
+		"1000": "Critical",
+		"2000": "High",
+		"3000": "Medium",
+		"4000": "Low"
+	},
+	"@PRIORITY": {
+		"0": "Critical",
+		"1": "High",
+		"2": "Medium",
+		"3": "Low"
+	},
+	"@STATUS": {
+		"0": "Draft",
+		"1": "Request For Authorization",
+		"2": "Request For Change",
+		"3": "Planning In Progress",
+		"4": "Scheduled For Review",
+		"5": "Scheduled For Approval",
+		"6": "Scheduled",
+		"7": "Implementation In Progress",
+		"8": "Pending",
+		"9": "Rejected",
+		"10": "Completed",
+		"11": "Closed",
+		"12": "Cancelled"
+	},
+	"@APP_ID": {
+		"BMC_APPLICATION": "BMC APPLICATION"
+	}
+}
