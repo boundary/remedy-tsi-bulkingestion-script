@@ -1,89 +1,107 @@
 package com.bmc.truesight.remedy.beans;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Payload {
 
-	private String title;
-	private List<String> fingerprintFields;
-	private String severity;
-	private String status;
-	private Map<String, String> properties;
-	private String createdAt;
-	private String eventClass;
-	private PayloadSource source;
-	private PayloadSource sender;
+    private String title;
+    private List<String> fingerprintFields;
+    private String severity;
+    private String status;
+    private Map<String, String> properties;
+    private String createdAt;
+    private String eventClass;
+    private PayloadSource source;
+    private PayloadSource sender;
 
-	public String getTitle() {
-		return title;
-	}
+    public Payload(Payload payload) {
+        this.setTitle(payload.getTitle());
+        this.setFingerprintFields(new ArrayList<>(payload.fingerprintFields));
+        this.setCreatedAt(payload.getCreatedAt());
+        this.setEventClass(payload.getEventClass());
+        this.setProperties(new HashMap<>(payload.getProperties()));
+        this.setSender(new PayloadSource(payload.getSender()));
+        this.setSource(new PayloadSource(payload.getSource()));
+        this.setSeverity(payload.getSeverity());
+        this.setStatus(payload.getStatus());
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public Payload() {
+        // Default Constructor
+    }
 
-	public List<String> getFingerprintFields() {
-		return fingerprintFields;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public void setFingerprintFields(List<String> fingerprintFields) {
-		this.fingerprintFields = fingerprintFields;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public String getSeverity() {
-		return severity;
-	}
+    public List<String> getFingerprintFields() {
+        return fingerprintFields;
+    }
 
-	public void setSeverity(String severity) {
-		this.severity = severity;
-	}
+    public void setFingerprintFields(List<String> fingerprintFields) {
+        this.fingerprintFields = fingerprintFields;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public String getSeverity() {
+        return severity;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void setSeverity(String severity) {
+        this.severity = severity;
+    }
 
-	public String getCreatedAt() {
-		return createdAt;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public void setCreatedAt(String createdAt) {
-		this.createdAt = createdAt;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	public String getEventClass() {
-		return eventClass;
-	}
+    public String getCreatedAt() {
+        return createdAt;
+    }
 
-	public void setEventClass(String eventClass) {
-		this.eventClass = eventClass;
-	}
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
 
-	public PayloadSource getSource() {
-		return source;
-	}
+    public String getEventClass() {
+        return eventClass;
+    }
 
-	public void setSource(PayloadSource source) {
-		this.source = source;
-	}
+    public void setEventClass(String eventClass) {
+        this.eventClass = eventClass;
+    }
 
-	public PayloadSource getSender() {
-		return sender;
-	}
+    public PayloadSource getSource() {
+        return source;
+    }
 
-	public void setSender(PayloadSource sender) {
-		this.sender = sender;
-	}
+    public void setSource(PayloadSource source) {
+        this.source = source;
+    }
 
-	public Map<String, String> getProperties() {
-		return properties;
-	}
+    public PayloadSource getSender() {
+        return sender;
+    }
 
-	public void setProperties(Map<String, String> properties) {
-		this.properties = properties;
-	}
+    public void setSender(PayloadSource sender) {
+        this.sender = sender;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
 }

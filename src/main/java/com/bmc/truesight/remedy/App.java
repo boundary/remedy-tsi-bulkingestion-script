@@ -24,105 +24,94 @@ import com.bmc.arsys.api.Timestamp;
 import com.bmc.arsys.api.Value;
 import com.bmc.truesight.remedy.beans.ARConstants;
 import com.bmc.truesight.remedy.beans.Configuration;
-import com.bmc.truesight.remedy.beans.sdk.Event;
-import com.bmc.truesight.remedy.beans.sdk.EventSinkAPI;
-import com.bmc.truesight.remedy.beans.sdk.EventSinkStandardOutput;
+import com.bmc.truesight.remedy.beans.Payload;
 import com.bmc.truesight.remedy.exception.ParsingException;
 import com.bmc.truesight.remedy.exception.ValidationException;
 import com.bmc.truesight.remedy.util.ConfigParser;
 import com.bmc.truesight.remedy.util.ConfigValidator;
-import com.bmc.truesight.remedy.util.Constants;
-import com.bmc.truesight.remedy.util.StringUtils;
+import com.bmc.truesight.remedy.util.RemedyIncidentReader;
 
 /**
- * Hello world!
+ * Main Application Entry 
  *
  */
 public class App {
 
-	private final static Logger log = LoggerFactory.getLogger(App.class);
+    private final static Logger log = LoggerFactory.getLogger(App.class);
 
-	public static void main(String[] args) {
-		run();
-	}
+    public static void main(String[] args) {
+        run();
+    }
 
-	private static ARServerUser createARServerContext(Configuration config) {
-		ARServerUser arServerContext = new ARServerUser();
-		arServerContext.setServer(config.getRemedyHostName());
-		arServerContext.setUser(config.getRemedyUserName());
-		arServerContext.setPassword(config.getRemedyPassword());
-		return arServerContext;
-	}
+    public static void run() {
 
-	public static void run() {
-		
-		//Start dev
-		String path = null;
-		try {
-			path = new java.io.File( "." ).getCanonicalPath();
-			path+="\\incidentTemplate.json";
-		} catch (IOException e2) {
-			log.error("The file path couldnot be found ");
-		}
-		// PARSING THE CONFIGURATION FILE 
-		ConfigParser incidentParser = new ConfigParser(path);
-		try {
-			incidentParser.readParseConfigFile();
-		} catch (ParsingException ex) {
-			log.error(ex.getMessage());
-			System.exit(0);
-		}
-		log.info("{} file reading and parsing succesfull",path);
-		//VALIDATION OF THE CONFIGURATION  
-		ConfigValidator incidentValidator = new ConfigValidator();
-		try {
-			incidentValidator.validate(incidentParser);
-		} catch (ValidationException ex) {
-			log.error(ex.getMessage());
-			System.exit(0);
-		}
-		log.info("{} configuration file validation succesfull",path);
-		//End Dev
-		
-		//Start Login
-		Configuration config = incidentParser.getConfiguration();
-		ARServerUser arServerContext = createARServerContext(config);
-		EventSinkStandardOutput output = new EventSinkStandardOutput();
-		EventSinkAPI eventSinkAPI = new EventSinkAPI();
-		Calendar cal = null;
+        String path = null;
+        try {
+            path = new java.io.File(".").getCanonicalPath();
+            path += "\\incidentTemplate.json";
+        } catch (IOException e2) {
+            log.error("The file path couldnot be found ");
+        }
+        // PARSING THE CONFIGURATION FILE
+        ConfigParser incidentParser = new ConfigParser(path);
+        try {
+            incidentParser.readParseConfigFile();
+        } catch (ParsingException ex) {
+            log.error(ex.getMessage());
+            System.exit(0);
+        }
+        log.info("{} file reading and parsing succesfull", path);
+        // VALIDATION OF THE CONFIGURATION
+        ConfigValidator incidentValidator = new ConfigValidator();
+        try {
+            incidentValidator.validate(incidentParser);
+        } catch (ValidationException ex) {
+            log.error(ex.getMessage());
+            System.exit(0);
+        }
+        log.info("{} configuration file validation succesfull", path);
 
-		try {
-			arServerContext.login();
-		} catch (ARException e1) {
-			log.error("Login failed to Remedy Server, ({})",e1.getMessage());
-		}
-		log.info("Login successful to remedy server");
-		cal = Calendar.getInstance();
-		//cal.add(Calendar.MINUTE, (0 - 900000));
-		Collection<Event> events;
-		try {
-			events = fetchData(arServerContext, cal.getTime(), 20,incidentParser.getConfiguration());//20 is max records
-			events.stream().forEach(event -> {
-				output.emit(event);
-				eventSinkAPI.emit(event);
-			});
+        Configuration config = incidentParser.getConfiguration();
+        RemedyIncidentReader incidentReader = new RemedyIncidentReader(incidentParser);
 
-		} catch (ARException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        try {
 
-		// Thread.sleep(config.getPollInterval());
-		// } catch (InterruptedException | ARException e) {
-		// e.printStackTrace();
-		// } finally {
-		arServerContext.logout();
-		// }
-		// }
-	}
+            // Start Login
+            incidentReader.login();
 
-	private static Collection<Event> fetchData(ARServerUser arServerContext, Date date, long maxRecords,Configuration config)
-			throws ARException {
+            int chunkSize = config.getChunkSize();
+            int startFrom = 1;
+            int iteration = 1;
+            OutputInteger nMatches = new OutputInteger();
+            boolean readNext = true;
+            while (readNext) {
+                log.info("Started reading remedy incidents with start & chunkSize as {},{},{},{}", new Object[]{startFrom, chunkSize, config.getStartDateTime(), config.getEndDateTime()});
+                List<Payload> eventList = incidentReader.readIncidents(startFrom, chunkSize, nMatches);
+                log.info("recieved remedy incidents chunk with start & chunkSize as {},{}", startFrom, chunkSize);
+                log.info("Recieved {} remedy incidents as part of iteration {}", eventList.size(), iteration);
+
+                eventList.forEach(event -> {
+                    log.info("Event --> [title :{},severity:{}", event.getTitle(), event.getSeverity());
+                });
+
+                if (nMatches.longValue() <= (startFrom + chunkSize)) {
+                    readNext = false;
+                }
+                iteration++;
+                startFrom = startFrom + chunkSize;
+
+                // TODO start Sending the events to TSI
+            }
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+        } finally {
+            incidentReader.logout();
+        }
+
+    }
+
+    /*	private static Collection<Event> fetchData(ARServerUser arServerContext, Date date, long maxRecords,
+			Configuration config) throws ARException {
 
 		String strShortSummary = null;
 		String strRequestId = null;
@@ -165,8 +154,9 @@ public class App {
 		int totalDocuments = 0;
 		for (int count = 0; count < totalIterations + 1; count++) {
 			List<Entry> entryList = arServerContext.getListEntryObjects(ARConstants.HELP_DESK_FORM, qualInfo,
-					config.getChunkSize() * (count), config.getChunkSize(), sortOrder, queryFieldsList, false, nMatches);
-			log.info("nMatches : "+nMatches+" entry List Size "+entryList.size());
+					config.getChunkSize() * (count), config.getChunkSize(), sortOrder, queryFieldsList, false,
+					nMatches);
+			log.info("nMatches : " + nMatches + " entry List Size " + entryList.size());
 			if (entryList.size() < 1) {
 				break;
 			}
@@ -176,7 +166,7 @@ public class App {
 				strShortSummary = null;
 				strRequestId = null;
 				strSummary = null;
-
+				
 				for (Map.Entry<Integer, Value> fieldIdVal : queryEntry.entrySet()) {
 					if ((fieldIdVal.getKey()).toString().equals(Integer.toString(ARConstants.INCIDENT_ID_FIELD))) {
 						if (fieldIdVal.getValue().getValue() != null) {
@@ -239,8 +229,7 @@ public class App {
 				// EventSeverity severity, String title, String message, String
 				// host, String source, List<String> tags
 				Event event = new Event(Event.EventSeverity.INFO, strShortSummary, strSummary,
-						config.getRemedyHostName(), config.getRemedyHostName(),
-						null);
+						config.getRemedyHostName(), config.getRemedyHostName(), null);
 
 				events.add(event);
 				totalDocuments++;
@@ -258,11 +247,12 @@ public class App {
 		return events;
 	}
 
-	/**
-	 * Prepare qualification "<fieldId>=<Value>"
-	 *
-	 * @return QualifierInfo
-	 */
+     */
+    /**
+     * Prepare qualification "<fieldId>=<Value>"
+     *
+     * @return QualifierInfo
+     *//*
 	public static QualifierInfo buildFieldValueQualification(int fieldId, Value value, int relationalOperation) {
 		ArithmeticOrRelationalOperand leftOperand = new ArithmeticOrRelationalOperand(fieldId);
 		ArithmeticOrRelationalOperand rightOperand = new ArithmeticOrRelationalOperand(value);
@@ -270,6 +260,6 @@ public class App {
 				rightOperand);
 		QualifierInfo qualification = new QualifierInfo(relationalOperationInfo);
 		return qualification;
-	}
+	}*/
 
 }
