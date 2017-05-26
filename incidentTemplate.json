@@ -5,7 +5,9 @@
    		"remedyUserName":"vitiwari",
    		"remedyPassword":"bmcAdm1n",
   		"tsiApiKey":"",
-  		"chunkSize":5
+  		"chunkSize":5,
+  		"startDateTime":"2017-01-01 00:00 AM GMT+1:00",
+  		"endDateTime":"2017-05-01 00:00 AM GMT+1:00"
 	},
 	"payload": {
 		"title": "@TITLE",
@@ -53,6 +55,15 @@
 			"3": "Low"
 		}
 	},
+	"@WEIGHT": {
+		"fieldId": 1000000164,
+		"valueMap":{
+			"0": "Critical",
+			"1": "High",
+			"2": "Medium",
+			"3": "Low"
+		}
+	},
 	"@STATUS": {
 		"fieldId": 7,
 		"valueMap":{
@@ -65,6 +76,10 @@
 			"6": "Cancelled"
 		}
 	},
-	"@INCIDENT_NUMBER":{"fieldId":1000000161}
+	"@INCIDENT_NUMBER":{"fieldId":1000000161},
+	"@TITLE":{"fieldId":1000000161},
+	"@ASSIGNEE":{"fieldId":1000000161},
+	"@CI":{"fieldId":1000000161},
+	"@CREATED_AT":{"fieldId":1000000161}
 	
 }

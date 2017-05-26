@@ -31,26 +31,40 @@ public class ConfigParser {
 		this.configPath = configPath;
 		this.fieldItemMap = new HashMap<String, FieldItem>();
 	}
-
-	//TODO make constructor or setter to support JSON string directly
 	
+	/**
+	 * Used to parse the configuration in case of configuration available as json String
+	 * @param configJson
+	 * @throws ParsingException
+	 */
+	public void readParseConfigJson(String configJson) throws ParsingException {
+		parse(configJson);
+	}
 	
-	public void readParseConfigFile() throws ParsingException{
+	/**
+	 * Used to parse the configuration in case of configuration available as json file
+	 * @param configJson
+	 * @throws ParsingException
+	 */
+	public void readParseConfigFile() throws ParsingException {
 
 		// Read the file in String
 		String configJson = null;
 		try {
 			configJson = FileUtils.readFileToString(new File(this.configPath), "UTF8");
 		} catch (IOException e) {
-			throw new ParsingException(StringUtils.format(Constants.CONFIG_FILE_NOT_FOUND, new Object[]{this.configPath}));
+			throw new ParsingException(StringUtils.format(Constants.CONFIG_FILE_NOT_FOUND, new Object[] { this.configPath }));
 		}
+		parse(configJson);
+	}
 
+	private void parse(String configJson) throws ParsingException {
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode rootNode = null;
 		try {
 			rootNode = mapper.readTree(configJson);
 		} catch (IOException e) {
-			throw new ParsingException(StringUtils.format(Constants.CONFIG_FILE_NOT_VALID, new Object[]{this.configPath}));
+			throw new ParsingException(StringUtils.format(Constants.CONFIG_FILE_NOT_VALID, new Object[] { this.configPath }));
 		}
 
 		// Read the config details and map to pojo

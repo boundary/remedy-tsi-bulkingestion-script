@@ -85,8 +85,8 @@ public class App {
 		//End Dev
 		
 		//Start Login
-		
-		ARServerUser arServerContext = createARServerContext(incidentParser.getConfiguration());
+		Configuration config = incidentParser.getConfiguration();
+		ARServerUser arServerContext = createARServerContext(config);
 		EventSinkStandardOutput output = new EventSinkStandardOutput();
 		EventSinkAPI eventSinkAPI = new EventSinkAPI();
 		Calendar cal = null;
