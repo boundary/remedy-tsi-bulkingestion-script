@@ -12,5 +12,7 @@ public interface Constants {
     String REMEDY_LOGIN_FAILED = "Login failed to Remedy Server, ({0})";
 
     public static final int SUBMIT_DATE_FIELD = 3;
+    public static final int CLOSE_DATE_FIELD = 1000000564;
     public static final String HELP_DESK_FORM = "HPD:Help Desk";
+    
 }

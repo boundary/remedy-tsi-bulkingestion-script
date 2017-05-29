@@ -103,7 +103,8 @@ public class App {
                 // TODO start Sending the events to TSI
             }
         } catch (Exception ex) {
-            log.error(ex.getMessage());
+            log.error("Error {}",ex.getMessage());
+            ex.printStackTrace();
         } finally {
             incidentReader.logout();
         }

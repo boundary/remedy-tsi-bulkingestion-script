@@ -71,10 +71,10 @@ public class RemedyIncidentReader {
 
         Date newDate = new Date();
 
-        QualifierInfo qualInfo1 = buildFieldValueQualification(Constants.SUBMIT_DATE_FIELD,
+        QualifierInfo qualInfo1 = buildFieldValueQualification(Constants.CLOSE_DATE_FIELD,
                 new Value(new Timestamp(configParser.getConfiguration().getStartDateTime()), DataType.TIME), RelationalOperationInfo.AR_REL_OP_GREATER_EQUAL);
 
-        QualifierInfo qualInfo2 = buildFieldValueQualification(Constants.SUBMIT_DATE_FIELD,
+        QualifierInfo qualInfo2 = buildFieldValueQualification(Constants.CLOSE_DATE_FIELD,
                 new Value(new Timestamp(configParser.getConfiguration().getEndDateTime()), DataType.TIME), RelationalOperationInfo.AR_REL_OP_LESS_EQUAL);
 
         QualifierInfo qualInfo = new QualifierInfo(QualifierInfo.AR_COND_OP_AND, qualInfo1, qualInfo2);

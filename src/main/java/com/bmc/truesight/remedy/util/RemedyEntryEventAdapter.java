@@ -1,5 +1,7 @@
 package com.bmc.truesight.remedy.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -17,6 +19,11 @@ public class RemedyEntryEventAdapter {
         Payload payload = new Payload(configParser.getPayload());
 
         payload.setTitle(getValueFromEntry(configParser, entry, payload.getTitle()));
+        List<String> fPrintFields = new ArrayList<String>();
+        payload.getFingerprintFields().forEach(fingerPrint->{
+        	fPrintFields.add(getValueFromEntry(configParser, entry, fingerPrint));
+        });
+        payload.setFingerprintFields(fPrintFields);
         Map<String, String> properties = payload.getProperties();
         for (String key : properties.keySet()) {
             properties.put(key, getValueFromEntry(configParser, entry, properties.get(key)));
