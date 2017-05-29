@@ -11,8 +11,10 @@ public interface Constants {
     String PAYLOAD_PLACEHOLDER_DEFINITION_MISSING = "The definition for payload placeholder {0} is missing in the configuration file";
     String REMEDY_LOGIN_FAILED = "Login failed to Remedy Server, ({0})";
 
-    public static final int SUBMIT_DATE_FIELD = 3;
-    public static final int CLOSE_DATE_FIELD = 1000000564;
     public static final String HELP_DESK_FORM = "HPD:Help Desk";
+    public static final String CHANGE_FORM = "CHG:Infrastructure Change";
     
+    public static final int TSI_EVENT_SUCCESS = 202;
+    public static final long TSI_DEFAULT_WAIT_TIME_IN_MILLI = 2000;
+
 }

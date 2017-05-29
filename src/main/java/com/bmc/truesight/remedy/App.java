@@ -1,38 +1,25 @@
 package com.bmc.truesight.remedy;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bmc.arsys.api.ARException;
-import com.bmc.arsys.api.ARServerUser;
-import com.bmc.arsys.api.ArithmeticOrRelationalOperand;
-import com.bmc.arsys.api.DataType;
-import com.bmc.arsys.api.Entry;
 import com.bmc.arsys.api.OutputInteger;
-import com.bmc.arsys.api.QualifierInfo;
-import com.bmc.arsys.api.RelationalOperationInfo;
-import com.bmc.arsys.api.SortInfo;
-import com.bmc.arsys.api.Timestamp;
-import com.bmc.arsys.api.Value;
-import com.bmc.truesight.remedy.beans.ARConstants;
 import com.bmc.truesight.remedy.beans.Configuration;
 import com.bmc.truesight.remedy.beans.Payload;
 import com.bmc.truesight.remedy.exception.ParsingException;
 import com.bmc.truesight.remedy.exception.ValidationException;
 import com.bmc.truesight.remedy.util.ConfigParser;
 import com.bmc.truesight.remedy.util.ConfigValidator;
-import com.bmc.truesight.remedy.util.RemedyIncidentReader;
+import com.bmc.truesight.remedy.util.Constants;
+import com.bmc.truesight.remedy.util.RemedyReader;
+import com.bmc.truesight.remedy.util.TsiHttpClient;
 
 /**
- * Main Application Entry 
+ * Main Application Entry
  *
  */
 public class App {
@@ -40,12 +27,42 @@ public class App {
     private final static Logger log = LoggerFactory.getLogger(App.class);
 
     public static void main(String[] args) {
-        run();
+        boolean readIncidents = false;
+        boolean readChange = false;
+        if (args.length == 0) {
+            log.info("Do you want to ingest Remedy Incidents tickets as events? (y/n)");
+            Scanner scanner = new Scanner(System.in);
+            String input1 = scanner.next();
+            if (input1.equalsIgnoreCase("y")) {
+                readIncidents = true;
+            }
+            log.info("Do you want to ingest Remedy Change tickets as events also? (y/n)");
+            String input2 = scanner.next();
+            if (input2.equalsIgnoreCase("y")) {
+                readChange = true;
+            }
+        } else {
+            for (String module : args) {
+                if (module.equalsIgnoreCase("incident") || module.equalsIgnoreCase("incidents")) {
+                    readIncidents = true;
+                }
+                if (module.equalsIgnoreCase("change") || module.equalsIgnoreCase("changes")) {
+                    readChange = true;
+                }
+            }
+        }
+        if (readIncidents) {
+            readAndIngestIncidents();
+        }
+        if (readChange) {
+            readAndIngestChanges();
+        }
     }
 
-    public static void run() {
+    private static void readAndIngestIncidents() {
 
         String path = null;
+        boolean hasLoggedIntoRemedy = false;
         try {
             path = new java.io.File(".").getCanonicalPath();
             path += "\\incidentTemplate.json";
@@ -72,12 +89,11 @@ public class App {
         log.info("{} configuration file validation succesfull", path);
 
         Configuration config = incidentParser.getConfiguration();
-        RemedyIncidentReader incidentReader = new RemedyIncidentReader(incidentParser);
-
+        RemedyReader incidentReader = new RemedyReader(incidentParser, Constants.HELP_DESK_FORM);
+        TsiHttpClient client = new TsiHttpClient(config);
         try {
-
             // Start Login
-            incidentReader.login();
+            hasLoggedIntoRemedy = incidentReader.login();
 
             int chunkSize = config.getChunkSize();
             int startFrom = 1;
@@ -85,10 +101,10 @@ public class App {
             OutputInteger nMatches = new OutputInteger();
             boolean readNext = true;
             while (readNext) {
-                log.info("Started reading remedy incidents with start & chunkSize as {},{},{},{}", new Object[]{startFrom, chunkSize, config.getStartDateTime(), config.getEndDateTime()});
-                List<Payload> eventList = incidentReader.readIncidents(startFrom, chunkSize, nMatches);
-                log.info("recieved remedy incidents chunk with start & chunkSize as {},{}", startFrom, chunkSize);
-                log.info("Recieved {} remedy incidents as part of iteration {}", eventList.size(), iteration);
+                log.info("Started reading remedy incidents with start & chunkSize as {},{},{},{}",
+                        new Object[]{startFrom, chunkSize, config.getStartDateTime(), config.getEndDateTime()});
+                List<Payload> eventList = incidentReader.readRemedyTickets(startFrom, chunkSize, nMatches);
+                log.info("Recieved {} remedy incidents for iteration no {} with start & chunkSize as {},{}", new Object[]{eventList.size(), iteration, startFrom, chunkSize});
 
                 eventList.forEach(event -> {
                     log.info("Event --> [title :{},severity:{}", event.getTitle(), event.getSeverity());
@@ -100,167 +116,86 @@ public class App {
                 iteration++;
                 startFrom = startFrom + chunkSize;
 
-                // TODO start Sending the events to TSI
+                client.pushBulkEventsToTSI(eventList);
             }
         } catch (Exception ex) {
-            log.error("Error {}",ex.getMessage());
+            log.error("Error {}", ex.getMessage());
             ex.printStackTrace();
         } finally {
-            incidentReader.logout();
+            if (hasLoggedIntoRemedy) {
+                incidentReader.logout();
+            }
         }
 
     }
 
-    /*	private static Collection<Event> fetchData(ARServerUser arServerContext, Date date, long maxRecords,
-			Configuration config) throws ARException {
+    private static void readAndIngestChanges() {
+        String path = null;
+        boolean hasLoggedIntoRemedy = false;
+        try {
+            path = new java.io.File(".").getCanonicalPath();
+            path += "\\changeTemplate.json";
+        } catch (IOException e2) {
+            log.error("The file path couldnot be found ");
+        }
+        // PARSING THE CONFIGURATION FILE
+        ConfigParser changeParser = new ConfigParser(path);
+        try {
+            changeParser.readParseConfigFile();
+        } catch (ParsingException ex) {
+            log.error(ex.getMessage());
+            System.exit(0);
+        }
+        log.info("{} file reading and parsing succesfull", path);
+        // VALIDATION OF THE CONFIGURATION
+        ConfigValidator changeValidator = new ConfigValidator();
+        try {
+            changeValidator.validate(changeParser);
+        } catch (ValidationException ex) {
+            log.error(ex.getMessage());
+            System.exit(0);
+        }
+        log.info("{} configuration file validation succesfull", path);
 
-		String strShortSummary = null;
-		String strRequestId = null;
-		String strSummary = null;
-		String strSubmitDate = null;
-		String strCloseDate = null;
-		String strOwningGroup = null;
-		String strService = null;
-		String strPriority = null;
-		String strReportedSource = null;
-		String strStauts = null;
-		String strAssignee = null;
+        Configuration config = changeParser.getConfiguration();
+        RemedyReader changeReader = new RemedyReader(changeParser, Constants.CHANGE_FORM);
+        TsiHttpClient client = new TsiHttpClient(config);
+        try {
 
-		List<Event> events = new ArrayList<>();
+            // Start Login
+            hasLoggedIntoRemedy = changeReader.login();
 
-		int[] queryFieldsList = { ARConstants.INCIDENT_ID_FIELD, ARConstants.SUMMARY_FIELD,
-				ARConstants.SHORT_SUMMARY_FIELD, ARConstants.SUBMIT_DATE_FIELD, ARConstants.CLOSE_DATE_FIELD,
-				ARConstants.OWNING_GROUP_FIELD, ARConstants.SERVICE_FIELD, ARConstants.PRIORITY_FIELD,
-				ARConstants.REPORTED_SOURCE_FIELD, ARConstants.STATUS_FIELD, ARConstants.ASSIGNEE_FIELD };
+            int chunkSize = config.getChunkSize();
+            int startFrom = 1;
+            int iteration = 1;
+            OutputInteger nMatches = new OutputInteger();
+            boolean readNext = true;
+            while (readNext) {
+                log.info("Started reading remedy changes with start & chunkSize as {},{},{},{}",
+                        new Object[]{startFrom, chunkSize, config.getStartDateTime(), config.getEndDateTime()});
+                List<Payload> eventList = changeReader.readRemedyTickets(startFrom, chunkSize, nMatches);
+                log.info("Recieved {} remedy changes for iteration no {} with start & chunkSize as {},{}", new Object[]{eventList.size(), iteration, startFrom, chunkSize});
 
-		Date newDate = new Date();
+                eventList.forEach(event -> {
+                    log.info("Event --> [title :{},severity:{}", event.getTitle(), event.getSeverity());
+                });
 
-		QualifierInfo qualInfo1 = buildFieldValueQualification(ARConstants.SUBMIT_DATE_FIELD,
-				new Value(new Timestamp(date), DataType.TIME), RelationalOperationInfo.AR_REL_OP_GREATER_EQUAL);
+                if (nMatches.longValue() <= (startFrom + chunkSize)) {
+                    readNext = false;
+                }
+                iteration++;
+                startFrom = startFrom + chunkSize;
 
-		QualifierInfo qualInfo2 = buildFieldValueQualification(ARConstants.SUBMIT_DATE_FIELD,
-				new Value(new Timestamp(newDate), DataType.TIME), RelationalOperationInfo.AR_REL_OP_LESS_EQUAL);
-
-		QualifierInfo qualInfo = new QualifierInfo(QualifierInfo.AR_COND_OP_AND, qualInfo1, qualInfo2);
-
-		OutputInteger nMatches = new OutputInteger();
-		List<SortInfo> sortOrder = new ArrayList<SortInfo>();
-
-		long totalIterations = 1;
-		if (maxRecords > (long) config.getChunkSize()) {
-			totalIterations = maxRecords / (long) config.getChunkSize();
-		}
-
-		boolean stopProcessing = false;
-		int totalDocuments = 0;
-		for (int count = 0; count < totalIterations + 1; count++) {
-			List<Entry> entryList = arServerContext.getListEntryObjects(ARConstants.HELP_DESK_FORM, qualInfo,
-					config.getChunkSize() * (count), config.getChunkSize(), sortOrder, queryFieldsList, false,
-					nMatches);
-			log.info("nMatches : " + nMatches + " entry List Size " + entryList.size());
-			if (entryList.size() < 1) {
-				break;
-			}
-
-			for (Entry queryEntry : entryList) {
-
-				strShortSummary = null;
-				strRequestId = null;
-				strSummary = null;
-				
-				for (Map.Entry<Integer, Value> fieldIdVal : queryEntry.entrySet()) {
-					if ((fieldIdVal.getKey()).toString().equals(Integer.toString(ARConstants.INCIDENT_ID_FIELD))) {
-						if (fieldIdVal.getValue().getValue() != null) {
-							strRequestId = fieldIdVal.getValue().getValue().toString();
-						}
-					}
-					if ((fieldIdVal.getKey()).toString().equals(Integer.toString(ARConstants.SHORT_SUMMARY_FIELD))) {
-						if (fieldIdVal.getValue().getValue() != null) {
-							strShortSummary = fieldIdVal.getValue().getValue().toString();
-						}
-					}
-
-					if ((fieldIdVal.getKey()).toString().equals(Integer.toString(ARConstants.SUMMARY_FIELD))) {
-						if (fieldIdVal.getValue().getValue() != null) {
-							strSummary = fieldIdVal.getValue().getValue().toString();
-						}
-					}
-					if ((fieldIdVal.getKey()).toString().equals(Integer.toString(ARConstants.SUBMIT_DATE_FIELD))) {
-						if (fieldIdVal.getValue().getValue() != null) {
-							strSubmitDate = fieldIdVal.getValue().getValue().toString();
-						}
-					}
-					if ((fieldIdVal.getKey()).toString().equals(Integer.toString(ARConstants.CLOSE_DATE_FIELD))) {
-						if (fieldIdVal.getValue().getValue() != null) {
-							strCloseDate = fieldIdVal.getValue().getValue().toString();
-						}
-					}
-					if ((fieldIdVal.getKey()).toString().equals(Integer.toString(ARConstants.OWNING_GROUP_FIELD))) {
-						if (fieldIdVal.getValue().getValue() != null) {
-							strOwningGroup = fieldIdVal.getValue().getValue().toString();
-						}
-					}
-					if ((fieldIdVal.getKey()).toString().equals(Integer.toString(ARConstants.SERVICE_FIELD))) {
-						if (fieldIdVal.getValue().getValue() != null) {
-							strService = fieldIdVal.getValue().getValue().toString();
-						}
-					}
-					if ((fieldIdVal.getKey()).toString().equals(Integer.toString(ARConstants.PRIORITY_FIELD))) {
-						if (fieldIdVal.getValue().getValue() != null) {
-							strPriority = fieldIdVal.getValue().getValue().toString();
-						}
-					}
-					if ((fieldIdVal.getKey()).toString().equals(Integer.toString(ARConstants.REPORTED_SOURCE_FIELD))) {
-						if (fieldIdVal.getValue().getValue() != null) {
-							strReportedSource = fieldIdVal.getValue().getValue().toString();
-						}
-					}
-					if ((fieldIdVal.getKey()).toString().equals(Integer.toString(ARConstants.STATUS_FIELD))) {
-						if (fieldIdVal.getValue().getValue() != null) {
-							strStauts = fieldIdVal.getValue().getValue().toString();
-						}
-					}
-					if ((fieldIdVal.getKey()).toString().equals(Integer.toString(ARConstants.ASSIGNEE_FIELD))) {
-						if (fieldIdVal.getValue().getValue() != null) {
-							strAssignee = fieldIdVal.getValue().getValue().toString();
-						}
-					}
-				}
-
-				// EventSeverity severity, String title, String message, String
-				// host, String source, List<String> tags
-				Event event = new Event(Event.EventSeverity.INFO, strShortSummary, strSummary,
-						config.getRemedyHostName(), config.getRemedyHostName(), null);
-
-				events.add(event);
-				totalDocuments++;
-
-				if (totalDocuments == 20) {
-					stopProcessing = true;
-					break;
-				}
-			}
-
-			if (stopProcessing == true) {
-				break;
-			}
-		}
-		return events;
-	}
-
-     */
-    /**
-     * Prepare qualification "<fieldId>=<Value>"
-     *
-     * @return QualifierInfo
-     *//*
-	public static QualifierInfo buildFieldValueQualification(int fieldId, Value value, int relationalOperation) {
-		ArithmeticOrRelationalOperand leftOperand = new ArithmeticOrRelationalOperand(fieldId);
-		ArithmeticOrRelationalOperand rightOperand = new ArithmeticOrRelationalOperand(value);
-		RelationalOperationInfo relationalOperationInfo = new RelationalOperationInfo(relationalOperation, leftOperand,
-				rightOperand);
-		QualifierInfo qualification = new QualifierInfo(relationalOperationInfo);
-		return qualification;
-	}*/
-
+                // Send the events to TSI
+                client.pushBulkEventsToTSI(eventList);
+            }
+        } catch (Exception ex) {
+            log.error("Error {}", ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            if (hasLoggedIntoRemedy) {
+                changeReader.logout();
+            }
+        }
+    }
 }

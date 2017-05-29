@@ -1,6 +1,7 @@
 package com.bmc.truesight.remedy.beans;
 
 import java.sql.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -10,8 +11,10 @@ public class Configuration {
     private int remedyPort;
     private String remedyUserName;
     private String remedyPassword;
-    private String tsiApiKey;
+    private String tsiEventEndpoint;
+    private String tsiApiToken;
     private int chunkSize;
+    private List<Integer> conditionFields;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
     private Date startDateTime;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
@@ -58,12 +61,12 @@ public class Configuration {
         this.remedyPassword = remedyPassword;
     }
 
-    public String getTsiApiKey() {
-        return tsiApiKey;
+    public String getTsiApiToken() {
+        return tsiApiToken;
     }
 
-    public void setTsiApiKey(String tsiApiKey) {
-        this.tsiApiKey = tsiApiKey;
+    public void setTsiApiToken(String tsiApiToken) {
+        this.tsiApiToken = tsiApiToken;
     }
 
     public int getChunkSize() {
@@ -88,6 +91,22 @@ public class Configuration {
 
     public void setRetryConfig(int retryConfig) {
         this.retryConfig = retryConfig;
+    }
+
+    public List<Integer> getConditionFields() {
+        return conditionFields;
+    }
+
+    public void setConditionFields(List<Integer> conditionFields) {
+        this.conditionFields = conditionFields;
+    }
+
+    public String getTsiEventEndpoint() {
+        return tsiEventEndpoint;
+    }
+
+    public void setTsiEventEndpoint(String tsiEventEndpoint) {
+        this.tsiEventEndpoint = tsiEventEndpoint;
     }
 
 }

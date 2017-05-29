@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import com.bmc.arsys.api.Entry;
 import com.bmc.arsys.api.Value;
 import com.bmc.truesight.remedy.beans.FieldItem;
@@ -20,8 +18,8 @@ public class RemedyEntryEventAdapter {
 
         payload.setTitle(getValueFromEntry(configParser, entry, payload.getTitle()));
         List<String> fPrintFields = new ArrayList<String>();
-        payload.getFingerprintFields().forEach(fingerPrint->{
-        	fPrintFields.add(getValueFromEntry(configParser, entry, fingerPrint));
+        payload.getFingerprintFields().forEach(fingerPrint -> {
+            fPrintFields.add(getValueFromEntry(configParser, entry, fingerPrint));
         });
         payload.setFingerprintFields(fPrintFields);
         Map<String, String> properties = payload.getProperties();
@@ -48,14 +46,17 @@ public class RemedyEntryEventAdapter {
     }
 
     public Payload convertChangeEntryToPayload(ConfigParser configParser, Entry entry) {
-        throw new NotImplementedException();
+        return convertIncidentEntryToPayload(configParser, entry);
     }
 
     private String getValueFromEntry(ConfigParser configParser, Entry entry, String placeholder) {
         if (placeholder.startsWith("@")) {
             FieldItem fieldItem = configParser.getFieldItemMap().get(placeholder);
             Value value = entry.get(fieldItem.getFieldId());
-            String val = value.getValue().toString();
+            String val = "";
+            if (value.getValue() != null) {
+                val = value.getValue().toString();
+            }
             if (fieldItem.getValueMap() != null && fieldItem.getValueMap().get(val) != null) {
                 return fieldItem.getValueMap().get(val);
             } else {

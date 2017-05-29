@@ -1,7 +1,6 @@
 package com.bmc.truesight.remedy.util;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,17 +23,20 @@ import com.bmc.truesight.remedy.beans.Configuration;
 import com.bmc.truesight.remedy.beans.Payload;
 import com.bmc.truesight.remedy.exception.RemedyLoginFailedException;
 
-public class RemedyIncidentReader {
+public class RemedyReader {
 
-    private static final Logger log = LoggerFactory.getLogger(RemedyIncidentReader.class);
+    private static final Logger log = LoggerFactory.getLogger(RemedyReader.class);
 
     private ARServerUser arServerContext;
     private ConfigParser configParser;
     private RemedyEntryEventAdapter remedyEntryEventAdapter;
+    private String formName;
 
-    public RemedyIncidentReader(ConfigParser configParser) {
+    public RemedyReader(ConfigParser configParser, String formName) {
         this.configParser = configParser;
         this.arServerContext = createARServerContext(this.configParser.getConfiguration());
+        this.remedyEntryEventAdapter = new RemedyEntryEventAdapter();
+        this.formName = formName;
     }
 
     private ARServerUser createARServerContext(Configuration config) {
@@ -45,17 +47,17 @@ public class RemedyIncidentReader {
         return arServerContext;
     }
 
-    public void login() throws RemedyLoginFailedException {
+    public boolean login() throws RemedyLoginFailedException {
         try {
             arServerContext.login();
             log.info("Login successful to remedy server");
         } catch (ARException e1) {
             throw new RemedyLoginFailedException(StringUtils.format(Constants.REMEDY_LOGIN_FAILED, new Object[]{e1.getMessage()}));
         }
-
+        return true;
     }
 
-    public List<Payload> readIncidents(int startFrom, int chunkSize, OutputInteger nMatches) {
+    public List<Payload> readRemedyTickets(int startFrom, int chunkSize, OutputInteger nMatches) {
 
         //keeping as set to avoid duplicates
         Set<Integer> fieldsList = new HashSet<>();
@@ -69,15 +71,24 @@ public class RemedyIncidentReader {
             queryFieldsList[index++] = i;
         }
 
-        Date newDate = new Date();
+        //Date newDate = new Date();
+        QualifierInfo qualInfoF = null;
+        for (int fieldId : configParser.getConfiguration().getConditionFields()) {
+            QualifierInfo qualInfo1 = buildFieldValueQualification(fieldId,
+                    new Value(new Timestamp(configParser.getConfiguration().getStartDateTime()), DataType.TIME), RelationalOperationInfo.AR_REL_OP_GREATER_EQUAL);
 
-        QualifierInfo qualInfo1 = buildFieldValueQualification(Constants.CLOSE_DATE_FIELD,
-                new Value(new Timestamp(configParser.getConfiguration().getStartDateTime()), DataType.TIME), RelationalOperationInfo.AR_REL_OP_GREATER_EQUAL);
+            QualifierInfo qualInfo2 = buildFieldValueQualification(fieldId,
+                    new Value(new Timestamp(configParser.getConfiguration().getEndDateTime()), DataType.TIME), RelationalOperationInfo.AR_REL_OP_LESS_EQUAL);
 
-        QualifierInfo qualInfo2 = buildFieldValueQualification(Constants.CLOSE_DATE_FIELD,
-                new Value(new Timestamp(configParser.getConfiguration().getEndDateTime()), DataType.TIME), RelationalOperationInfo.AR_REL_OP_LESS_EQUAL);
+            QualifierInfo qualInfo = new QualifierInfo(QualifierInfo.AR_COND_OP_AND, qualInfo1, qualInfo2);
 
-        QualifierInfo qualInfo = new QualifierInfo(QualifierInfo.AR_COND_OP_AND, qualInfo1, qualInfo2);
+            if (qualInfoF != null) {
+                qualInfoF = new QualifierInfo(QualifierInfo.AR_COND_OP_OR, qualInfoF, qualInfo);
+            } else {
+                qualInfoF = qualInfo;
+            }
+
+        }
 
         List<SortInfo> sortOrder = new ArrayList<SortInfo>();
         List<Entry> entryList = new ArrayList<>();
@@ -85,25 +96,37 @@ public class RemedyIncidentReader {
         int retryCount = 0;
         while (!isSuccessful && retryCount <= configParser.getConfiguration().getRetryConfig()) {
             try {
-                entryList = arServerContext.getListEntryObjects(Constants.HELP_DESK_FORM, qualInfo,
+                entryList = arServerContext.getListEntryObjects(this.formName, qualInfoF,
                         startFrom, chunkSize, sortOrder, queryFieldsList, false, nMatches);
                 isSuccessful = true;
             } catch (ARException e) {
                 if (retryCount < configParser.getConfiguration().getRetryConfig()) {
                     retryCount++;
-                    log.error("Reading Incidents for starting : {}, chunk size {} resulted into exception, Re-trying for {} time", new Object[]{startFrom, chunkSize, retryCount});
+                    log.error("Reading  {} tickets from {} resulted into exception[{}], Re-trying for {} time", new Object[]{chunkSize, startFrom, e.getMessage(), retryCount});
+                    try {
+                        log.error("Waiting for 5 sec before trying again ......");
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e1) {
+                    }
+
                     continue;
                 } else {
-                    log.error("Skipping the read process, Reading Incidents Failed for starting : {}, chunk size {} even after retrying for {} times", new Object[]{startFrom, chunkSize, retryCount});
+                    log.error("Skipping the read process, Reading tickets Failed for starting : {}, chunk size {} even after retrying for {} times", new Object[]{startFrom, chunkSize, retryCount});
                     break;
                 }
             }
-            log.info("Recieved {} incidents in {} retry  for starting : {}, chunk size {}  ", new Object[]{entryList.size(), retryCount, startFrom, chunkSize});
+            log.info("Recieved {} tickets in {} retry  for starting : {}, chunk size {}  ", new Object[]{entryList.size(), retryCount, startFrom, chunkSize});
         }
-        List<Payload> payloadList = new ArrayList<>();
-        entryList.forEach(entry -> {
-            payloadList.add(remedyEntryEventAdapter.convertIncidentEntryToPayload(configParser, entry));
-        });
+        List<Payload> payloadList = new ArrayList<Payload>();
+        if (this.formName.equalsIgnoreCase(Constants.HELP_DESK_FORM)) {
+            entryList.forEach(entry -> {
+                payloadList.add(remedyEntryEventAdapter.convertIncidentEntryToPayload(configParser, entry));
+            });
+        } else if (this.formName.equalsIgnoreCase(Constants.CHANGE_FORM)) {
+            entryList.forEach(entry -> {
+                payloadList.add(remedyEntryEventAdapter.convertChangeEntryToPayload(configParser, entry));
+            });
+        }
         return payloadList;
     }
 
