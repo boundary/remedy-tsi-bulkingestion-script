@@ -19,7 +19,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * This class parses the configuration file and
+ * This class Parses the configuration Templates ( incidentTemplate &
+ * changeTemplate.json). It intializes/creates the Configuration , payload and
+ * Field definition
  *
  * @author vitiwari
  */
@@ -109,9 +111,7 @@ public class ConfigParser {
                     throw new ParsingException(StringUtils.format(Constants.PAYLOAD_PROPERTY_NOT_FOUND, new Object[]{entry.getKey()}));
                 }
             }
-
         }
-
     }
 
     public Configuration getConfiguration() {

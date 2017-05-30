@@ -23,10 +23,4 @@ public class FieldItem {
         this.fieldId = fieldId;
     }
 
-    @Override
-    public String toString() {
-        return "FieldItem [ fieldId=" + fieldId + ", valueMap=" + valueMap
-                + "]";
-    }
-
 }

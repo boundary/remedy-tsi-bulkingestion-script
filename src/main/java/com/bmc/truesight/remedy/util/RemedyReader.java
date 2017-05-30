@@ -23,6 +23,13 @@ import com.bmc.truesight.remedy.beans.Configuration;
 import com.bmc.truesight.remedy.beans.Payload;
 import com.bmc.truesight.remedy.exception.RemedyLoginFailedException;
 
+/**
+ * This Class is responsible for reading form entries from the Remedy AR server
+ * Using Java Api. It takes Configuration & a formName (ex HPD:Help Desk) as
+ * constructor Arg
+ *
+ * @author vitiwari
+ */
 public class RemedyReader {
 
     private static final Logger log = LoggerFactory.getLogger(RemedyReader.class);
@@ -71,7 +78,6 @@ public class RemedyReader {
             queryFieldsList[index++] = i;
         }
 
-        //Date newDate = new Date();
         QualifierInfo qualInfoF = null;
         for (int fieldId : configParser.getConfiguration().getConditionFields()) {
             QualifierInfo qualInfo1 = buildFieldValueQualification(fieldId,
@@ -99,13 +105,14 @@ public class RemedyReader {
                 entryList = arServerContext.getListEntryObjects(this.formName, qualInfoF,
                         startFrom, chunkSize, sortOrder, queryFieldsList, false, nMatches);
                 isSuccessful = true;
+                log.info("Recieved {} tickets  for starting index : {}, chunk size {}  ", new Object[]{entryList.size(), startFrom, chunkSize});
             } catch (ARException e) {
                 if (retryCount < configParser.getConfiguration().getRetryConfig()) {
                     retryCount++;
                     log.error("Reading  {} tickets from {} resulted into exception[{}], Re-trying for {} time", new Object[]{chunkSize, startFrom, e.getMessage(), retryCount});
                     try {
-                        log.error("Waiting for 5 sec before trying again ......");
-                        Thread.sleep(5000);
+                        log.error("Waiting for {} sec before trying again ......", (configParser.getConfiguration().getWaitMsBeforeRetry() / 1000));
+                        Thread.sleep(configParser.getConfiguration().getWaitMsBeforeRetry());
                     } catch (InterruptedException e1) {
                     }
 
@@ -115,7 +122,6 @@ public class RemedyReader {
                     break;
                 }
             }
-            log.info("Recieved {} tickets in {} retry  for starting : {}, chunk size {}  ", new Object[]{entryList.size(), retryCount, startFrom, chunkSize});
         }
         List<Payload> payloadList = new ArrayList<Payload>();
         if (this.formName.equalsIgnoreCase(Constants.HELP_DESK_FORM)) {
@@ -131,7 +137,7 @@ public class RemedyReader {
     }
 
     /**
-     * Prepare qualification "<fieldId>=<Value>"
+     * Prepare qualification
      *
      * @return QualifierInfo
      */

@@ -1,6 +1,6 @@
 package com.bmc.truesight.remedy.util;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -14,9 +14,14 @@ import org.slf4j.LoggerFactory;
 import com.bmc.thirdparty.org.apache.commons.codec.binary.Base64;
 import com.bmc.truesight.remedy.beans.Configuration;
 import com.bmc.truesight.remedy.beans.Payload;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
+/**
+ * It is HttpClient which sends the Events to TSI system based on the
+ * configuration
+ *
+ * @author vitiwari
+ */
 public class TsiHttpClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(TsiHttpClient.class);
@@ -28,7 +33,7 @@ public class TsiHttpClient {
     }
 
     public void pushBulkEventsToTSI(final List<Payload> bulkEvents) {
-
+        LOG.info("Starting ingestion of {} events  to TSI ", bulkEvents.size());
         HttpClient httpClient = null;
         boolean isSuccessful = false;
         int retryCount = 0;
@@ -38,17 +43,16 @@ public class TsiHttpClient {
             httpPost.addHeader("Authorization", "Basic " + encodeBase64("" + ":" + this.configuration.getTsiApiToken()));
             httpPost.addHeader("Content-Type", "application/json");
             httpPost.addHeader("accept", "application/json");
-            ObjectMapper mapper = new ObjectMapper();
+            httpPost.addHeader("User-Agent", "RemedyScript");
+            Gson mapper = new Gson();
             String jsonInString = null;
             try {
-                jsonInString = mapper.writeValueAsString(bulkEvents);
-                StringEntity postingString = new StringEntity(jsonInString);
+                jsonInString = mapper.toJson(bulkEvents);
+                Charset charsetD = Charset.forName("UTF-8");
+                StringEntity postingString = new StringEntity(jsonInString, charsetD);
                 httpPost.setEntity(postingString);
-            } catch (JsonProcessingException e) {
-                LOG.error("Can not Send events, There is an issue while converting list of events into json String [{}]", e.getMessage());
-                break;
-            } catch (UnsupportedEncodingException e) {
-                LOG.error("Can not Send events, There is an issue with the encoding of Json String [{}]", e.getMessage());
+            } catch (Exception e) {
+                LOG.error("Can not Send events, There is an issue in creating http request data [{}]", e.getMessage());
                 break;
             }
             HttpResponse response;
@@ -59,14 +63,14 @@ public class TsiHttpClient {
                 if (retryCount < this.configuration.getRetryConfig()) {
                     retryCount++;
                     try {
-                        LOG.info("[Retry  {} ], Waiting for 5 sec before trying again ......", retryCount);
-                        Thread.sleep(5000);
+                        LOG.info("[Retry  {} ], Waiting for {} sec before trying again ......", retryCount, (this.configuration.getWaitMsBeforeRetry() / 1000));
+                        Thread.sleep(this.configuration.getWaitMsBeforeRetry());
                     } catch (InterruptedException e1) {
                         LOG.info("Thread interrupted ......");
                     }
                     continue;
-                }else{
-                	break;
+                } else {
+                    break;
                 }
             }
             int statusCode = response.getStatusLine().getStatusCode();
@@ -75,17 +79,17 @@ public class TsiHttpClient {
                     retryCount++;
                     LOG.error("Sending Event did not result in success, response status Code : {}", new Object[]{response.getStatusLine().getStatusCode()});
                     try {
-                        LOG.info("[Retry  {} ], Waiting for 5 sec before trying again ......", retryCount);
-                        Thread.sleep(5000);
+                        LOG.info("[Retry  {} ], Waiting for {} sec before trying again ......", retryCount, (this.configuration.getWaitMsBeforeRetry() / 1000));
+                        Thread.sleep(this.configuration.getWaitMsBeforeRetry());
                     } catch (InterruptedException e1) {
                         LOG.error("Thread interrupted ......");
                     }
                     continue;
-                }else{
-                	break;
+                } else {
+                    break;
                 }
             } else {
-            	isSuccessful=true;
+                isSuccessful = true;
                 LOG.info("Event sending successful {}", response.getStatusLine());
                 break;
             }

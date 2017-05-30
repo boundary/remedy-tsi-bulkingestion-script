@@ -5,6 +5,12 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+/**
+ * This class is mapped to the configuration field (ie config). The fields
+ * contain the remedy access details, TSI details and other configuration
+ *
+ * @author vitiwari
+ */
 public class Configuration {
 
     private String remedyHostName;
@@ -20,6 +26,7 @@ public class Configuration {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
     private Date endDateTime;
     private int retryConfig;
+    private int waitMsBeforeRetry;
 
     public Date getEndDateTime() {
         return endDateTime;
@@ -107,6 +114,14 @@ public class Configuration {
 
     public void setTsiEventEndpoint(String tsiEventEndpoint) {
         this.tsiEventEndpoint = tsiEventEndpoint;
+    }
+
+    public int getWaitMsBeforeRetry() {
+        return waitMsBeforeRetry;
+    }
+
+    public void setWaitMsBeforeRetry(int waitMsBeforeRetry) {
+        this.waitMsBeforeRetry = waitMsBeforeRetry;
     }
 
 }

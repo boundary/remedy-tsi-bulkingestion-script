@@ -5,17 +5,18 @@
    		"remedyUserName":"vitiwari",
    		"remedyPassword":"bmcAdm1n",
    		"tsiEventEndpoint" : "https://api.truesight-staging.bmc.com/v1/events",
-  		"tsiApiToken":"be300968-ac4c-43f2-9bb2-b0e82b84ccab",
+  		"tsiApiToken":"9ab3c30d-2d16-4023-9517-dc0840ade392",
   		"chunkSize":5,
   		"conditionFields":[1000000564,3],
   		"startDateTime":"2017-01-01 00:00 AM GMT+1:00",
   		"endDateTime":"2017-05-29 00:00 AM GMT+1:00",
-  		"retryConfig":3
+  		"retryConfig":3,
+  		"waitMsBeforeRetry":5000
 	},
 	"payload": {
 		"title": "@TITLE",
 		"fingerprintFields": [
-			"@INCIDENT_NUMBER"
+			"IncidentNumber"
 		],
 		"severity": "@SEVERITY",
 		"status": "@STATUS",
@@ -41,7 +42,7 @@
 		}
 	},
 	"@SEVERITY": {
-		"fieldId":1000000164,
+		"fieldId":1000000162,
 		"valueMap":{
 			"1000": "Critical",
 			"2000": "High",
@@ -72,7 +73,7 @@
 	},
 	"@INCIDENT_NUMBER":{"fieldId":1000000161},
 	"@WEIGHT":{"fieldId":1000000169},
-	"@TITLE":{"fieldId":8},
+	"@TITLE":{"fieldId":1000000000 },
 	"@ASSIGNEE":{"fieldId":1000000218},
 	"@CI":{"fieldId":303544200},
 	"@CREATED_AT":{"fieldId":1000000564}

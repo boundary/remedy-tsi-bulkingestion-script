@@ -19,8 +19,13 @@ import com.bmc.truesight.remedy.util.RemedyReader;
 import com.bmc.truesight.remedy.util.TsiHttpClient;
 
 /**
- * Main Application Entry
+ * Main Application Entry This application reads the files incidentTemplate.json
+ * & changeTemplate.json It parses the files and validates for the syntactical
+ * and semantical correctness It Reads the incident/Change tickets from the
+ * Remedy Server based on the configuration provided and then sends as an events
+ * to the Truesight Intelligence server
  *
+ * @author vitiwari
  */
 public class App {
 
@@ -30,13 +35,13 @@ public class App {
         boolean readIncidents = false;
         boolean readChange = false;
         if (args.length == 0) {
-            log.info("Do you want to ingest Remedy Incidents tickets as events? (y/n)");
+            System.out.println("Do you want to ingest Remedy Incidents tickets as events? (y/n)");
             Scanner scanner = new Scanner(System.in);
             String input1 = scanner.next();
             if (input1.equalsIgnoreCase("y")) {
                 readIncidents = true;
             }
-            log.info("Do you want to ingest Remedy Change tickets as events also? (y/n)");
+            System.out.println("Do you want to ingest Remedy Change tickets as events also? (y/n)");
             String input2 = scanner.next();
             if (input2.equalsIgnoreCase("y")) {
                 readChange = true;
@@ -100,27 +105,20 @@ public class App {
             int iteration = 1;
             OutputInteger nMatches = new OutputInteger();
             boolean readNext = true;
+            log.info("Started reading {} remedy incidents starting from index {} , [Start Date: {}, End Date: {}]", new Object[]{chunkSize, startFrom, config.getStartDateTime(), config.getEndDateTime()});
             while (readNext) {
-                log.info("Started reading remedy incidents with start & chunkSize as {},{},{},{}",
-                        new Object[]{startFrom, chunkSize, config.getStartDateTime(), config.getEndDateTime()});
                 List<Payload> eventList = incidentReader.readRemedyTickets(startFrom, chunkSize, nMatches);
-                log.info("Recieved {} remedy incidents for iteration no {} with start & chunkSize as {},{}", new Object[]{eventList.size(), iteration, startFrom, chunkSize});
-
-                eventList.forEach(event -> {
-                    log.info("Event --> [title :{},severity:{}", event.getTitle(), event.getSeverity());
-                });
+                log.info("[iteration : {}]  Recieved {} remedy incidents", new Object[]{iteration, eventList.size()});
 
                 if (nMatches.longValue() <= (startFrom + chunkSize)) {
                     readNext = false;
                 }
                 iteration++;
                 startFrom = startFrom + chunkSize;
-
                 client.pushBulkEventsToTSI(eventList);
             }
         } catch (Exception ex) {
             log.error("Error {}", ex.getMessage());
-            ex.printStackTrace();
         } finally {
             if (hasLoggedIntoRemedy) {
                 incidentReader.logout();
@@ -170,15 +168,10 @@ public class App {
             int iteration = 1;
             OutputInteger nMatches = new OutputInteger();
             boolean readNext = true;
+            log.info("Started reading {} remedy Change tickets starting from index {} , [Start Date: {}, End Date: {}]", new Object[]{chunkSize, startFrom, config.getStartDateTime(), config.getEndDateTime()});
             while (readNext) {
-                log.info("Started reading remedy changes with start & chunkSize as {},{},{},{}",
-                        new Object[]{startFrom, chunkSize, config.getStartDateTime(), config.getEndDateTime()});
                 List<Payload> eventList = changeReader.readRemedyTickets(startFrom, chunkSize, nMatches);
-                log.info("Recieved {} remedy changes for iteration no {} with start & chunkSize as {},{}", new Object[]{eventList.size(), iteration, startFrom, chunkSize});
-
-                eventList.forEach(event -> {
-                    log.info("Event --> [title :{},severity:{}", event.getTitle(), event.getSeverity());
-                });
+                log.info("[iteration : {}]  Recieved {} remedy Changes", new Object[]{iteration, eventList.size()});
 
                 if (nMatches.longValue() <= (startFrom + chunkSize)) {
                     readNext = false;

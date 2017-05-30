@@ -12,7 +12,10 @@ import com.bmc.truesight.remedy.beans.PayloadSource;
 import com.bmc.truesight.remedy.exception.ValidationException;
 
 /**
- * This class validates the configuration file
+ * This class Validates the configuration Templates ( incidentTemplate &
+ * changeTemplate.json). It Checks for the placeholders (@PlaceholderName) and
+ * their definitions in the config file It also validates if there is proper
+ * values for fields in "config" item.
  *
  * @author vitiwari
  */

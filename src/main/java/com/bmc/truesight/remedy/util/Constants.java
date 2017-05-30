@@ -13,8 +13,7 @@ public interface Constants {
 
     public static final String HELP_DESK_FORM = "HPD:Help Desk";
     public static final String CHANGE_FORM = "CHG:Infrastructure Change";
-    
+
     public static final int TSI_EVENT_SUCCESS = 202;
-    public static final long TSI_DEFAULT_WAIT_TIME_IN_MILLI = 2000;
 
 }
