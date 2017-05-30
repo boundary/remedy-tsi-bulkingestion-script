@@ -64,7 +64,7 @@ public class ConfigParser {
         try {
             configJson = FileUtils.readFileToString(new File(this.configPath), "UTF8");
         } catch (IOException e) {
-            throw new ParsingException(StringUtils.format(Constants.CONFIG_FILE_NOT_FOUND, new Object[]{this.configPath}));
+            throw new ParsingException(StringUtil.format(Constants.CONFIG_FILE_NOT_FOUND, new Object[]{this.configPath}));
         }
         parse(configJson);
     }
@@ -75,7 +75,7 @@ public class ConfigParser {
         try {
             rootNode = mapper.readTree(configJson);
         } catch (IOException e) {
-            throw new ParsingException(StringUtils.format(Constants.CONFIG_FILE_NOT_VALID, new Object[]{this.configPath}));
+            throw new ParsingException(StringUtil.format(Constants.CONFIG_FILE_NOT_VALID, new Object[]{this.configPath}));
         }
 
         // Read the config details and map to pojo
@@ -85,7 +85,7 @@ public class ConfigParser {
             configString = mapper.writeValueAsString(configuration);
             this.configuration = mapper.readValue(configString, Configuration.class);
         } catch (IOException e) {
-            throw new ParsingException(StringUtils.format(Constants.CONFIG_PROPERTY_NOT_FOUND, new Object[]{}));
+            throw new ParsingException(StringUtil.format(Constants.CONFIG_PROPERTY_NOT_FOUND, new Object[]{}));
         }
 
         // Read the payload details and map to pojo
@@ -94,7 +94,7 @@ public class ConfigParser {
             String payloadString = mapper.writeValueAsString(payloadNode);
             this.setPayload(mapper.readValue(payloadString, Payload.class));
         } catch (IOException e) {
-            throw new ParsingException(StringUtils.format(Constants.PAYLOAD_PROPERTY_NOT_FOUND, new Object[]{}));
+            throw new ParsingException(StringUtil.format(Constants.PAYLOAD_PROPERTY_NOT_FOUND, new Object[]{}));
         }
 
         // Iterate over the properties and if it starts with '@', put it to
@@ -108,7 +108,7 @@ public class ConfigParser {
                     FieldItem placeholderDefinition = mapper.readValue(placeholderNode, FieldItem.class);
                     fieldItemMap.put(entry.getKey(), placeholderDefinition);
                 } catch (IOException e) {
-                    throw new ParsingException(StringUtils.format(Constants.PAYLOAD_PROPERTY_NOT_FOUND, new Object[]{entry.getKey()}));
+                    throw new ParsingException(StringUtil.format(Constants.PAYLOAD_PROPERTY_NOT_FOUND, new Object[]{entry.getKey()}));
                 }
             }
         }

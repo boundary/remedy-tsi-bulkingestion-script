@@ -59,7 +59,7 @@ public class RemedyReader {
             arServerContext.login();
             log.info("Login successful to remedy server");
         } catch (ARException e1) {
-            throw new RemedyLoginFailedException(StringUtils.format(Constants.REMEDY_LOGIN_FAILED, new Object[]{e1.getMessage()}));
+            throw new RemedyLoginFailedException(StringUtil.format(Constants.REMEDY_LOGIN_FAILED, new Object[]{e1.getMessage()}));
         }
         return true;
     }

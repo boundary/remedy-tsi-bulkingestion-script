@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.bmc.thirdparty.org.apache.commons.codec.binary.Base64;
 import com.bmc.truesight.remedy.beans.Configuration;
 import com.bmc.truesight.remedy.beans.Payload;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * It is HttpClient which sends the Events to TSI system based on the
@@ -44,10 +44,10 @@ public class TsiHttpClient {
             httpPost.addHeader("Content-Type", "application/json");
             httpPost.addHeader("accept", "application/json");
             httpPost.addHeader("User-Agent", "RemedyScript");
-            Gson mapper = new Gson();
+            ObjectMapper mapper = new ObjectMapper();
             String jsonInString = null;
             try {
-                jsonInString = mapper.toJson(bulkEvents);
+                jsonInString = mapper.writeValueAsString(bulkEvents);
                 Charset charsetD = Charset.forName("UTF-8");
                 StringEntity postingString = new StringEntity(jsonInString, charsetD);
                 httpPost.setEntity(postingString);
