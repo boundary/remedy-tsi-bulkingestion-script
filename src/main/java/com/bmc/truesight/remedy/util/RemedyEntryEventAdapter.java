@@ -65,7 +65,7 @@ public class RemedyEntryEventAdapter {
             FieldItem fieldItem = configParser.getFieldItemMap().get(placeholder);
             Value value = entry.get(fieldItem.getFieldId());
             String val = "";
-            if (value.getValue() != null) {
+            if (value != null && value.getValue() != null) {
                 val = value.getValue().toString();
             }
             if (fieldItem.getValueMap() != null && fieldItem.getValueMap().get(val) != null) {
