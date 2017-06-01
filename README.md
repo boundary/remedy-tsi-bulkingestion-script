@@ -36,7 +36,7 @@ Script for ingestion of Remedy Incidents and Change tickets into Truesight Intel
 |   	"tsiEventEndpoint" : "https://api.truesight-staging.bmc.com/v1/events",| TSI events endpoint based on credentials |
 |  		"tsiApiToken":"XXXXXXXXXXXXXXXXXXXXXXXXXXXXX",| TSI API Token                         |
 |  		"chunkSize":5,                                | No of tickets read and ingested in one chunk |
-|  		"conditionFields":[1000000564,3],             | List of fields to create condition (see blow for details)|
+|  		"conditionFields":[1000000564,3],             | List of fields to create condition (see below for details)*|
 | 		"startDateTime":"2017-01-01 00:00 AM GMT+1:00",| Start Date of Remedy conditionFields   |
 | 		"endDateTime":"2017-05-29 00:00 AM GMT+1:00",| end date of remedy conditionFields 		|
 |  		"retryConfig":3,                            | Retry configuration, in case of failure   |
@@ -46,16 +46,15 @@ Script for ingestion of Remedy Incidents and Change tickets into Truesight Intel
 *You can enter multiple Remedy field Ids as conditions. The reader will read based on all these fields falling in the startDat & EndDate configured.
 
 for ex if [1000000564,3] is given & 1000000564 & 3  are fieldIds for ClosedDate & SubmittedDate correspondingly. Then Reader will read all the tickets that have closed date or submitted date falling under startDate & endDate 
-
-|Payload field and value 					    	| Details/comments						|
+## Payload
+| Payload field and value 					    	| Details/comments						|
 |:-------------------------------------------------:|:------------------------------------:|
 |"payload": {							      		| TSi even Payload json                     |
 |		"title": "@TITLE",						    | '@' refers to a placeholder whose definition* will define the value |
 |		"fingerprintFields": ["IncidentNumber"],	|	if There is no @ in the value it is treated as it is|
 |				............                        | 					...........				|
 
-Placeholder definitions
-::javascript
+## Placeholder definitions
 "@SEVERITY": {
 		"fieldId":1000000162,
 		"valueMap":{
