@@ -24,7 +24,8 @@ Script for ingestion of Remedy Incidents and Change tickets into Truesight Intel
    - "config":{}
    - "payload":{}
    - "@placeholder" : {}
-   1) The config element contains all the required configurations to run this script.
+
+### 1) The config element contains all the required configurations to run this script.
 
 |config field and value 								| Details/comments						|
 |:------------------------------------------------------:|:------------------------------------:|
@@ -46,7 +47,9 @@ Script for ingestion of Remedy Incidents and Change tickets into Truesight Intel
 *You can enter multiple Remedy field Ids as conditions. The reader will read based on all these fields falling in the startDat & EndDate configured.
 
 for ex if [1000000564,3] is given & 1000000564 & 3  are fieldIds for ClosedDate & SubmittedDate correspondingly. Then Reader will read all the tickets that have closed date or submitted date falling under startDate & endDate 
-## Payload
+
+### 2) Payload
+
 | Payload field and value 					    	| Details/comments						|
 |:-------------------------------------------------:|:------------------------------------:|
 |"payload": {							      		| TSi even Payload json                     |
@@ -54,7 +57,8 @@ for ex if [1000000564,3] is given & 1000000564 & 3  are fieldIds for ClosedDate 
 |		"fingerprintFields": ["IncidentNumber"],	|	if There is no @ in the value it is treated as it is|
 |				............                        | 					...........				|
 
-## Placeholder definitions
+### 3) Placeholder definitions
+
 "@SEVERITY": {
 		"fieldId":1000000162,
 		"valueMap":{
@@ -66,4 +70,4 @@ for ex if [1000000564,3] is given & 1000000564 & 3  are fieldIds for ClosedDate 
 	},
 	
 The place holder definition contains the remedy fieldId for which values will be used.
-In case of valueMap is present in the definition its valueMap would be used otherwise the same value will be used. 
+In case of valueMap is present in the definition its valueMap would be used otherwise the same value will be used.
