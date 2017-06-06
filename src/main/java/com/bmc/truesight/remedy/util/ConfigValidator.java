@@ -46,14 +46,14 @@ public class ConfigValidator {
         }
 
         // validate payload configuration
-        if (payload.getTitle().startsWith("@") && !fieldItemMap.containsKey(payload.getTitle())) {
+        if (payload.getTitle()!=null && payload.getTitle().startsWith("@") && !fieldItemMap.containsKey(payload.getTitle())) {
             throw new ValidationException(StringUtil.format(Constants.PAYLOAD_PLACEHOLDER_DEFINITION_MISSING,
                     new Object[]{payload.getTitle()}));
         }
 
         // validate payload configuration
         for (String fpField : payload.getFingerprintFields()) {
-            if (fpField.startsWith("@") && !fieldItemMap.containsKey(fpField)) {
+            if (fpField!=null && fpField.startsWith("@") && !fieldItemMap.containsKey(fpField)) {
                 throw new ValidationException(
                         StringUtil.format(Constants.PAYLOAD_PLACEHOLDER_DEFINITION_MISSING, new Object[]{fpField}));
             }
@@ -68,51 +68,51 @@ public class ConfigValidator {
             }
         }
 
-        if (payload.getSeverity().startsWith("@") && !fieldItemMap.containsKey(payload.getSeverity())) {
+        if (payload.getSeverity()!=null && payload.getSeverity().startsWith("@") && !fieldItemMap.containsKey(payload.getSeverity())) {
             throw new ValidationException(
                     StringUtil.format(Constants.PAYLOAD_PLACEHOLDER_DEFINITION_MISSING, new Object[]{payload.getSeverity()}));
         }
 
-        if (payload.getStatus().startsWith("@") && !fieldItemMap.containsKey(payload.getStatus())) {
+        if (payload.getStatus()!=null && payload.getStatus().startsWith("@") && !fieldItemMap.containsKey(payload.getStatus())) {
             throw new ValidationException(
                     StringUtil.format(Constants.PAYLOAD_PLACEHOLDER_DEFINITION_MISSING, new Object[]{payload.getStatus()}));
         }
 
-        if (payload.getCreatedAt().startsWith("@") && !fieldItemMap.containsKey(payload.getCreatedAt())) {
+        if (payload.getCreatedAt()!=null && payload.getCreatedAt().startsWith("@") && !fieldItemMap.containsKey(payload.getCreatedAt())) {
             throw new ValidationException(
                     StringUtil.format(Constants.PAYLOAD_PLACEHOLDER_DEFINITION_MISSING, new Object[]{payload.getCreatedAt()}));
         }
 
-        if (payload.getEventClass().startsWith("@") && !fieldItemMap.containsKey(payload.getEventClass())) {
+        if (payload.getEventClass()!=null && payload.getEventClass().startsWith("@") && !fieldItemMap.containsKey(payload.getEventClass())) {
             throw new ValidationException(
                     StringUtil.format(Constants.PAYLOAD_PLACEHOLDER_DEFINITION_MISSING, new Object[]{payload.getEventClass()}));
         }
 
         //valiadting source
         PayloadSource source = payload.getSource();
-        if (source.getName().startsWith("@") && !fieldItemMap.containsKey(source.getName())) {
+        if (source.getName()!=null && source.getName().startsWith("@") && !fieldItemMap.containsKey(source.getName())) {
             throw new ValidationException(
                     StringUtil.format(Constants.PAYLOAD_PLACEHOLDER_DEFINITION_MISSING, new Object[]{source.getName()}));
         }
-        if (source.getType().startsWith("@") && !fieldItemMap.containsKey(source.getType())) {
+        if (source.getType()!=null && source.getType().startsWith("@") && !fieldItemMap.containsKey(source.getType())) {
             throw new ValidationException(
                     StringUtil.format(Constants.PAYLOAD_PLACEHOLDER_DEFINITION_MISSING, new Object[]{source.getType()}));
         }
-        if (source.getRef().startsWith("@") && !fieldItemMap.containsKey(source.getRef())) {
+        if (source.getRef()!=null && source.getRef().startsWith("@") && !fieldItemMap.containsKey(source.getRef())) {
             throw new ValidationException(
                     StringUtil.format(Constants.PAYLOAD_PLACEHOLDER_DEFINITION_MISSING, new Object[]{source.getRef()}));
         }
 
         PayloadSource sender = payload.getSender();
-        if (sender.getName().startsWith("@") && !fieldItemMap.containsKey(sender.getName())) {
+        if (sender.getName()!=null && sender.getName().startsWith("@") && !fieldItemMap.containsKey(sender.getName())) {
             throw new ValidationException(
                     StringUtil.format(Constants.PAYLOAD_PLACEHOLDER_DEFINITION_MISSING, new Object[]{sender.getName()}));
         }
-        if (sender.getType().startsWith("@") && !fieldItemMap.containsKey(sender.getType())) {
+        if (sender.getType()!=null && sender.getType().startsWith("@") && !fieldItemMap.containsKey(sender.getType())) {
             throw new ValidationException(
                     StringUtil.format(Constants.PAYLOAD_PLACEHOLDER_DEFINITION_MISSING, new Object[]{sender.getType()}));
         }
-        if (sender.getRef().startsWith("@") && !fieldItemMap.containsKey(sender.getRef())) {
+        if (sender.getRef()!=null && sender.getRef().startsWith("@") && !fieldItemMap.containsKey(sender.getRef())) {
             throw new ValidationException(
                     StringUtil.format(Constants.PAYLOAD_PLACEHOLDER_DEFINITION_MISSING, new Object[]{sender.getRef()}));
         }

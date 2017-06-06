@@ -35,6 +35,7 @@ public class TsiHttpClient {
     public void pushBulkEventsToTSI(final List<Payload> bulkEvents) {
         LOG.info("Starting ingestion of {} events  to TSI ", bulkEvents.size());
         HttpClient httpClient = null;
+        for(Payload payload:bulkEvents){
         boolean isSuccessful = false;
         int retryCount = 0;
         while (!isSuccessful && retryCount <= this.configuration.getRetryConfig()) {
@@ -47,7 +48,7 @@ public class TsiHttpClient {
             ObjectMapper mapper = new ObjectMapper();
             String jsonInString = null;
             try {
-                jsonInString = mapper.writeValueAsString(bulkEvents);
+                jsonInString = mapper.writeValueAsString(payload);
                 Charset charsetD = Charset.forName("UTF-8");
                 StringEntity postingString = new StringEntity(jsonInString, charsetD);
                 httpPost.setEntity(postingString);
@@ -93,6 +94,7 @@ public class TsiHttpClient {
                 LOG.info("Event sending successful {}", response.getStatusLine());
                 break;
             }
+        }
         }
     }
 

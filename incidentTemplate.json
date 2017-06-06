@@ -5,10 +5,10 @@
    		"remedyUserName":"vitiwari",
    		"remedyPassword":"bmcAdm1n",
    		"tsiEventEndpoint" : "https://api.truesight-staging.bmc.com/v1/events",
-  		"tsiApiToken":"9ab3c30d-2d16-4023-9517-dc0840ade392",
+  		"tsiApiToken":"93911456-79dd-4bf6-b2e6-69a58a082a06",
   		"chunkSize":5,
   		"conditionFields":[1000000564,3,6],
-  		"startDateTime":"2013-01-01 00:00 AM GMT+1:00",
+  		"startDateTime":"2017-01-01 00:00 AM GMT+1:00",
   		"endDateTime":"2017-05-29 00:00 AM GMT+1:00",
   		"retryConfig":3,
   		"waitMsBeforeRetry":5000
@@ -26,7 +26,7 @@
 			"CI": "@CI",
 			"Priority": "@PRIORITY",
 			"PriorityWeight": "@WEIGHT",
-			"app_id": "BMC APPLICATION"
+			"app_id": "Remedy Demo"
 		},
 		"createdAt": "@CREATED_AT",
 		"eventClass": "Incident",
