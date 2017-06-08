@@ -1,5 +1,5 @@
-# remedy-meter-script
-Script for ingestion of Remedy Incidents and Change tickets into Truesight Intelligence as events.
+# remedy-tsi-bulkingestion-script
+Script for ingestion of historical Remedy Incidents and Change tickets into Truesight Intelligence as events.
 
 ## Prerequisite 
 	- Java Sdk 1.8
