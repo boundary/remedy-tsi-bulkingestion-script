@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.bmc.truesight</groupId>
-    <artifactId>remedy-meter-script</artifactId>
+    <artifactId>remedy-tsi-bulkingestion-script</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>remedy-meter-script</name>
+    <name>remedy-tsi-bulkingestion-script</name>
     <url>http://maven.apache.org</url>
 
     <properties>
