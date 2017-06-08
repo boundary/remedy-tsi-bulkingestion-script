@@ -11,18 +11,18 @@ Script for ingestion of Remedy Incidents and Change tickets into Truesight Intel
 	- Change the directory.
 	  $ cd remedy-meter-script
 	- Run maven install
-	  $ mvn install
-	- You can find the build jar file as remedy-meter-script-0.0.1-SNAPSHOT-full.jar  
+	  $ mvn clean install
+	- You can find the build jar file as 	remedy-meter-script-0.0.1-SNAPSHOT-full.jar  
 
 ## How to run ?
-	- Copy jar file to the same location as file changeTemplate.json, incidentTemplate.json
+	- Copy jar file to the location as dist.
 	- Change the incidentTemplate.json/changeTemplate.json configuration (based on description below)
 	- Run jar file
 	  ####java -jar remedy-meter-script-0.0.1-SNAPSHOT-full.jar <incident> <change>
 ## Configuration
    The configuration file contains three major sections.
    - "config":{}
-   - "payload":{}
+   - "eventDefinition":{}
    - "@placeholder" : {}
 
 ### 1) The config element contains all the required configurations to run this script.
@@ -48,11 +48,11 @@ Script for ingestion of Remedy Incidents and Change tickets into Truesight Intel
 
 for ex if [1000000564,3] is given & 1000000564 & 3  are fieldIds for ClosedDate & SubmittedDate correspondingly. Then Reader will read all the tickets that have closed date or submitted date falling under startDate & endDate 
 
-### 2) Payload
+### 2) Event Definition
 
 | Payload field and value 					    	| Details/comments						|
 |:-------------------------------------------------:|:------------------------------------:|
-|"payload": {							      		| TSi even Payload json                     |
+|"eventDefinition": {							      		| TSi even Payload json                     |
 |		"title": "@TITLE",						    | '@' refers to a placeholder whose definition* will define the value |
 |		"fingerprintFields": ["IncidentNumber"],	|	if There is no @ in the value it is treated as it is|
 |				............                        | 					...........				|

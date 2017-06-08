@@ -1,11 +1,11 @@
 {
 	"config": {
-		"remedyHostName":"clm-aus-015321.bmc.com",
+		"remedyHostName":"<Change to AR hostName>",
    		"remedyPort":"",
-   		"remedyUserName":"vitiwari",
-   		"remedyPassword":"bmcAdm1n",
+   		"remedyUserName":"<Change to AR UserName>",
+   		"remedyPassword":"<Change to password>",
   		"tsiEventEndpoint" : "https://api.truesight-staging.bmc.com/v1/events",
-  		"tsiApiToken":"52a90a69-242b-4a5f-8685-44eb1d42a0f8",
+  		"tsiApiToken":"<Change to TSI API token>",
   		"chunkSize":5,
   		"conditionFields":[303915500,3],
   		"startDateTime":"2008-01-01 00:00 AM GMT+1:00",
@@ -13,7 +13,7 @@
   		"retryConfig":3,
   		"waitMsBeforeRetry":5000
 	},
-	"payload": {
+	"eventDefinition": {
 		"title": "@TITLE",
 		"fingerprintFields": ["ChangeID"],
 		"severity": "@SEVERITY",
