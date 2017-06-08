@@ -1,0 +1,81 @@
+{
+	"config": {
+		"remedyHostName":"clm-aus-015321.bmc.com",
+   		"remedyPort":"",
+   		"remedyUserName":"vitiwari",
+   		"remedyPassword":"bmcAdm1n",
+   		"tsiEventEndpoint" : "https://api.truesight-staging.bmc.com/v1/events",
+  		"tsiApiToken":"52a90a69-242b-4a5f-8685-44eb1d42a0f8",
+  		"chunkSize":5,
+  		"conditionFields":[1000000564,3,6],
+  		"startDateTime":"2017-01-01 00:00 AM GMT+1:00",
+  		"endDateTime":"2017-05-29 00:00 AM GMT+1:00",
+  		"retryConfig":3,
+  		"waitMsBeforeRetry":5000
+	},
+	"payload": {
+		"title": "@TITLE",
+		"fingerprintFields": [
+			"IncidentNumber"
+		],
+		"severity": "@SEVERITY",
+		"status": "@STATUS",
+		"properties": {
+			"Assignee": "@ASSIGNEE",
+			"IncidentNumber": "@INCIDENT_NUMBER",
+			"CI": "@CI",
+			"Priority": "@PRIORITY",
+			"PriorityWeight": "@WEIGHT",
+			"app_id": "Remedy Demo"
+		},
+		"createdAt": "@CREATED_AT",
+		"eventClass": "Incident",
+		"source": {
+			"name": "Remedy",
+			"type": "Remedy",
+			"ref": "Remedy"
+		},
+		"sender": {
+			"name": "Remedy",
+			"type": "Remedy",
+			"ref": "Remedy"
+		}
+	},
+	"@SEVERITY": {
+		"fieldId":1000000162,
+		"valueMap":{
+			"1000": "Critical",
+			"2000": "High",
+			"3000": "Medium",
+			"4000": "Low"
+		}
+	},
+	"@PRIORITY": {
+		"fieldId": 1000000164,
+		"valueMap":{
+			"0": "Critical",
+			"1": "High",
+			"2": "Medium",
+			"3": "Low"
+		}
+	},
+	"@STATUS": {
+		"fieldId": 7,
+		"valueMap":{
+			"0":"New",
+			"1": "Assigned",
+			"2": "In Progress",
+			"3": "Pending",
+			"4": "Resolved",
+			"5": "Closed",
+			"6": "Cancelled"
+		}
+	},
+	"@INCIDENT_NUMBER":{"fieldId":1000000161},
+	"@WEIGHT":{"fieldId":1000000169},
+	"@TITLE":{"fieldId":1000000000 },
+	"@ASSIGNEE":{"fieldId":1000000218},
+	"@CI":{"fieldId":303544200},
+	"@CREATED_AT":{"fieldId":1000000564}
+	
+}

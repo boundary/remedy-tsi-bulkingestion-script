@@ -12,8 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bmc.thirdparty.org.apache.commons.codec.binary.Base64;
-import com.bmc.truesight.remedy.beans.Configuration;
-import com.bmc.truesight.remedy.beans.Payload;
+import com.bmc.truesight.saas.remedy.integration.beans.Configuration;
+import com.bmc.truesight.saas.remedy.integration.beans.Event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -32,10 +32,10 @@ public class TsiHttpClient {
         this.configuration = configuration;
     }
 
-    public void pushBulkEventsToTSI(final List<Payload> bulkEvents) {
+    public void pushBulkEventsToTSI(final List<Event> bulkEvents) {
         LOG.info("Starting ingestion of {} events  to TSI ", bulkEvents.size());
         HttpClient httpClient = null;
-        for(Payload payload:bulkEvents){
+        //for(Event payload:bulkEvents){
         boolean isSuccessful = false;
         int retryCount = 0;
         while (!isSuccessful && retryCount <= this.configuration.getRetryConfig()) {
@@ -48,7 +48,7 @@ public class TsiHttpClient {
             ObjectMapper mapper = new ObjectMapper();
             String jsonInString = null;
             try {
-                jsonInString = mapper.writeValueAsString(payload);
+                jsonInString = mapper.writeValueAsString(bulkEvents);
                 Charset charsetD = Charset.forName("UTF-8");
                 StringEntity postingString = new StringEntity(jsonInString, charsetD);
                 httpPost.setEntity(postingString);
@@ -95,7 +95,7 @@ public class TsiHttpClient {
                 break;
             }
         }
-        }
+        // }
     }
 
     public static String encodeBase64(final String encodeToken) {
