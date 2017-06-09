@@ -1,9 +1,9 @@
 # remedy-tsi-bulkingestion-script
 Script for ingestion of historical Remedy Incidents and Change tickets into Truesight Intelligence as events.
-
 ## Description.
 
 This Script ingests historical Remedy incidents and change tickets into TSI. Based on the configuration present in the template(see in dist), this script reads the Remedy Incident & Change Tickets and after converting into a TSI event (based on definitions in  `eventDefinition`), it ingests the events to TSI.
+
 
 ## Prerequisite 
 ```
