@@ -3,12 +3,12 @@ Script for ingestion of historical Remedy Incidents and Change tickets into True
 
 ## Description.
 
-This Script enables a Remedy & TSI User to have intelligence on the historical Remedy incidents and change tickets. Based on the configurations present in the template(see in dist), this script reads the Remedy Incident & Change Tickets and after converting into a TSI event based on definitions in  `eventDefinition` it ingests the Events to TSI.
+This Script ingests historical Remedy incidents and change tickets into TSI. Based on the configuration present in the template(see in dist), this script reads the Remedy Incident & Change Tickets and after converting into a TSI event (based on definitions in  `eventDefinition`), it ingests the events to TSI.
 
 ## Prerequisite 
 ```
 Java Sdk 1.8
-maven ( *Only required  if you want to build the code)
+maven (*Only required if you want to build the code)
 ```
 ## How to build ? 
 ```
@@ -41,41 +41,41 @@ $java -jar remedy-meter-script-0.0.1-SNAPSHOT-full.jar <incident> <change>
 
 ### 1) Config
 
-#### The config element contains all the required configurations to run this script.
+#### The config element contains all the required configuration to run this script.
 ```
 "config": {
-  "remedyHostName":"xxxx"       	      ---> ARServer Host name
-  "remedyPort":"",                        ---> ARServer port (Not required)
-  "remedyUserName":"xxxx",                ---> ARServer UserName
-  "remedyPassword":"xxxx",                ---> Password
-  "tsiEventEndpoint": "https://api.truesight-staging.bmc.com/v1/events",   ---> TSI events ingestion API endpoint
-  "tsiApiToken":"xxxx",                   ---> TSI API Token
-  "chunkSize":100,                        --->  No of tickets read and ingested in one chunk
-  "conditionFields":[1000000564,3], ---> List of fields to create condition (see below for details)
-  "startDateTime":"2017-01-01 00:00 AM GMT+1:00", ---> Start Date for Remedy conditionFields
-  "endDateTime":"2017-05-29 00:00 AM GMT+1:00",  ---> End date for remedy conditionFields
-  "retryConfig":3,                        ---> Retry configuration, in case of failure
- "waitMsBeforeRetry":5000         --->Time in ms to wait before next retry
+  "remedyHostName":"xxxx"  					---> ARServer Host name
+  "remedyPort":"",  						---> ARServer port (Not required)
+  "remedyUserName":"xxxx",  					---> ARServer UserName
+  "remedyPassword":"xxxx",					---> Password
+  "tsiEventEndpoint": "https://api.truesight-staging.bmc.com/v1/events", ---> TSI events ingestion API endpoint
+  "tsiApiToken":"xxxx",       					---> TSI API Token
+  "chunkSize":100,	          				---> No of tickets read and ingested in one chunk
+  "conditionFields":[1000000564,3],				---> List of fields to create condition (see below for details)
+  "startDateTime":"2017-01-01 00:00 AM GMT+1:00", 		---> Start Date for Remedy conditionFields
+  "endDateTime":"2017-05-29 00:00 AM GMT+1:00", 		---> End date for remedy conditionFields
+  "retryConfig":3,               				---> Retry configuration, in case of failure
+  "waitMsBeforeRetry":5000       				---> Time in ms to wait before next retry
 }
 
 ```
 
-> ** You can enter multiple Remedy field Ids as conditions. The reader will read based on all these fields falling in the startDate & EndDate configured.*You can enter multiple Remedy field Ids as conditions. The reader will read based on all these fields falling in the startDate & EndDate configured.
+> ** You can enter multiple Remedy field Ids as conditions. The reader will read based on all these fields falling in the startDate & EndDate configured. *You can enter multiple Remedy field Ids as conditions. The reader will read based on all these fields falling in the startDate & EndDate configured.
 
-for ex if [1000000564,3] is given & 1000000564 & 3  are fieldIds for ClosedDate & SubmittedDate correspondingly. Then Reader will read all the tickets that have closed date or submitted date falling under startDate & endDate 
+Ex if [1000000564,3] is given as conditionFields, where 1000000564 & 3  are fieldIds for ClosedDate & SubmittedDate correspondingly, then Reader will read all the tickets that have closed date or submitted date falling under startDate & endDate.
 
 ### 2) Event Definition
 ```
-Payload field and value				Details/Comment
-"eventDefinition": {			---> TSi event definition json
-	"title": "@TITLE",			---> Value with @ prefix is a placeholder
-	"fingerprintFields": ["IncidentNumber"]    ---> If There is no @ in the value it is treated as it is
+Payload field and value						Details/Comment
+"eventDefinition": {					---> TSi event definition json
+	"title": "@TITLE"				---> Value with @ prefix is a placeholder
+	"fingerprintFields": ["IncidentNumber"] 	---> If There is no @ in the value it is treated as it is.
 	.....
 	.....
 }
 ```
 
-### 3) Placeholder definitions
+### 3) Placeholder Definition
 ```
 "@SEVERITY": {
 		"fieldId":1000000162,
@@ -87,8 +87,8 @@ Payload field and value				Details/Comment
 		}
 	},
 ```
-> 1. The placeholder definition contains the remedy `fieldId` , Which defines that this fieldId's value from Remedy Entry will be used in place of this placeholder.
+> 1. The placeholder definition contains the Remedy `fieldId` , which defines that this fieldId's value from Remedy entry will be used in place of this placeholder.
 
-> 2. In case of valueMap is present in the definition its value would be used otherwise the Remedy value will be used.
+> 2. If valueMap is present in the definition its value would be used otherwise the Remedy value will be used.
 
 
