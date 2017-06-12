@@ -17,7 +17,7 @@ import com.bmc.truesight.saas.remedy.integration.TemplateParser;
 import com.bmc.truesight.saas.remedy.integration.TemplateValidator;
 import com.bmc.truesight.saas.remedy.integration.adapter.RemedyEntryEventAdapter;
 import com.bmc.truesight.saas.remedy.integration.beans.Configuration;
-import com.bmc.truesight.saas.remedy.integration.beans.Event;
+import com.bmc.truesight.saas.remedy.integration.beans.TSIEvent;
 import com.bmc.truesight.saas.remedy.integration.beans.Template;
 import com.bmc.truesight.saas.remedy.integration.exception.ParsingException;
 import com.bmc.truesight.saas.remedy.integration.exception.ValidationException;
@@ -116,7 +116,7 @@ public class App {
             boolean readNext = true;
             log.info("Started reading {} remedy incidents starting from index {} , [Start Date: {}, End Date: {}]", new Object[]{chunkSize, startFrom, config.getStartDateTime(), config.getEndDateTime()});
             while (readNext) {
-                List<Event> eventList = incidentReader.readRemedyTickets(user, ARServerForm.INCIDENT_FORM, template, startFrom, chunkSize, nMatches, adapter);
+                List<TSIEvent> eventList = incidentReader.readRemedyTickets(user, ARServerForm.INCIDENT_FORM, template, startFrom, chunkSize, nMatches, adapter);
                 log.info("[iteration : {}]  Recieved {} remedy incidents", new Object[]{iteration, eventList.size()});
 
                 if (nMatches.longValue() <= (startFrom + chunkSize)) {
@@ -181,7 +181,7 @@ public class App {
             boolean readNext = true;
             log.info("Started reading {} remedy Change tickets starting from index {} , [Start Date: {}, End Date: {}]", new Object[]{chunkSize, startFrom, config.getStartDateTime(), config.getEndDateTime()});
             while (readNext) {
-                List<Event> eventList = changeReader.readRemedyTickets(user, ARServerForm.CHANGE_FORM, template, startFrom, chunkSize, nMatches, adapter);
+                List<TSIEvent> eventList = changeReader.readRemedyTickets(user, ARServerForm.CHANGE_FORM, template, startFrom, chunkSize, nMatches, adapter);
                 log.info("[iteration : {}]  Recieved {} remedy Changes", new Object[]{iteration, eventList.size()});
 
                 if (nMatches.longValue() <= (startFrom + chunkSize)) {
