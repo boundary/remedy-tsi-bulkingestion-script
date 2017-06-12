@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.bmc.thirdparty.org.apache.commons.codec.binary.Base64;
 import com.bmc.truesight.saas.remedy.integration.beans.Configuration;
-import com.bmc.truesight.saas.remedy.integration.beans.Event;
+import com.bmc.truesight.saas.remedy.integration.beans.TSIEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -32,7 +32,7 @@ public class TsiHttpClient {
         this.configuration = configuration;
     }
 
-    public void pushBulkEventsToTSI(final List<Event> bulkEvents) {
+    public void pushBulkEventsToTSI(final List<TSIEvent> bulkEvents) {
         LOG.info("Starting ingestion of {} events  to TSI ", bulkEvents.size());
         HttpClient httpClient = null;
         //for(Event payload:bulkEvents){
