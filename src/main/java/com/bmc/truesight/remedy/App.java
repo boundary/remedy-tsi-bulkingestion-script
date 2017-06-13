@@ -14,6 +14,7 @@ import com.bmc.truesight.remedy.util.TsiHttpClient;
 import com.bmc.truesight.saas.remedy.integration.ARServerForm;
 import com.bmc.truesight.saas.remedy.integration.RemedyReader;
 import com.bmc.truesight.saas.remedy.integration.TemplateParser;
+import com.bmc.truesight.saas.remedy.integration.TemplatePreParser;
 import com.bmc.truesight.saas.remedy.integration.TemplateValidator;
 import com.bmc.truesight.saas.remedy.integration.adapter.RemedyEntryEventAdapter;
 import com.bmc.truesight.saas.remedy.integration.beans.Configuration;
@@ -23,6 +24,7 @@ import com.bmc.truesight.saas.remedy.integration.exception.ParsingException;
 import com.bmc.truesight.saas.remedy.integration.exception.ValidationException;
 import com.bmc.truesight.saas.remedy.integration.impl.GenericRemedyReader;
 import com.bmc.truesight.saas.remedy.integration.impl.GenericTemplateParser;
+import com.bmc.truesight.saas.remedy.integration.impl.GenericTemplatePreParser;
 import com.bmc.truesight.saas.remedy.integration.impl.GenericTemplateValidator;
 
 /**
@@ -83,9 +85,11 @@ public class App {
         }
         // PARSING THE CONFIGURATION FILE
         Template template = null;
+        TemplatePreParser incidentPreParser = new GenericTemplatePreParser();
         TemplateParser incidentParser = new GenericTemplateParser();
         try {
-            template = incidentParser.readParseConfigFile(path);
+            Template defaultTemplate = incidentPreParser.loadDefaults(ARServerForm.INCIDENT_FORM);
+            template = incidentParser.readParseConfigFile(defaultTemplate, path);
         } catch (ParsingException ex) {
             log.error(ex.getMessage());
             System.exit(0);
@@ -148,8 +152,11 @@ public class App {
         Template template = null;
         // PARSING THE CONFIGURATION FILE
         TemplateParser changeParser = new GenericTemplateParser();
+        TemplatePreParser changePreParser = new GenericTemplatePreParser();
         try {
-            template = changeParser.readParseConfigFile(path);
+
+            Template defaultTemplate = changePreParser.loadDefaults(ARServerForm.CHANGE_FORM);
+            template = changeParser.readParseConfigFile(defaultTemplate, path);
         } catch (ParsingException ex) {
             log.error(ex.getMessage());
             System.exit(0);
