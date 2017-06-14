@@ -114,10 +114,11 @@ public class App {
             hasLoggedIntoRemedy = incidentReader.login(user);
             RemedyEntryEventAdapter adapter = new RemedyEntryEventAdapter();
             int chunkSize = config.getChunkSize();
-            int startFrom = 1;
+            int startFrom = 0;
             int iteration = 1;
             OutputInteger nMatches = new OutputInteger();
             boolean readNext = true;
+            int successfulEntries = 0;
             log.info("Started reading {} remedy incidents starting from index {} , [Start Date: {}, End Date: {}]", new Object[]{chunkSize, startFrom, config.getStartDateTime(), config.getEndDateTime()});
             while (readNext) {
                 List<TSIEvent> eventList = incidentReader.readRemedyTickets(user, ARServerForm.INCIDENT_FORM, template, startFrom, chunkSize, nMatches, adapter);
@@ -128,8 +129,10 @@ public class App {
                 }
                 iteration++;
                 startFrom = startFrom + chunkSize;
-                client.pushBulkEventsToTSI(eventList);
+                int successCount = client.pushBulkEventsToTSI(eventList);
+                successfulEntries += successCount;
             }
+            log.info("________________________ Total Entries from Remedy = {}, Successful Ingestion Count = {} ______", new Object[]{nMatches.longValue(), successfulEntries});  
         } catch (Exception ex) {
             log.error("Error {}", ex.getMessage());
         } finally {
