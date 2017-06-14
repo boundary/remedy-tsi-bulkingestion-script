@@ -32,10 +32,10 @@ public class TsiHttpClient {
         this.configuration = configuration;
     }
 
-    public void pushBulkEventsToTSI(final List<TSIEvent> bulkEvents) {
+    public int pushBulkEventsToTSI(final List<TSIEvent> bulkEvents) {
         LOG.info("Starting ingestion of {} events  to TSI ", bulkEvents.size());
         HttpClient httpClient = null;
-        //for(Event payload:bulkEvents){
+        int successCount=0;
         boolean isSuccessful = false;
         int retryCount = 0;
         while (!isSuccessful && retryCount <= this.configuration.getRetryConfig()) {
@@ -90,12 +90,13 @@ public class TsiHttpClient {
                     break;
                 }
             } else {
+            	successCount+=bulkEvents.size();
                 isSuccessful = true;
                 LOG.info("Event sending successful {}", response.getStatusLine());
                 break;
             }
         }
-        // }
+       return successCount;
     }
 
     public static String encodeBase64(final String encodeToken) {
