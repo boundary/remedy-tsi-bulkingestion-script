@@ -10,11 +10,6 @@
 	},
 	"eventDefinition": {
 		"properties": {
-			"Assignee": "@ASSIGNEE",
-			"IncidentNumber": "@INCIDENT_NUMBER",
-			"CI": "@CI",
-			"Priority": "@PRIORITY",
-			"PriorityWeight": "@WEIGHT",
 			"app_id": "Remedy Ingestion script"
 		}
 	}
