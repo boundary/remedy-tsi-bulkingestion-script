@@ -66,39 +66,51 @@ public class App {
             }
         }
         if (readIncidents) {
-            readAndIngestIncidents();
+            readAndIngest(ARServerForm.INCIDENT_FORM);
         }
         if (readChange) {
-            readAndIngestChanges();
+            readAndIngest(ARServerForm.CHANGE_FORM);
         }
     }
 
-    private static void readAndIngestIncidents() {
+    private static void readAndIngest(ARServerForm form) {
 
         String path = null;
         boolean hasLoggedIntoRemedy = false;
+        String name = "";
+        if (form.equals(ARServerForm.INCIDENT_FORM)) {
+            name = "Incidents";
+        } else if (form.equals(ARServerForm.CHANGE_FORM)) {
+            name = "Changes";
+        }
+
         try {
             path = new java.io.File(".").getCanonicalPath();
-            path += Constants.INCIDENT_TEMPLATE_PATH;
+            if (form.equals(ARServerForm.INCIDENT_FORM)) {
+                path += Constants.INCIDENT_TEMPLATE_PATH;
+            } else if (form.equals(ARServerForm.CHANGE_FORM)) {
+                path += Constants.CHANGE_TEMPLATE_PATH;
+            }
+
         } catch (IOException e2) {
             log.error("The file path couldnot be found ");
         }
         // PARSING THE CONFIGURATION FILE
         Template template = null;
-        TemplatePreParser incidentPreParser = new GenericTemplatePreParser();
-        TemplateParser incidentParser = new GenericTemplateParser();
+        TemplatePreParser preParser = new GenericTemplatePreParser();
+        TemplateParser parser = new GenericTemplateParser();
         try {
-            Template defaultTemplate = incidentPreParser.loadDefaults(ARServerForm.INCIDENT_FORM);
-            template = incidentParser.readParseConfigFile(defaultTemplate, path);
+            Template defaultTemplate = preParser.loadDefaults(form);
+            template = parser.readParseConfigFile(defaultTemplate, path);
         } catch (ParsingException ex) {
             log.error(ex.getMessage());
             System.exit(0);
         }
         log.info("{} file reading and parsing succesfull", path);
         // VALIDATION OF THE CONFIGURATION
-        TemplateValidator incidentValidator = new GenericTemplateValidator();
+        TemplateValidator validator = new GenericTemplateValidator();
         try {
-            incidentValidator.validate(template);
+            validator.validate(template);
         } catch (ValidationException ex) {
             log.error(ex.getMessage());
             System.exit(0);
@@ -106,110 +118,49 @@ public class App {
         log.info("{} configuration file validation succesfull", path);
 
         Configuration config = template.getConfig();
-        RemedyReader incidentReader = new GenericRemedyReader();
+        RemedyReader reader = new GenericRemedyReader();
         TsiHttpClient client = new TsiHttpClient(config);
-        ARServerUser user = incidentReader.createARServerContext(config.getRemedyHostName(), null, config.getRemedyUserName(), config.getRemedyPassword());
+        ARServerUser user = reader.createARServerContext(config.getRemedyHostName(), null, config.getRemedyUserName(), config.getRemedyPassword());
         try {
             // Start Login
-            hasLoggedIntoRemedy = incidentReader.login(user);
+            hasLoggedIntoRemedy = reader.login(user);
             RemedyEntryEventAdapter adapter = new RemedyEntryEventAdapter();
             int chunkSize = config.getChunkSize();
             int startFrom = 0;
             int iteration = 1;
+            int totalRecordsRead = 0;
             OutputInteger nMatches = new OutputInteger();
             boolean readNext = true;
             int successfulEntries = 0;
-            log.info("Started reading {} remedy incidents starting from index {} , [Start Date: {}, End Date: {}]", new Object[]{chunkSize, startFrom, config.getStartDateTime(), config.getEndDateTime()});
+            log.info("Started reading {} remedy {} starting from index {} , [Start Date: {}, End Date: {}]", new Object[]{chunkSize, name, startFrom, config.getStartDateTime(), config.getEndDateTime()});
             while (readNext) {
-                List<TSIEvent> eventList = incidentReader.readRemedyTickets(user, ARServerForm.INCIDENT_FORM, template, startFrom, chunkSize, nMatches, adapter);
-                log.info("[iteration : {}]  Recieved {} remedy incidents", new Object[]{iteration, eventList.size()});
-
+                System.err.println("Iteration : " + iteration);
+                List<TSIEvent> eventList = reader.readRemedyTickets(user, form, template, startFrom, chunkSize, nMatches, adapter);
+                totalRecordsRead += eventList.size();
+                if (eventList.size() < chunkSize && totalRecordsRead < nMatches.intValue()) {
+                    System.err.println(" Request Sent to remedy (startFrom:" + startFrom + ",chunkSize:" + chunkSize + "), Response Got(RecordsRead:" + eventList.size() + ", totalRecordsRead:" + totalRecordsRead + ", recordsAvailable:" + nMatches.intValue() + ")");
+                    System.err.println(" Based on response, adjusting the chunk Size as " + eventList.size());
+                    chunkSize = eventList.size();
+                } else if (eventList.size() <= chunkSize) {
+                    System.err.println(" Request Sent to remedy (startFrom:" + startFrom + ", chunkSize:" + chunkSize + "), Response Got (RecordsRead:" + eventList.size() + ", totalRecordsRead:" + totalRecordsRead + ", recordsAvailable:" + nMatches.intValue() + ")");
+                }
                 if (nMatches.longValue() <= (startFrom + chunkSize)) {
                     readNext = false;
                 }
                 iteration++;
-                startFrom = startFrom + chunkSize;
+                startFrom = totalRecordsRead;
                 int successCount = client.pushBulkEventsToTSI(eventList);
                 successfulEntries += successCount;
             }
-            log.info("________________________ Total Entries from Remedy = {}, Successful Ingestion Count = {} ______", new Object[]{nMatches.longValue(), successfulEntries});  
+            log.info("________________________ Total {} Entries from Remedy = {}, Successful Ingestion Count = {} ______", new Object[]{name, nMatches.longValue(), successfulEntries});
         } catch (Exception ex) {
             log.error("Error {}", ex.getMessage());
         } finally {
             if (hasLoggedIntoRemedy) {
-                incidentReader.logout(user);
+                reader.logout(user);
             }
         }
 
     }
 
-    private static void readAndIngestChanges() {
-        String path = null;
-        boolean hasLoggedIntoRemedy = false;
-        try {
-            path = new java.io.File(".").getCanonicalPath();
-            path += Constants.CHANGE_TEMPLATE_PATH;
-        } catch (IOException e2) {
-            log.error("The file path couldnot be found ");
-        }
-        Template template = null;
-        // PARSING THE CONFIGURATION FILE
-        TemplateParser changeParser = new GenericTemplateParser();
-        TemplatePreParser changePreParser = new GenericTemplatePreParser();
-        try {
-
-            Template defaultTemplate = changePreParser.loadDefaults(ARServerForm.CHANGE_FORM);
-            template = changeParser.readParseConfigFile(defaultTemplate, path);
-        } catch (ParsingException ex) {
-            log.error(ex.getMessage());
-            System.exit(0);
-        }
-        log.info("{} file reading and parsing succesfull", path);
-        // VALIDATION OF THE CONFIGURATION
-        TemplateValidator changeValidator = new GenericTemplateValidator();
-        try {
-            changeValidator.validate(template);
-        } catch (ValidationException ex) {
-            log.error(ex.getMessage());
-            System.exit(0);
-        }
-        log.info("{} configuration file validation succesfull", path);
-
-        Configuration config = template.getConfig();
-        RemedyReader changeReader = new GenericRemedyReader();
-        TsiHttpClient client = new TsiHttpClient(config);
-        ARServerUser user = changeReader.createARServerContext(config.getRemedyHostName(), null, config.getRemedyUserName(), config.getRemedyPassword());
-        try {
-
-            // Start Login
-            hasLoggedIntoRemedy = changeReader.login(user);
-            RemedyEntryEventAdapter adapter = new RemedyEntryEventAdapter();
-            int chunkSize = config.getChunkSize();
-            int startFrom = 1;
-            int iteration = 1;
-            OutputInteger nMatches = new OutputInteger();
-            boolean readNext = true;
-            log.info("Started reading {} remedy Change tickets starting from index {} , [Start Date: {}, End Date: {}]", new Object[]{chunkSize, startFrom, config.getStartDateTime(), config.getEndDateTime()});
-            while (readNext) {
-                List<TSIEvent> eventList = changeReader.readRemedyTickets(user, ARServerForm.CHANGE_FORM, template, startFrom, chunkSize, nMatches, adapter);
-                log.info("[iteration : {}]  Recieved {} remedy Changes", new Object[]{iteration, eventList.size()});
-
-                if (nMatches.longValue() <= (startFrom + chunkSize)) {
-                    readNext = false;
-                }
-                iteration++;
-                startFrom = startFrom + chunkSize;
-
-                // Send the events to TSI
-                client.pushBulkEventsToTSI(eventList);
-            }
-        } catch (Exception ex) {
-            log.error("Error {}", ex.getMessage());
-            ex.printStackTrace();
-        } finally {
-            if (hasLoggedIntoRemedy) {
-                changeReader.logout(user);
-            }
-        }
-    }
 }
