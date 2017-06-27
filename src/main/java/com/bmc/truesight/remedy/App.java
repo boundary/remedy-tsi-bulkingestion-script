@@ -132,21 +132,27 @@ public class App {
             OutputInteger nMatches = new OutputInteger();
             boolean readNext = true;
             int successfulEntries = 0;
+            boolean exceededMaxServerEntries = false;
             log.info("Started reading {} remedy {} starting from index {} , [Start Date: {}, End Date: {}]", new Object[]{chunkSize, name, startFrom, config.getStartDateTime(), config.getEndDateTime()});
             while (readNext) {
                 System.err.println("Iteration : " + iteration);
                 List<TSIEvent> eventList = reader.readRemedyTickets(user, form, template, startFrom, chunkSize, nMatches, adapter);
+                exceededMaxServerEntries = reader.exceededMaxServerEntries(user);
                 totalRecordsRead += eventList.size();
-                if (eventList.size() < chunkSize && totalRecordsRead < nMatches.intValue()) {
+                if (eventList.size() < chunkSize && totalRecordsRead < nMatches.intValue() && exceededMaxServerEntries) {
                     System.err.println(" Request Sent to remedy (startFrom:" + startFrom + ",chunkSize:" + chunkSize + "), Response Got(RecordsRead:" + eventList.size() + ", totalRecordsRead:" + totalRecordsRead + ", recordsAvailable:" + nMatches.intValue() + ")");
-                    System.err.println(" Based on response, adjusting the chunk Size as " + eventList.size());
+                    System.err.println(" Based on exceededMaxServerEntries response as(" + exceededMaxServerEntries + "), adjusting the chunk Size as " + eventList.size());
                     chunkSize = eventList.size();
                 } else if (eventList.size() <= chunkSize) {
                     System.err.println(" Request Sent to remedy (startFrom:" + startFrom + ", chunkSize:" + chunkSize + "), Response Got (RecordsRead:" + eventList.size() + ", totalRecordsRead:" + totalRecordsRead + ", recordsAvailable:" + nMatches.intValue() + ")");
                 }
-                if (nMatches.longValue() <= (startFrom + chunkSize)) {
+                if (totalRecordsRead < nMatches.longValue() && (totalRecordsRead + chunkSize) > nMatches.longValue()) {
+                    //assuming the long value would be in int range always
+                    chunkSize = (int) (nMatches.longValue() - totalRecordsRead);
+                } else if (totalRecordsRead >= nMatches.longValue()) {
                     readNext = false;
                 }
+
                 iteration++;
                 startFrom = totalRecordsRead;
                 int successCount = client.pushBulkEventsToTSI(eventList);
