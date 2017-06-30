@@ -177,12 +177,12 @@ public class App {
                 Date createdDate = convertToDate(lastEventList.get((lastEventList.size() - 1)).getCreatedAt());
                 Date modDate = convertToDate(lastEventList.get((lastEventList.size() - 1)).getProperties().get("LastModDate"));
                 Date closedDate = convertToDate(lastEventList.get((lastEventList.size() - 1)).getProperties().get("ClosedDate"));
-                log.error("Created Date : {}", new Object[]{createdDate});
+                log.info("Created Date : {}", new Object[]{createdDate});
                 if (lastEventList.get((lastEventList.size() - 1)).getProperties().get("LastModDate") != null) {
-                    log.error("Last Modified Date : {}", new Object[]{modDate});
+                    log.info("Last Modified Date : {}", new Object[]{modDate});
                 }
                 if (lastEventList.get((lastEventList.size() - 1)).getProperties().get("ClosedDate") != null) {
-                    log.error("Closed Date : {}", new Object[]{closedDate});
+                    log.info("Closed Date : {}", new Object[]{closedDate});
                 }
             }
         } catch (BulkEventsIngestionFailedException e) {
@@ -193,12 +193,12 @@ public class App {
                 Date createdDate = convertToDate(lastEventList.get((lastEventList.size() - 1)).getCreatedAt());
                 Date modDate = convertToDate(lastEventList.get((lastEventList.size() - 1)).getProperties().get("LastModDate"));
                 Date closedDate = convertToDate(lastEventList.get((lastEventList.size() - 1)).getProperties().get("ClosedDate"));
-                log.error("Created Date : {}", new Object[]{ScriptUtil.dateToString(createdDate)});
+                log.info("Created Date : {}", new Object[]{ScriptUtil.dateToString(createdDate)});
                 if (lastEventList.get((lastEventList.size() - 1)).getProperties().get("LastModDate") != null) {
-                    log.error("Last Modified Date : {}", new Object[]{ScriptUtil.dateToString(modDate)});
+                    log.info("Last Modified Date : {}", new Object[]{ScriptUtil.dateToString(modDate)});
                 }
                 if (lastEventList.get((lastEventList.size() - 1)).getProperties().get("ClosedDate") != null) {
-                    log.error("Closed Date : {}", new Object[]{ScriptUtil.dateToString(closedDate)});
+                    log.info("Closed Date : {}", new Object[]{ScriptUtil.dateToString(closedDate)});
                 }
             }
 
