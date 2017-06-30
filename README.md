@@ -45,39 +45,31 @@ $java -jar remedy-meter-script-0.0.1-SNAPSHOT-full.jar <incident> <change>
 ```
 "config": {
   "remedyHostName":"xxxx"  					---> ARServer Host name
-  "remedyPort":"",  						---> ARServer port (Not required)
   "remedyUserName":"xxxx",  					---> ARServer UserName
   "remedyPassword":"xxxx",					---> Password
   "tsiEventEndpoint": "https://api.truesight-staging.bmc.com/v1/events", ---> TSI events ingestion API endpoint
   "tsiApiToken":"xxxx",       					---> TSI API Token
-  "chunkSize":100,	          				---> No of tickets read and ingested in one chunk
-  "conditionFields":[1000000564,3],				---> List of fields to create condition (see below for details)
-  "startDateTime":"2017-01-01 00:00 AM GMT+1:00", 		---> Start Date for Remedy conditionFields
-  "endDateTime":"2017-05-29 00:00 AM GMT+1:00", 		---> End date for remedy conditionFields
-  "retryConfig":3,               				---> Retry configuration, in case of failure
-  "waitMsBeforeRetry":5000       				---> Time in ms to wait before next retry
+  "startDateTime":"2016-12-31 00:00:00 UTC", 	 		---> Start Date for Remedy conditionFields
+  "endDateTime":"2017-12-31 00:00:00 UTC", 			---> End date for remedy conditionFields
 }
 
 ```
 
-> ** You can enter multiple Remedy field Ids as conditions. The reader will read based on all these fields falling in the startDate & EndDate configured. *You can enter multiple Remedy field Ids as conditions. The reader will read based on all these fields falling in the startDate & EndDate configured.
-
-Ex if [1000000564,3] is given as conditionFields, where 1000000564 & 3  are fieldIds for ClosedDate & SubmittedDate correspondingly, then Reader will read all the tickets that have closed date or submitted date falling under startDate & endDate.
 
 ### 2) Event Definition
 ```
 Payload field and value						Details/Comment
-"eventDefinition": {					---> TSi event definition json
-	"title": "@TITLE"				---> Value with @ prefix is a placeholder
-	"fingerprintFields": ["IncidentNumber"] 	---> If There is no @ in the value it is treated as it is.
-	.....
-	.....
-}
+"eventDefinition": {						---> Event Definition
+  "properties": {
+    "app_id": "Remedy Ingestion script" 			---> Change the App_Id as Required
+  }
+ }
 ```
 
-### 3) Placeholder Definition
+### 3) Placeholder Definition 
+There are several Field Definitions/ Placeholder definitions already available by default. You can add a custom Field Definition & use it in the properties section of eventDefinition as per requirement.
 ```
-"@SEVERITY": {
+"@CUSTOMFIELD": {
 		"fieldId":1000000162,
 		"valueMap":{
 			"1000": "Critical",
@@ -87,8 +79,18 @@ Payload field and value						Details/Comment
 		}
 	},
 ```
+
+```
+Example
+"eventDefinition": {						  
+		"properties": {
+			"app_id": "Remedy Ingestion script",
+			"CustomFieldName":"@CUSTOMFIELD"				---> Add Custom additional fields like this
+		}
+ }
+```
 > 1. The placeholder definition contains the Remedy `fieldId` , which defines that this fieldId's value from Remedy entry will be used in place of this placeholder.
 
-> 2. If valueMap is present in the definition its value would be used otherwise the Remedy value will be used.
+> 2. If valueMap is present in the definition its value would be used from valueMap otherwise the Remedy value will be used.
 
 

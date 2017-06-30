@@ -5,8 +5,8 @@
    		"remedyPassword":"<Change to password>",
    		"tsiEventEndpoint" : "https://api.truesight-staging.bmc.com/v1/events",
   		"tsiApiToken":"<Change to TSI API token>",
-  		"startDateTime":"2017-01-01 00:00 AM GMT+1:00",
-  		"endDateTime":"2017-05-29 00:00 AM GMT+1:00"
+  		"startDateTime":"2017-01-01 00:00:00 UTC",
+  		"endDateTime":"2017-06-29 00:00:00 UTC"
 	},
 	"eventDefinition": {
 		"properties": {

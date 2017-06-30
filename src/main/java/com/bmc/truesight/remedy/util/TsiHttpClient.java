@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bmc.thirdparty.org.apache.commons.codec.binary.Base64;
+import com.bmc.truesight.remedy.exception.BulkEventsIngestionFailedException;
 import com.bmc.truesight.saas.remedy.integration.beans.Configuration;
 import com.bmc.truesight.saas.remedy.integration.beans.TSIEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,10 +33,10 @@ public class TsiHttpClient {
         this.configuration = configuration;
     }
 
-    public int pushBulkEventsToTSI(final List<TSIEvent> bulkEvents) {
+    public int pushBulkEventsToTSI(final List<TSIEvent> bulkEvents) throws BulkEventsIngestionFailedException {
         LOG.info("Starting ingestion of {} events  to TSI ", bulkEvents.size());
         HttpClient httpClient = null;
-        int successCount=0;
+        int successCount = 0;
         boolean isSuccessful = false;
         int retryCount = 0;
         while (!isSuccessful && retryCount <= this.configuration.getRetryConfig()) {
@@ -54,7 +55,7 @@ public class TsiHttpClient {
                 httpPost.setEntity(postingString);
             } catch (Exception e) {
                 LOG.error("Can not Send events, There is an issue in creating http request data [{}]", e.getMessage());
-                break;
+                throw new BulkEventsIngestionFailedException(e.getMessage());
             }
             HttpResponse response;
             try {
@@ -71,7 +72,7 @@ public class TsiHttpClient {
                     }
                     continue;
                 } else {
-                    break;
+                    throw new BulkEventsIngestionFailedException(e.getMessage());
                 }
             }
             int statusCode = response.getStatusLine().getStatusCode();
@@ -87,16 +88,16 @@ public class TsiHttpClient {
                     }
                     continue;
                 } else {
-                    break;
+                    throw new BulkEventsIngestionFailedException("Sending Event to TSI did not result in success, response status Code :" + response.getStatusLine().getStatusCode());
                 }
             } else {
-            	successCount+=bulkEvents.size();
+                successCount += bulkEvents.size();
                 isSuccessful = true;
                 LOG.info("Event sending successful {}", response.getStatusLine());
                 break;
             }
         }
-       return successCount;
+        return successCount;
     }
 
     public static String encodeBase64(final String encodeToken) {
