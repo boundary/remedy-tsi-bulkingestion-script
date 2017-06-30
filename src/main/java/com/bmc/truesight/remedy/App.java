@@ -1,6 +1,8 @@
 package com.bmc.truesight.remedy;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -9,7 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import com.bmc.arsys.api.ARServerUser;
 import com.bmc.arsys.api.OutputInteger;
+import com.bmc.truesight.remedy.exception.BulkEventsIngestionFailedException;
 import com.bmc.truesight.remedy.util.Constants;
+import com.bmc.truesight.remedy.util.ScriptUtil;
 import com.bmc.truesight.remedy.util.TsiHttpClient;
 import com.bmc.truesight.saas.remedy.integration.ARServerForm;
 import com.bmc.truesight.saas.remedy.integration.RemedyReader;
@@ -21,6 +25,8 @@ import com.bmc.truesight.saas.remedy.integration.beans.Configuration;
 import com.bmc.truesight.saas.remedy.integration.beans.TSIEvent;
 import com.bmc.truesight.saas.remedy.integration.beans.Template;
 import com.bmc.truesight.saas.remedy.integration.exception.ParsingException;
+import com.bmc.truesight.saas.remedy.integration.exception.RemedyLoginFailedException;
+import com.bmc.truesight.saas.remedy.integration.exception.RemedyReadFailedException;
 import com.bmc.truesight.saas.remedy.integration.exception.ValidationException;
 import com.bmc.truesight.saas.remedy.integration.impl.GenericRemedyReader;
 import com.bmc.truesight.saas.remedy.integration.impl.GenericTemplateParser;
@@ -121,6 +127,8 @@ public class App {
         RemedyReader reader = new GenericRemedyReader();
         TsiHttpClient client = new TsiHttpClient(config);
         ARServerUser user = reader.createARServerContext(config.getRemedyHostName(), null, config.getRemedyUserName(), config.getRemedyPassword());
+        List<TSIEvent> eventList = new ArrayList<>();
+        List<TSIEvent> lastEventList = new ArrayList<>();
         try {
             // Start Login
             hasLoggedIntoRemedy = reader.login(user);
@@ -133,18 +141,18 @@ public class App {
             boolean readNext = true;
             int successfulEntries = 0;
             boolean exceededMaxServerEntries = false;
-            log.info("Started reading {} remedy {} starting from index {} , [Start Date: {}, End Date: {}]", new Object[]{chunkSize, name, startFrom, config.getStartDateTime(), config.getEndDateTime()});
+            log.info("Started reading {} remedy {} starting from index {} , [Start Date: {}, End Date: {}]", new Object[]{chunkSize, name, startFrom, ScriptUtil.dateToString(config.getStartDateTime()), ScriptUtil.dateToString(config.getEndDateTime())});
             while (readNext) {
-                System.err.println("Iteration : " + iteration);
-                List<TSIEvent> eventList = reader.readRemedyTickets(user, form, template, startFrom, chunkSize, nMatches, adapter);
+                log.info("Iteration : " + iteration);
+                eventList = reader.readRemedyTickets(user, form, template, startFrom, chunkSize, nMatches, adapter);
                 exceededMaxServerEntries = reader.exceededMaxServerEntries(user);
                 totalRecordsRead += eventList.size();
                 if (eventList.size() < chunkSize && totalRecordsRead < nMatches.intValue() && exceededMaxServerEntries) {
-                    System.err.println(" Request Sent to remedy (startFrom:" + startFrom + ",chunkSize:" + chunkSize + "), Response Got(RecordsRead:" + eventList.size() + ", totalRecordsRead:" + totalRecordsRead + ", recordsAvailable:" + nMatches.intValue() + ")");
-                    System.err.println(" Based on exceededMaxServerEntries response as(" + exceededMaxServerEntries + "), adjusting the chunk Size as " + eventList.size());
+                    log.info(" Request Sent to remedy (startFrom:" + startFrom + ",chunkSize:" + chunkSize + "), Response Got(RecordsRead:" + eventList.size() + ", totalRecordsRead:" + totalRecordsRead + ", recordsAvailable:" + nMatches.intValue() + ")");
+                    log.info(" Based on exceededMaxServerEntries response as(" + exceededMaxServerEntries + "), adjusting the chunk Size as " + eventList.size());
                     chunkSize = eventList.size();
                 } else if (eventList.size() <= chunkSize) {
-                    System.err.println(" Request Sent to remedy (startFrom:" + startFrom + ", chunkSize:" + chunkSize + "), Response Got (RecordsRead:" + eventList.size() + ", totalRecordsRead:" + totalRecordsRead + ", recordsAvailable:" + nMatches.intValue() + ")");
+                    log.info(" Request Sent to remedy (startFrom:" + startFrom + ", chunkSize:" + chunkSize + "), Response Got (RecordsRead:" + eventList.size() + ", totalRecordsRead:" + totalRecordsRead + ", recordsAvailable:" + nMatches.intValue() + ")");
                 }
                 if (totalRecordsRead < nMatches.longValue() && (totalRecordsRead + chunkSize) > nMatches.longValue()) {
                     //assuming the long value would be in int range always
@@ -152,13 +160,48 @@ public class App {
                 } else if (totalRecordsRead >= nMatches.longValue()) {
                     readNext = false;
                 }
-
                 iteration++;
                 startFrom = totalRecordsRead;
                 int successCount = client.pushBulkEventsToTSI(eventList);
                 successfulEntries += successCount;
+                lastEventList = new ArrayList<>(eventList);
             }
             log.info("________________________ Total {} Entries from Remedy = {}, Successful Ingestion Count = {} ______", new Object[]{name, nMatches.longValue(), successfulEntries});
+        } catch (RemedyLoginFailedException e) {
+            log.error("Login Failed : {}", e.getMessage());
+        } catch (RemedyReadFailedException e) {
+            if (lastEventList.isEmpty()) {
+                log.error("Reading tickets from Remedy server failed for StartDateTime, EndDateTime ({},{}). Please try running the script after some time with the same timestamps.", new Object[]{e.getMessage(), ScriptUtil.dateToString(config.getStartDateTime()), ScriptUtil.dateToString(config.getEndDateTime())});
+            } else {
+                log.error("Due to some issue Reading tickets from Remedy server failed for StartDateTime, EndDateTime ({},{}). Please try running the script after some time from the last successful timestamp as below.", new Object[]{ScriptUtil.dateToString(config.getStartDateTime()), ScriptUtil.dateToString(config.getEndDateTime())});
+                Date createdDate = convertToDate(lastEventList.get((lastEventList.size() - 1)).getCreatedAt());
+                Date modDate = convertToDate(lastEventList.get((lastEventList.size() - 1)).getProperties().get("LastModDate"));
+                Date closedDate = convertToDate(lastEventList.get((lastEventList.size() - 1)).getProperties().get("ClosedDate"));
+                log.error("Created Date : {}", new Object[]{createdDate});
+                if (lastEventList.get((lastEventList.size() - 1)).getProperties().get("LastModDate") != null) {
+                    log.error("Last Modified Date : {}", new Object[]{modDate});
+                }
+                if (lastEventList.get((lastEventList.size() - 1)).getProperties().get("ClosedDate") != null) {
+                    log.error("Closed Date : {}", new Object[]{closedDate});
+                }
+            }
+        } catch (BulkEventsIngestionFailedException e) {
+            if (lastEventList.isEmpty()) {
+                log.error("Ingestion Failed (Reason : {}) for StartDateTime, EndDateTime ({},{}). Please try running the script after some time with the same timestamps.", new Object[]{e.getMessage(), ScriptUtil.dateToString(config.getStartDateTime()), ScriptUtil.dateToString(config.getEndDateTime())});
+            } else {
+                log.error("Ingestion Failed (Reason : {}) for StartDateTime, EndDateTime ({},{}). Please try running the script after some time from the last successful timestamp as below.", new Object[]{e.getMessage(), ScriptUtil.dateToString(config.getStartDateTime()), ScriptUtil.dateToString(config.getEndDateTime())});
+                Date createdDate = convertToDate(lastEventList.get((lastEventList.size() - 1)).getCreatedAt());
+                Date modDate = convertToDate(lastEventList.get((lastEventList.size() - 1)).getProperties().get("LastModDate"));
+                Date closedDate = convertToDate(lastEventList.get((lastEventList.size() - 1)).getProperties().get("ClosedDate"));
+                log.error("Created Date : {}", new Object[]{ScriptUtil.dateToString(createdDate)});
+                if (lastEventList.get((lastEventList.size() - 1)).getProperties().get("LastModDate") != null) {
+                    log.error("Last Modified Date : {}", new Object[]{ScriptUtil.dateToString(modDate)});
+                }
+                if (lastEventList.get((lastEventList.size() - 1)).getProperties().get("ClosedDate") != null) {
+                    log.error("Closed Date : {}", new Object[]{ScriptUtil.dateToString(closedDate)});
+                }
+            }
+
         } catch (Exception ex) {
             log.error("Error {}", ex.getMessage());
         } finally {
@@ -167,6 +210,17 @@ public class App {
             }
         }
 
+    }
+
+    private static Date convertToDate(String date) {
+        Date dt = null;
+        try {
+            dt = new Date(Long.parseLong(date) * 1000L);
+        } catch (Exception ex) {
+            log.debug("Date conversion failed for date [{}]", date);
+            //do nothing 
+        }
+        return dt;
     }
 
 }
