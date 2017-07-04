@@ -28,7 +28,7 @@ $ mvn clean install
 $cd dist
 2. Change the incidentTemplate.json/changeTemplate.json configuration (based on description below)
 3. Run jar file
-$java -jar remedy-meter-script-0.9.0.jar <incident> <change>
+$java -jar remedy-tsi-bulkingestion-script-0.9.0.jar <incident> <change>
 ```
 ## Configuration
    The configuration file contains three major sections.
