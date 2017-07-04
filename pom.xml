@@ -4,7 +4,7 @@
 
     <groupId>com.bmc.truesight</groupId>
     <artifactId>remedy-tsi-bulkingestion-script</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.9.0</version>
     <packaging>jar</packaging>
 
     <name>remedy-tsi-bulkingestion-script</name>
@@ -91,7 +91,7 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                    <finalName>${project.artifactId}-${project.version}-full</finalName>
+                    <finalName>${project.artifactId}-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
