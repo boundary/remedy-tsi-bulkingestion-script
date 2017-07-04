@@ -126,7 +126,7 @@ public class App {
         Configuration config = template.getConfig();
         RemedyReader reader = new GenericRemedyReader();
         TsiHttpClient client = new TsiHttpClient(config);
-        ARServerUser user = reader.createARServerContext(config.getRemedyHostName(), null, config.getRemedyUserName(), config.getRemedyPassword());
+        ARServerUser user = reader.createARServerContext(config.getRemedyHostName(), config.getRemedyPort(), config.getRemedyUserName(), config.getRemedyPassword());
         List<TSIEvent> eventList = new ArrayList<>();
         List<TSIEvent> lastEventList = new ArrayList<>();
         try {

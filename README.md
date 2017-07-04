@@ -18,7 +18,7 @@ $ git clone https://github.com/boundary/remedy-tsi-bulkingestion-script.git
 $ cd remedy-tsi-bulkingestion-script
 3. Run maven install
 $ mvn clean install
-4. You can find the build jar file as remedy-tsi-bulkingestion-script-0.0.1-SNAPSHOT-full.jar
+4. You can find the build jar file as remedy-tsi-bulkingestion-script-0.9.0.jar
 ```
 ##### Note : You can find a pre-built jar in dist folder
 
@@ -28,7 +28,7 @@ $ mvn clean install
 $cd dist
 2. Change the incidentTemplate.json/changeTemplate.json configuration (based on description below)
 3. Run jar file
-$java -jar remedy-meter-script-0.0.1-SNAPSHOT-full.jar <incident> <change>
+$java -jar remedy-meter-script-0.9.0.jar <incident> <change>
 ```
 ## Configuration
    The configuration file contains three major sections.
@@ -45,6 +45,7 @@ $java -jar remedy-meter-script-0.0.1-SNAPSHOT-full.jar <incident> <change>
 ```
 "config": {
   "remedyHostName":"xxxx"  					---> ARServer Host name
+  "remedyPort":0,                                               ---> ArServer TCP Port
   "remedyUserName":"xxxx",  					---> ARServer UserName
   "remedyPassword":"xxxx",					---> Password
   "tsiEventEndpoint": "https://api.truesight-staging.bmc.com/v1/events", ---> TSI events ingestion API endpoint
