@@ -45,7 +45,6 @@ $java -jar remedy-meter-script-0.9.0.jar <incident> <change>
 ```
 "config": {
   "remedyHostName":"xxxx"  					---> ARServer Host name
-  "remedyPort":0,                                               ---> ArServer TCP Port
   "remedyUserName":"xxxx",  					---> ARServer UserName
   "remedyPassword":"xxxx",					---> Password
   "tsiEventEndpoint": "https://api.truesight-staging.bmc.com/v1/events", ---> TSI events ingestion API endpoint
