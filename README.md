@@ -18,7 +18,7 @@ $ git clone https://github.com/boundary/remedy-tsi-bulkingestion-script.git
 $ cd remedy-tsi-bulkingestion-script
 3. Run maven install
 $ mvn clean install
-4. You can find the build jar file as remedy-tsi-bulkingestion-script-0.9.0.jar
+4. You can find the build jar file as remedy-tsi-bulkingestion-script-0.9.1.jar
 ```
 ##### Note : You can find a pre-built jar in dist folder
 
@@ -28,7 +28,7 @@ $ mvn clean install
 $cd dist
 2. Change the incidentTemplate.json/changeTemplate.json configuration (based on description below)
 3. Run jar file
-$java -jar remedy-tsi-bulkingestion-script-0.9.0.jar <incident> <change>
+$java -jar remedy-tsi-bulkingestion-script-0.9.1.jar <incident> <change>
 ```
 ## Configuration
    The configuration file contains three major sections.
@@ -47,7 +47,6 @@ $java -jar remedy-tsi-bulkingestion-script-0.9.0.jar <incident> <change>
   "remedyHostName":"xxxx"  					---> ARServer Host name
   "remedyUserName":"xxxx",  					---> ARServer UserName
   "remedyPassword":"xxxx",					---> Password
-  "tsiEventEndpoint": "https://api.truesight-staging.bmc.com/v1/events", ---> TSI events ingestion API endpoint
   "tsiApiToken":"xxxx",       					---> TSI API Token
   "startDateTime":"2016-12-31 00:00:00 UTC", 	 		---> Start Date for Remedy conditionFields
   "endDateTime":"2017-12-31 00:00:00 UTC", 			---> End date for remedy conditionFields
@@ -67,7 +66,7 @@ Payload field and value						Details/Comment
 ```
 
 ### 3) Placeholder Definition 
-There are several Field Definitions/ Placeholder definitions already available by default. You can add a custom Field Definition & use it in the properties section of eventDefinition as per requirement.
+There are several Field Definitions/ Placeholder definitions already available by default(see [IncidentDefaultTemplate](https://github.com/boundary/remedy-tsi-integration-lib/blob/master/src/main/resources/incidentDefaultTemplate.json) & [ChangeDefaultTemplate](https://github.com/boundary/remedy-tsi-integration-lib/blob/master/src/main/resources/changeDefaultTemplate.json) ). You can add a custom Field Definition & use it in the properties section of eventDefinition as per requirement.
 ```
 "@CUSTOMFIELD": {
 		"fieldId":1000000162,
@@ -82,12 +81,24 @@ There are several Field Definitions/ Placeholder definitions already available b
 
 ```
 Example
+
+{
 "eventDefinition": {						  
 		"properties": {
 			"app_id": "Remedy Ingestion script",
 			"CustomFieldName":"@CUSTOMFIELD"				---> Add Custom additional fields like this
 		}
- }
+ },
+ "@CUSTOMFIELD": {
+		"fieldId":1000000162,
+		"valueMap":{
+			"1000": "Critical",
+			"2000": "High",
+			"3000": "Medium",
+			"4000": "Low"
+		}
+	}
+}
 ```
 > 1. The placeholder definition contains the Remedy `fieldId` , which defines that this fieldId's value from Remedy entry will be used in place of this placeholder.
 
