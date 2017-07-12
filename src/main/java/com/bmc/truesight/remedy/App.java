@@ -112,7 +112,7 @@ public class App {
             log.error(ex.getMessage());
             System.exit(0);
         }
-        log.info("{} file reading and parsing succesfull", path);
+        log.info("{} file reading and parsing successful", path);
         // VALIDATION OF THE CONFIGURATION
         TemplateValidator validator = new GenericTemplateValidator();
         try {
@@ -121,7 +121,7 @@ public class App {
             log.error(ex.getMessage());
             System.exit(0);
         }
-        log.info("{} configuration file validation succesfull", path);
+        log.info("{} configuration file validation successful", path);
 
         Configuration config = template.getConfig();
         RemedyReader reader = new GenericRemedyReader();
