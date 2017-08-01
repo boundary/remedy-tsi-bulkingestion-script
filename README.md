@@ -18,7 +18,7 @@ $ git clone https://github.com/boundary/remedy-tsi-bulkingestion-script.git
 $ cd remedy-tsi-bulkingestion-script
 3. Run maven install
 $ mvn clean install
-4. You can find the build jar file as remedy-tsi-bulkingestion-script-0.9.1.jar
+4. You can find the build jar file as remedy-tsi-bulkingestion-script-0.9.2.jar
 ```
 ##### Note : You can find a pre-built jar in dist folder
 
@@ -28,7 +28,7 @@ $ mvn clean install
 $cd dist
 2. Change the incidentTemplate.json/changeTemplate.json configuration (based on description below)
 3. Run jar file
-$java -jar remedy-tsi-bulkingestion-script-0.9.1.jar <incident> <change>
+$java -jar remedy-tsi-bulkingestion-script-0.9.2.jar <incident> <change> <loglevel>
 ```
 ## Configuration
    The configuration file contains three major sections.
