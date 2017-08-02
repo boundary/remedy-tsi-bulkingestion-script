@@ -3,31 +3,39 @@ package com.bmc.truesight.remedy;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bmc.arsys.api.ARServerUser;
 import com.bmc.arsys.api.OutputInteger;
-import com.bmc.truesight.remedy.exception.BulkEventsIngestionFailedException;
 import com.bmc.truesight.remedy.util.Constants;
 import com.bmc.truesight.remedy.util.ScriptUtil;
-import com.bmc.truesight.remedy.util.TsiHttpClient;
 import com.bmc.truesight.saas.remedy.integration.ARServerForm;
+import com.bmc.truesight.saas.remedy.integration.BulkEventHttpClient;
 import com.bmc.truesight.saas.remedy.integration.RemedyReader;
 import com.bmc.truesight.saas.remedy.integration.TemplateParser;
 import com.bmc.truesight.saas.remedy.integration.TemplatePreParser;
 import com.bmc.truesight.saas.remedy.integration.TemplateValidator;
 import com.bmc.truesight.saas.remedy.integration.adapter.RemedyEntryEventAdapter;
 import com.bmc.truesight.saas.remedy.integration.beans.Configuration;
+import com.bmc.truesight.saas.remedy.integration.beans.RemedyEventResponse;
+import com.bmc.truesight.saas.remedy.integration.beans.Result;
+import com.bmc.truesight.saas.remedy.integration.beans.Success;
 import com.bmc.truesight.saas.remedy.integration.beans.TSIEvent;
 import com.bmc.truesight.saas.remedy.integration.beans.Template;
+import com.bmc.truesight.saas.remedy.integration.exception.BulkEventsIngestionFailedException;
 import com.bmc.truesight.saas.remedy.integration.exception.ParsingException;
 import com.bmc.truesight.saas.remedy.integration.exception.RemedyLoginFailedException;
 import com.bmc.truesight.saas.remedy.integration.exception.RemedyReadFailedException;
 import com.bmc.truesight.saas.remedy.integration.exception.ValidationException;
+import com.bmc.truesight.saas.remedy.integration.impl.GenericBulkEventHttpClient;
 import com.bmc.truesight.saas.remedy.integration.impl.GenericRemedyReader;
 import com.bmc.truesight.saas.remedy.integration.impl.GenericTemplateParser;
 import com.bmc.truesight.saas.remedy.integration.impl.GenericTemplatePreParser;
@@ -47,6 +55,7 @@ public class App {
     private final static Logger log = LoggerFactory.getLogger(App.class);
 
     public static void main(String[] args) {
+
         boolean readIncidents = false;
         boolean readChange = false;
         if (args.length == 0) {
@@ -65,10 +74,13 @@ public class App {
             for (String module : args) {
                 if (module.equalsIgnoreCase("incident") || module.equalsIgnoreCase("incidents")) {
                     readIncidents = true;
-                }
-                if (module.equalsIgnoreCase("change") || module.equalsIgnoreCase("changes")) {
+                } else if (module.equalsIgnoreCase("change") || module.equalsIgnoreCase("changes")) {
                     readChange = true;
+                } else {
+                    setLoglevel(module);
+                    log.debug("Log level changed as per command line arguments, new log level is {}", module);
                 }
+
             }
         }
         if (readIncidents) {
@@ -76,6 +88,36 @@ public class App {
         }
         if (readChange) {
             readAndIngest(ARServerForm.CHANGE_FORM);
+        }
+    }
+
+    private static void setLoglevel(String module) {
+        switch (module) {
+            case "ALL":
+                LogManager.getLogger("com.bmc.truesight").setLevel(Level.ALL);
+            case "DEBUG":
+                LogManager.getLogger("com.bmc.truesight").setLevel(Level.DEBUG);
+                break;
+            case "ERROR":
+                LogManager.getLogger("com.bmc.truesight").setLevel(Level.ERROR);
+                break;
+            case "FATAL":
+                LogManager.getLogger("com.bmc.truesight").setLevel(Level.FATAL);
+                break;
+            case "INFO":
+                LogManager.getLogger("com.bmc.truesight").setLevel(Level.INFO);
+                break;
+            case "OFF":
+                LogManager.getLogger("com.bmc.truesight").setLevel(Level.OFF);
+                break;
+            case "TRACE":
+                LogManager.getLogger("com.bmc.truesight").setLevel(Level.TRACE);
+                break;
+            case "WARN":
+                LogManager.getLogger("com.bmc.truesight").setLevel(Level.WARN);
+                break;
+            default:
+                log.error("Arguments not recognised, available arguments are <incident> <change> <loglevel>.");
         }
     }
 
@@ -107,7 +149,9 @@ public class App {
         TemplateParser parser = new GenericTemplateParser();
         try {
             Template defaultTemplate = preParser.loadDefaults(form);
+            log.debug("{} default template loading sucessfuly finished , default status configured to query is {}", name, defaultTemplate.getConfig().getQueryStatusList());
             template = parser.readParseConfigFile(defaultTemplate, path);
+            log.debug("{} user template configuration parsing successful , status configured to be queried is {}", name, template.getConfig().getQueryStatusList());
         } catch (ParsingException ex) {
             log.error(ex.getMessage());
             System.exit(0);
@@ -125,9 +169,9 @@ public class App {
 
         Configuration config = template.getConfig();
         RemedyReader reader = new GenericRemedyReader();
-        TsiHttpClient client = new TsiHttpClient(config);
+        BulkEventHttpClient client = new GenericBulkEventHttpClient(config);
         ARServerUser user = reader.createARServerContext(config.getRemedyHostName(), config.getRemedyPort(), config.getRemedyUserName(), config.getRemedyPassword());
-        List<TSIEvent> eventList = new ArrayList<>();
+        RemedyEventResponse remedyResponse = new RemedyEventResponse();
         List<TSIEvent> lastEventList = new ArrayList<>();
         try {
             // Start Login
@@ -139,34 +183,62 @@ public class App {
             int totalRecordsRead = 0;
             OutputInteger nMatches = new OutputInteger();
             boolean readNext = true;
-            int successfulEntries = 0;
+            int totalFailure = 0;
+            int totalSuccessful = 0;
             boolean exceededMaxServerEntries = false;
             log.info("Started reading {} remedy {} starting from index {} , [Start Date: {}, End Date: {}]", new Object[]{chunkSize, name, startFrom, ScriptUtil.dateToString(config.getStartDateTime()), ScriptUtil.dateToString(config.getEndDateTime())});
+            Map<String, Integer> errorsMap = new HashMap<String, Integer>();
             while (readNext) {
                 log.info("Iteration : " + iteration);
-                eventList = reader.readRemedyTickets(user, form, template, startFrom, chunkSize, nMatches, adapter);
+                remedyResponse = reader.readRemedyTickets(user, form, template, startFrom, chunkSize, nMatches, adapter);
+                int recordsCount = remedyResponse.getValidEventList().size() + remedyResponse.getLargeInvalidEventCount();
                 exceededMaxServerEntries = reader.exceededMaxServerEntries(user);
-                totalRecordsRead += eventList.size();
-                if (eventList.size() < chunkSize && totalRecordsRead < nMatches.intValue() && exceededMaxServerEntries) {
-                    log.info(" Request Sent to remedy (startFrom:" + startFrom + ",chunkSize:" + chunkSize + "), Response Got(RecordsRead:" + eventList.size() + ", totalRecordsRead:" + totalRecordsRead + ", recordsAvailable:" + nMatches.intValue() + ")");
-                    log.info(" Based on exceededMaxServerEntries response as(" + exceededMaxServerEntries + "), adjusting the chunk Size as " + eventList.size());
-                    chunkSize = eventList.size();
-                } else if (eventList.size() <= chunkSize) {
-                    log.info(" Request Sent to remedy (startFrom:" + startFrom + ", chunkSize:" + chunkSize + "), Response Got (RecordsRead:" + eventList.size() + ", totalRecordsRead:" + totalRecordsRead + ", recordsAvailable:" + nMatches.intValue() + ")");
+                totalRecordsRead += recordsCount;
+                if (recordsCount < chunkSize && totalRecordsRead < nMatches.intValue() && exceededMaxServerEntries) {
+                    log.info(" Request Sent to remedy (startFrom:" + startFrom + ",chunkSize:" + chunkSize + "), Response Got(Valid Events:" + remedyResponse.getValidEventList().size() + ", Invalid Events:" + remedyResponse.getLargeInvalidEventCount() + ", totalRecordsRead: (" + totalRecordsRead + "/" + nMatches.intValue() + ")");
+                    log.info(" Based on exceededMaxServerEntries response as(" + exceededMaxServerEntries + "), adjusting the chunk Size as " + recordsCount);
+                    chunkSize = recordsCount;
+                } else if (recordsCount <= chunkSize) {
+                    log.info(" Request Sent to remedy (startFrom:" + startFrom + ",chunkSize:" + chunkSize + "), Response Got(Valid Events:" + remedyResponse.getValidEventList().size() + ", Invalid Events:" + remedyResponse.getLargeInvalidEventCount() + ", totalRecordsRead: (" + totalRecordsRead + "/" + nMatches.intValue() + ")");
                 }
                 if (totalRecordsRead < nMatches.longValue() && (totalRecordsRead + chunkSize) > nMatches.longValue()) {
                     //assuming the long value would be in int range always
-                    chunkSize = (int) (nMatches.longValue() - totalRecordsRead);
+                    chunkSize = ((int) (nMatches.longValue()) - totalRecordsRead);
                 } else if (totalRecordsRead >= nMatches.longValue()) {
                     readNext = false;
                 }
                 iteration++;
                 startFrom = totalRecordsRead;
-                int successCount = client.pushBulkEventsToTSI(eventList);
-                successfulEntries += successCount;
-                lastEventList = new ArrayList<>(eventList);
+                Result result = client.pushBulkEventsToTSI(remedyResponse.getValidEventList());
+                if (result.getAccepted() != null) {
+                    totalSuccessful += result.getAccepted().size();
+                }
+                if (result.getErrors() != null) {
+                    totalFailure += result.getErrors().size();
+                }
+                lastEventList = new ArrayList<>(remedyResponse.getValidEventList());
+                if (result.getSuccess() == Success.PARTIAL) {
+                    log.debug("events rejected from tsi for following reasons");
+                    result.getErrors().forEach(error -> {
+                        String msg = error.getMessage().trim();
+                        if (errorsMap.containsKey(msg)) {
+                            errorsMap.put(msg, (errorsMap.get(msg) + 1));
+                        } else {
+                            errorsMap.put(msg, 1);
+                        }
+                        log.debug("Index :" + error.getIndex() + ": reason -" + error.getMessage());
+                    });
+                }
             }
-            log.info("________________________ Total {} Entries from Remedy = {}, Successful Ingestion Count = {} ______", new Object[]{name, nMatches.longValue(), successfulEntries});
+            log.info("________________________ {} ingestion to truesight intelligence final status: Remedy Records = {}, Valid Records Sent = {}, Successful = {} , Failure = {} ______", new Object[]{name, nMatches.longValue(), remedyResponse.getValidEventList().size(), totalSuccessful, totalFailure});
+            if (totalFailure > 0) {
+                log.info("________________________  Errors (No of times seen)______");
+                errorsMap.keySet().forEach(msg -> {
+                    log.info("{}   ({})", msg, errorsMap.get(msg));
+                });
+
+            }
+
         } catch (RemedyLoginFailedException e) {
             log.error("Login Failed : {}", e.getMessage());
         } catch (RemedyReadFailedException e) {
