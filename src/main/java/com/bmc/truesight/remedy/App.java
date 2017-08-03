@@ -18,7 +18,6 @@ import com.bmc.arsys.api.OutputInteger;
 import com.bmc.truesight.remedy.util.Constants;
 import com.bmc.truesight.remedy.util.ScriptUtil;
 import com.bmc.truesight.saas.remedy.integration.ARServerForm;
-import com.bmc.truesight.saas.remedy.integration.BulkEventHttpClient;
 import com.bmc.truesight.saas.remedy.integration.RemedyReader;
 import com.bmc.truesight.saas.remedy.integration.TemplateParser;
 import com.bmc.truesight.saas.remedy.integration.TemplatePreParser;
@@ -35,7 +34,7 @@ import com.bmc.truesight.saas.remedy.integration.exception.ParsingException;
 import com.bmc.truesight.saas.remedy.integration.exception.RemedyLoginFailedException;
 import com.bmc.truesight.saas.remedy.integration.exception.RemedyReadFailedException;
 import com.bmc.truesight.saas.remedy.integration.exception.ValidationException;
-import com.bmc.truesight.saas.remedy.integration.impl.GenericBulkEventHttpClient;
+import com.bmc.truesight.saas.remedy.integration.impl.EventIngestionExecuterService;
 import com.bmc.truesight.saas.remedy.integration.impl.GenericRemedyReader;
 import com.bmc.truesight.saas.remedy.integration.impl.GenericTemplateParser;
 import com.bmc.truesight.saas.remedy.integration.impl.GenericTemplatePreParser;
@@ -169,7 +168,7 @@ public class App {
 
         Configuration config = template.getConfig();
         RemedyReader reader = new GenericRemedyReader();
-        BulkEventHttpClient client = new GenericBulkEventHttpClient(config);
+        //BulkEventHttpClient client = new GenericBulkEventHttpClient(config);
         ARServerUser user = reader.createARServerContext(config.getRemedyHostName(), config.getRemedyPort(), config.getRemedyUserName(), config.getRemedyPassword());
         RemedyEventResponse remedyResponse = new RemedyEventResponse();
         List<TSIEvent> lastEventList = new ArrayList<>();
@@ -185,6 +184,7 @@ public class App {
             boolean readNext = true;
             int totalFailure = 0;
             int totalSuccessful = 0;
+            int validRecords = 0;
             boolean exceededMaxServerEntries = false;
             log.info("Started reading {} remedy {} starting from index {} , [Start Date: {}, End Date: {}]", new Object[]{chunkSize, name, startFrom, ScriptUtil.dateToString(config.getStartDateTime()), ScriptUtil.dateToString(config.getEndDateTime())});
             Map<String, Integer> errorsMap = new HashMap<String, Integer>();
@@ -194,6 +194,7 @@ public class App {
                 int recordsCount = remedyResponse.getValidEventList().size() + remedyResponse.getLargeInvalidEventCount();
                 exceededMaxServerEntries = reader.exceededMaxServerEntries(user);
                 totalRecordsRead += recordsCount;
+                validRecords += remedyResponse.getValidEventList().size();
                 if (recordsCount < chunkSize && totalRecordsRead < nMatches.intValue() && exceededMaxServerEntries) {
                     log.info(" Request Sent to remedy (startFrom:" + startFrom + ",chunkSize:" + chunkSize + "), Response Got(Valid Events:" + remedyResponse.getValidEventList().size() + ", Invalid Events:" + remedyResponse.getLargeInvalidEventCount() + ", totalRecordsRead: (" + totalRecordsRead + "/" + nMatches.intValue() + ")");
                     log.info(" Based on exceededMaxServerEntries response as(" + exceededMaxServerEntries + "), adjusting the chunk Size as " + recordsCount);
@@ -209,15 +210,16 @@ public class App {
                 }
                 iteration++;
                 startFrom = totalRecordsRead;
-                Result result = client.pushBulkEventsToTSI(remedyResponse.getValidEventList());
-                if (result.getAccepted() != null) {
+                //Result result = client.pushBulkEventsToTSI(remedyResponse.getValidEventList());
+                Result result = new EventIngestionExecuterService().ingestEvents(remedyResponse.getValidEventList(), config);
+                if (result != null && result.getAccepted() != null) {
                     totalSuccessful += result.getAccepted().size();
                 }
-                if (result.getErrors() != null) {
+                if (result != null && result.getErrors() != null) {
                     totalFailure += result.getErrors().size();
                 }
                 lastEventList = new ArrayList<>(remedyResponse.getValidEventList());
-                if (result.getSuccess() == Success.PARTIAL) {
+                if (result != null && result.getSuccess() == Success.PARTIAL) {
                     log.debug("events rejected from tsi for following reasons");
                     result.getErrors().forEach(error -> {
                         String msg = error.getMessage().trim();
@@ -229,8 +231,9 @@ public class App {
                         log.debug("Index :" + error.getIndex() + ": reason -" + error.getMessage());
                     });
                 }
+
             }
-            log.info("________________________ {} ingestion to truesight intelligence final status: Remedy Records = {}, Valid Records Sent = {}, Successful = {} , Failure = {} ______", new Object[]{name, nMatches.longValue(), remedyResponse.getValidEventList().size(), totalSuccessful, totalFailure});
+            log.info("________________________ {} ingestion to truesight intelligence final status: Remedy Records = {}, Valid Records Sent = {}, Successful = {} , Failure = {} ______", new Object[]{name, nMatches.longValue(), validRecords, totalSuccessful, totalFailure});
             if (totalFailure > 0) {
                 log.info("________________________  Errors (No of times seen)______");
                 errorsMap.keySet().forEach(msg -> {
