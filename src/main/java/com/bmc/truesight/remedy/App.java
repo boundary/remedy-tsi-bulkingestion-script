@@ -24,6 +24,7 @@ import com.bmc.truesight.saas.remedy.integration.TemplatePreParser;
 import com.bmc.truesight.saas.remedy.integration.TemplateValidator;
 import com.bmc.truesight.saas.remedy.integration.adapter.RemedyEntryEventAdapter;
 import com.bmc.truesight.saas.remedy.integration.beans.Configuration;
+import com.bmc.truesight.saas.remedy.integration.beans.Error;
 import com.bmc.truesight.saas.remedy.integration.beans.RemedyEventResponse;
 import com.bmc.truesight.saas.remedy.integration.beans.Result;
 import com.bmc.truesight.saas.remedy.integration.beans.Success;
@@ -187,7 +188,7 @@ public class App {
             int validRecords = 0;
             boolean exceededMaxServerEntries = false;
             log.info("Started reading {} remedy {} starting from index {} , [Start Date: {}, End Date: {}]", new Object[]{chunkSize, name, startFrom, ScriptUtil.dateToString(config.getStartDateTime()), ScriptUtil.dateToString(config.getEndDateTime())});
-            Map<String, Integer> errorsMap = new HashMap<String, Integer>();
+            Map<String, List<String>> errorsMap = new HashMap<>();
             while (readNext) {
                 log.info("Iteration : " + iteration);
                 remedyResponse = reader.readRemedyTickets(user, form, template, startFrom, chunkSize, nMatches, adapter);
@@ -210,7 +211,20 @@ public class App {
                 }
                 iteration++;
                 startFrom = totalRecordsRead;
-                //Result result = client.pushBulkEventsToTSI(remedyResponse.getValidEventList());
+                if (remedyResponse.getLargeInvalidEventCount() > 0) {
+                    List<String> eventIds = new ArrayList<>();
+                    if (form == ARServerForm.INCIDENT_FORM) {
+                        for (TSIEvent event : remedyResponse.getInvalidEventList()) {
+                            eventIds.add(event.getProperties().get(Constants.PROPERTY_INCIDENTNO));
+                        }
+                    } else {
+                        for (TSIEvent event : remedyResponse.getInvalidEventList()) {
+                            eventIds.add(event.getProperties().get(Constants.PROPERTY_INCIDENTNO));
+                        }
+                    }
+                    log.error("following {} ids are larger than allowed limits [{}]", name, String.join(",", eventIds));
+                }
+
                 Result result = new EventIngestionExecuterService().ingestEvents(remedyResponse.getValidEventList(), config);
                 if (result != null && result.getAccepted() != null) {
                     totalSuccessful += result.getAccepted().size();
@@ -220,24 +234,32 @@ public class App {
                 }
                 lastEventList = new ArrayList<>(remedyResponse.getValidEventList());
                 if (result != null && result.getSuccess() == Success.PARTIAL) {
-                    log.debug("events rejected from tsi for following reasons");
-                    result.getErrors().forEach(error -> {
+                    for (Error error : result.getErrors()) {
+                        String id = "";
                         String msg = error.getMessage().trim();
-                        if (errorsMap.containsKey(msg)) {
-                            errorsMap.put(msg, (errorsMap.get(msg) + 1));
+                        if (form == ARServerForm.INCIDENT_FORM) {
+                            id = remedyResponse.getValidEventList().get(error.getIndex()).getProperties().get(Constants.PROPERTY_INCIDENTNO);
                         } else {
-                            errorsMap.put(msg, 1);
+                            id = remedyResponse.getValidEventList().get(error.getIndex()).getProperties().get(Constants.PROPERTY_CHANGEID);
                         }
-                        log.debug("Index :" + error.getIndex() + ": reason -" + error.getMessage());
-                    });
+                        if (errorsMap.containsKey(msg)) {
+                            List<String> errorsId = errorsMap.get(msg);
+                            errorsId.add(id);
+                            errorsMap.put(msg, errorsId);
+                        } else {
+                            List<String> errorsId = new ArrayList<String>();
+                            errorsId.add(id);
+                            errorsMap.put(msg, errorsId);
+                        }
+                    }
                 }
 
             }
             log.info("________________________ {} ingestion to truesight intelligence final status: Remedy Records = {}, Valid Records Sent = {}, Successful = {} , Failure = {} ______", new Object[]{name, nMatches.longValue(), validRecords, totalSuccessful, totalFailure});
             if (totalFailure > 0) {
-                log.info("________________________  Errors (No of times seen)______");
+                log.error("________________________  Failures (No of times seen), [Reference Ids] ______");
                 errorsMap.keySet().forEach(msg -> {
-                    log.info("{}   ({})", msg, errorsMap.get(msg));
+                    log.error(msg + " (" + errorsMap.get(msg).size() + "), " + errorsMap.get(msg));
                 });
 
             }
@@ -276,7 +298,6 @@ public class App {
                     log.info("Closed Date : {}", new Object[]{ScriptUtil.dateToString(closedDate)});
                 }
             }
-
         } catch (Exception ex) {
             log.error("Error {}", ex.getMessage());
         } finally {
