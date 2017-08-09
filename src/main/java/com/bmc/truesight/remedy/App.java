@@ -1,6 +1,8 @@
 package com.bmc.truesight.remedy;
 
+import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,6 +42,7 @@ import com.bmc.truesight.saas.remedy.integration.impl.GenericRemedyReader;
 import com.bmc.truesight.saas.remedy.integration.impl.GenericTemplateParser;
 import com.bmc.truesight.saas.remedy.integration.impl.GenericTemplatePreParser;
 import com.bmc.truesight.saas.remedy.integration.impl.GenericTemplateValidator;
+import com.opencsv.CSVWriter;
 
 /**
  * Main Application Entry This application reads the files incidentTemplate.json
@@ -53,14 +56,15 @@ import com.bmc.truesight.saas.remedy.integration.impl.GenericTemplateValidator;
 public class App {
 
     private final static Logger log = LoggerFactory.getLogger(App.class);
+    private static boolean exportToCsvFlag = false;
 
     public static void main(String[] args) {
 
         boolean readIncidents = false;
         boolean readChange = false;
+        Scanner scanner = new Scanner(System.in);
         if (args.length == 0) {
             System.out.println("Do you want to ingest Remedy Incidents tickets as events? (y/n)");
-            Scanner scanner = new Scanner(System.in);
             String input1 = scanner.next();
             if (input1.equalsIgnoreCase("y")) {
                 readIncidents = true;
@@ -83,6 +87,13 @@ public class App {
 
             }
         }
+
+        System.out.println("Do you also want to export the events to CSV? (y/n)");
+        String input3 = scanner.next();
+        if (input3.equalsIgnoreCase("y")) {
+            exportToCsvFlag = true;
+        }
+
         if (readIncidents) {
             readAndIngest(ARServerForm.INCIDENT_FORM);
         }
@@ -131,7 +142,7 @@ public class App {
         } else if (form.equals(ARServerForm.CHANGE_FORM)) {
             name = "Changes";
         }
-
+        CSVWriter writer = null;
         try {
             path = new java.io.File(".").getCanonicalPath();
             if (form.equals(ARServerForm.INCIDENT_FORM)) {
@@ -173,6 +184,22 @@ public class App {
         ARServerUser user = reader.createARServerContext(config.getRemedyHostName(), config.getRemedyPort(), config.getRemedyUserName(), config.getRemedyPassword());
         RemedyEventResponse remedyResponse = new RemedyEventResponse();
         List<TSIEvent> lastEventList = new ArrayList<>();
+        String csv = name + "_records_" + config.getStartDateTime().getTime() + "_TO_" + config.getEndDateTime().getTime() + ".csv";
+        String[] headers = getFieldHeaders(template);
+        if (exportToCsvFlag) {
+            try {
+                writer = new CSVWriter(new FileWriter(csv));
+            } catch (IOException e) {
+                e.printStackTrace();
+                log.error("CSV file creation failed, Do you want to proceed without csv export ?(y/n)");
+                Scanner scanner = new Scanner(System.in);
+                String input = scanner.next();
+                if (input.equalsIgnoreCase("n")) {
+                    System.exit(0);
+                }
+            }
+            writer.writeNext(headers);
+        }
         try {
             // Start Login
             hasLoggedIntoRemedy = reader.login(user);
@@ -190,18 +217,18 @@ public class App {
             log.info("Started reading {} remedy {} starting from index {} , [Start Date: {}, End Date: {}]", new Object[]{chunkSize, name, startFrom, ScriptUtil.dateToString(config.getStartDateTime()), ScriptUtil.dateToString(config.getEndDateTime())});
             Map<String, List<String>> errorsMap = new HashMap<>();
             while (readNext) {
-                log.info("Iteration : " + iteration);
+                log.info("_________________Iteration : " + iteration);
                 remedyResponse = reader.readRemedyTickets(user, form, template, startFrom, chunkSize, nMatches, adapter);
                 int recordsCount = remedyResponse.getValidEventList().size() + remedyResponse.getLargeInvalidEventCount();
                 exceededMaxServerEntries = reader.exceededMaxServerEntries(user);
                 totalRecordsRead += recordsCount;
                 validRecords += remedyResponse.getValidEventList().size();
                 if (recordsCount < chunkSize && totalRecordsRead < nMatches.intValue() && exceededMaxServerEntries) {
-                    log.info(" Request Sent to remedy (startFrom:" + startFrom + ",chunkSize:" + chunkSize + "), Response Got(Valid Events:" + remedyResponse.getValidEventList().size() + ", Invalid Events:" + remedyResponse.getLargeInvalidEventCount() + ", totalRecordsRead: (" + totalRecordsRead + "/" + nMatches.intValue() + ")");
+                    log.info(" Request Sent to remedy (startFrom:" + startFrom + ",chunkSize:" + chunkSize + "), Response(Valid Event(s):" + remedyResponse.getValidEventList().size() + ", Invalid Event(s):" + remedyResponse.getLargeInvalidEventCount() + ", totalRecordsRead: (" + totalRecordsRead + "/" + nMatches.intValue() + ")");
                     log.info(" Based on exceededMaxServerEntries response as(" + exceededMaxServerEntries + "), adjusting the chunk Size as " + recordsCount);
                     chunkSize = recordsCount;
                 } else if (recordsCount <= chunkSize) {
-                    log.info(" Request Sent to remedy (startFrom:" + startFrom + ",chunkSize:" + chunkSize + "), Response Got(Valid Events:" + remedyResponse.getValidEventList().size() + ", Invalid Events:" + remedyResponse.getLargeInvalidEventCount() + ", totalRecordsRead: (" + totalRecordsRead + "/" + nMatches.intValue() + ")");
+                    log.info(" Request Sent to remedy (startFrom:" + startFrom + ",chunkSize:" + chunkSize + "), Response(Valid Event(s):" + remedyResponse.getValidEventList().size() + ", Invalid Event(s):" + remedyResponse.getLargeInvalidEventCount() + ", totalRecordsRead: (" + totalRecordsRead + "/" + nMatches.intValue() + ")");
                 }
                 if (totalRecordsRead < nMatches.longValue() && (totalRecordsRead + chunkSize) > nMatches.longValue()) {
                     //assuming the long value would be in int range always
@@ -224,7 +251,12 @@ public class App {
                     }
                     log.error("following {} ids are larger than allowed limits [{}]", name, String.join(",", eventIds));
                 }
-
+                if (exportToCsvFlag) {
+                    for (TSIEvent event : remedyResponse.getValidEventList()) {
+                        writer.writeNext(getFieldValues(event, headers));
+                    }
+                    log.debug("{} events written to the CSV file", remedyResponse.getValidEventList().size());
+                }
                 Result result = new EventIngestionExecuterService().ingestEvents(remedyResponse.getValidEventList(), config);
                 if (result != null && result.getAccepted() != null) {
                     totalSuccessful += result.getAccepted().size();
@@ -255,9 +287,12 @@ public class App {
                 }
 
             }
-            log.info("________________________ {} ingestion to truesight intelligence final status: Remedy Records = {}, Valid Records Sent = {}, Successful = {} , Failure = {} ______", new Object[]{name, nMatches.longValue(), validRecords, totalSuccessful, totalFailure});
+            log.info("__________________ {} ingestion to truesight intelligence final status: Remedy Record(s) = {}, Valid Record(s) Sent = {}, Successful = {} , Failure = {} ______", new Object[]{name, nMatches.longValue(), validRecords, totalSuccessful, totalFailure});
+            if (exportToCsvFlag) {
+                log.info("__________________{} event(s) written to the CSV file {}", validRecords, csv);
+            }
             if (totalFailure > 0) {
-                log.error("________________________  Failures (No of times seen), [Reference Ids] ______");
+                log.error("__________________ Failures (No of times seen), [Reference Id(s)] ______");
                 errorsMap.keySet().forEach(msg -> {
                     log.error(msg + " (" + errorsMap.get(msg).size() + "), " + errorsMap.get(msg));
                 });
@@ -304,8 +339,85 @@ public class App {
             if (hasLoggedIntoRemedy) {
                 reader.logout(user);
             }
+            if (exportToCsvFlag) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    log.error("Closing CSV Writer failed {}", e.getMessage());
+
+                }
+            }
         }
 
+    }
+
+    private static String[] getFieldHeaders(Template template) {
+        TSIEvent event = template.getEventDefinition();
+        List<String> fields = new ArrayList<>();
+        for (Field field : event.getClass().getDeclaredFields()) {
+            if (field.getName().equalsIgnoreCase("properties")) {
+                for (String key : event.getProperties().keySet()) {
+                    fields.add(key);
+                }
+            } else if (field.getName().equals("source") || field.getName().equals("sender")) {
+                for (Field field1 : event.getSource().getClass().getDeclaredFields()) {
+                    fields.add(field.getName() + "_" + field1.getName());
+                }
+            } else {
+                fields.add(field.getName());
+            }
+        }
+        return fields.toArray(new String[0]);
+    }
+
+    private static String[] getFieldValues(TSIEvent event, String[] header) {
+        List<String> values = new ArrayList<>();
+        for (String fieldName : header) {
+            switch (fieldName) {
+                case "title":
+                    values.add(event.getTitle());
+                    break;
+                case "status":
+                    values.add(event.getStatus());
+                    break;
+                case "severity":
+                    values.add(event.getSeverity());
+                    break;
+                case "message":
+                    values.add(event.getMessage());
+                    break;
+                case "createdAt":
+                    values.add(event.getCreatedAt());
+                    break;
+                case "eventClass":
+                    values.add(event.getEventClass());
+                    break;
+                case "sender_name":
+                    values.add(event.getSender().getName());
+                    break;
+                case "sender_ref":
+                    values.add(event.getSender().getRef());
+                    break;
+                case "sender_type":
+                    values.add(event.getSender().getType());
+                    break;
+                case "source_name":
+                    values.add(event.getSource().getName());
+                    break;
+                case "source_ref":
+                    values.add(event.getSource().getRef());
+                    break;
+                case "source_type":
+                    values.add(event.getSource().getType());
+                    break;
+                case "fingerprintFields":
+                    values.add(String.join(",", event.getFingerprintFields()));
+                    break;
+                default:
+                    values.add(event.getProperties().get(fieldName));
+            }
+        }
+        return values.toArray(new String[0]);
     }
 
     private static Date convertToDate(String date) {

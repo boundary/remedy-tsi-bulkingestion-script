@@ -24,6 +24,7 @@
         <maven.sourceplugin.version>2.4</maven.sourceplugin.version>
         <maven.compilerplugin.version>3.6.1</maven.compilerplugin.version>
         <tsi.integrationlib.version>0.1.3</tsi.integrationlib.version>
+        <opencsv.version>3.8</opencsv.version>
     </properties>
     <repositories>
         <repository>
@@ -73,7 +74,11 @@
             <artifactId>commons-io</artifactId>
             <version>${commons.io.version}</version>
         </dependency>
-		
+	<dependency>
+	     <groupId>com.opencsv</groupId>
+	     <artifactId>opencsv</artifactId>
+	     <version>${opencsv.version}</version>
+	</dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
