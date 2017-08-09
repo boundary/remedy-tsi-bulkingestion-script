@@ -88,12 +88,6 @@ public class App {
             }
         }
 
-        System.out.println("Do you also want to export the events to CSV? (y/n)");
-        String input3 = scanner.next();
-        if (input3.equalsIgnoreCase("y")) {
-            exportToCsvFlag = true;
-        }
-
         if (readIncidents) {
             readAndIngest(ARServerForm.INCIDENT_FORM);
         }
@@ -184,22 +178,6 @@ public class App {
         ARServerUser user = reader.createARServerContext(config.getRemedyHostName(), config.getRemedyPort(), config.getRemedyUserName(), config.getRemedyPassword());
         RemedyEventResponse remedyResponse = new RemedyEventResponse();
         List<TSIEvent> lastEventList = new ArrayList<>();
-        String csv = name + "_records_" + config.getStartDateTime().getTime() + "_TO_" + config.getEndDateTime().getTime() + ".csv";
-        String[] headers = getFieldHeaders(template);
-        if (exportToCsvFlag) {
-            try {
-                writer = new CSVWriter(new FileWriter(csv));
-            } catch (IOException e) {
-                e.printStackTrace();
-                log.error("CSV file creation failed, Do you want to proceed without csv export ?(y/n)");
-                Scanner scanner = new Scanner(System.in);
-                String input = scanner.next();
-                if (input.equalsIgnoreCase("n")) {
-                    System.exit(0);
-                }
-            }
-            writer.writeNext(headers);
-        }
         try {
             // Start Login
             hasLoggedIntoRemedy = reader.login(user);
@@ -216,6 +194,32 @@ public class App {
             boolean exceededMaxServerEntries = false;
             log.info("Started reading {} remedy {} starting from index {} , [Start Date: {}, End Date: {}]", new Object[]{chunkSize, name, startFrom, ScriptUtil.dateToString(config.getStartDateTime()), ScriptUtil.dateToString(config.getEndDateTime())});
             Map<String, List<String>> errorsMap = new HashMap<>();
+            OutputInteger totalAvailableCount = new OutputInteger();
+            //Reading first Iteration to get the Idea of total available count
+            reader.readRemedyTickets(user, form, template, 1, 1, totalAvailableCount, adapter);
+            System.out.println("Remedy has " + totalAvailableCount.intValue() + " " + name + ", Do you also want to export the events to CSV, The events (Incidents and/or changes) would be exported to CSV files? (y/n)");
+            Scanner scanner = new Scanner(System.in);
+            String input3 = scanner.next();
+            if (input3.equalsIgnoreCase("y")) {
+                exportToCsvFlag = true;
+            }
+            String csv = name + "_records_" + config.getStartDateTime().getTime() + "_TO_" + config.getEndDateTime().getTime() + ".csv";
+            String[] headers = getFieldHeaders(template);
+            if (exportToCsvFlag) {
+                try {
+                    writer = new CSVWriter(new FileWriter(csv));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    log.error("CSV file creation failed, Do you want to proceed without csv export ?(y/n)");
+                    Scanner scanner1 = new Scanner(System.in);
+                    String input = scanner.next();
+                    if (input.equalsIgnoreCase("n")) {
+                        System.exit(0);
+                    }
+                }
+                writer.writeNext(headers);
+            }
+
             while (readNext) {
                 log.info("_________________Iteration : " + iteration);
                 remedyResponse = reader.readRemedyTickets(user, form, template, startFrom, chunkSize, nMatches, adapter);
