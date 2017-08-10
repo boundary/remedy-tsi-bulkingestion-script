@@ -21,9 +21,6 @@ import com.bmc.truesight.remedy.util.Constants;
 import com.bmc.truesight.remedy.util.ScriptUtil;
 import com.bmc.truesight.saas.remedy.integration.ARServerForm;
 import com.bmc.truesight.saas.remedy.integration.RemedyReader;
-import com.bmc.truesight.saas.remedy.integration.TemplateParser;
-import com.bmc.truesight.saas.remedy.integration.TemplatePreParser;
-import com.bmc.truesight.saas.remedy.integration.TemplateValidator;
 import com.bmc.truesight.saas.remedy.integration.adapter.RemedyEntryEventAdapter;
 import com.bmc.truesight.saas.remedy.integration.beans.Configuration;
 import com.bmc.truesight.saas.remedy.integration.beans.Error;
@@ -39,9 +36,6 @@ import com.bmc.truesight.saas.remedy.integration.exception.RemedyReadFailedExcep
 import com.bmc.truesight.saas.remedy.integration.exception.ValidationException;
 import com.bmc.truesight.saas.remedy.integration.impl.EventIngestionExecuterService;
 import com.bmc.truesight.saas.remedy.integration.impl.GenericRemedyReader;
-import com.bmc.truesight.saas.remedy.integration.impl.GenericTemplateParser;
-import com.bmc.truesight.saas.remedy.integration.impl.GenericTemplatePreParser;
-import com.bmc.truesight.saas.remedy.integration.impl.GenericTemplateValidator;
 import com.opencsv.CSVWriter;
 
 /**
@@ -56,125 +50,182 @@ import com.opencsv.CSVWriter;
 public class App {
 
     private final static Logger log = LoggerFactory.getLogger(App.class);
-    private static boolean exportToCsvFlag = false;
+
+    private static boolean isIncidentFileValid = false;
+    private static boolean incidentIngestionFlag = false;
+    private static boolean incidentExportToCsvFlag = false;
+    private static boolean isChangeFileValid = false;
+    private static boolean changeIngestionFlag = false;
+    private static boolean changeExportToCsvFlag = false;
 
     public static void main(String[] args) {
+        if (args.length > 0) {
+            String logLevel = args[0];
+            setLoglevel(logLevel);
+        }
+        Template incidentTemplate = inputIncidentChoice();
+        Template changeTemplate = inputChangeChoice();
+        if (incidentIngestionFlag) {
+            readAndIngest(ARServerForm.INCIDENT_FORM, incidentTemplate);
+        }
+        if (changeIngestionFlag) {
+            readAndIngest(ARServerForm.CHANGE_FORM, changeTemplate);
+        }
 
-        boolean readIncidents = false;
-        boolean readChange = false;
-        Scanner scanner = new Scanner(System.in);
-        if (args.length == 0) {
-            System.out.println("Do you want to ingest Remedy Incidents tickets as events? (y/n)");
-            String input1 = scanner.next();
-            if (input1.equalsIgnoreCase("y")) {
-                readIncidents = true;
+    }
+
+    private static Template inputIncidentChoice() {
+        Template incidentTemplate = null;
+        try {
+            incidentTemplate = ScriptUtil.prepareTemplate(ARServerForm.INCIDENT_FORM);
+            isIncidentFileValid = true;
+        } catch (ParsingException e) {
+            log.error(e.getMessage());
+        } catch (ValidationException e) {
+            log.error(e.getMessage());
+        } catch (IOException e) {
+            log.error("The Incident template file couldnot be found, please check the file name and location");
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        log.debug("Incident template file reading and parsing successful");
+        if (isIncidentFileValid) {
+            Configuration config = incidentTemplate.getConfig();
+            RemedyReader incidentReader = new GenericRemedyReader();
+            ARServerUser user = incidentReader.createARServerContext(config.getRemedyHostName(), config.getRemedyPort(), config.getRemedyUserName(), config.getRemedyPassword());
+            boolean hasLoggedIntoRemedy = false;
+            try {
+                hasLoggedIntoRemedy = incidentReader.login(user);
+            } catch (RemedyLoginFailedException e) {
+                log.error(e.getMessage());
             }
-            System.out.println("Do you want to ingest Remedy Change tickets as events also? (y/n)");
-            String input2 = scanner.next();
-            if (input2.equalsIgnoreCase("y")) {
-                readChange = true;
-            }
-        } else {
-            for (String module : args) {
-                if (module.equalsIgnoreCase("incident") || module.equalsIgnoreCase("incidents")) {
-                    readIncidents = true;
-                } else if (module.equalsIgnoreCase("change") || module.equalsIgnoreCase("changes")) {
-                    readChange = true;
-                } else {
-                    setLoglevel(module);
-                    log.debug("Log level changed as per command line arguments, new log level is {}", module);
+            if (hasLoggedIntoRemedy) {
+                try {
+                    int incidentsCount = ScriptUtil.getAvailableRecordsCount(user, ARServerForm.INCIDENT_FORM, incidentTemplate);
+                    System.out.println(incidentsCount + " Incidents available for the input time range, do you want to ingest these to TSIntelligence?(y/n)");
+                    Scanner scanner = new Scanner(System.in);
+                    String input = scanner.next();
+                    if (input.equalsIgnoreCase("y")) {
+                        incidentIngestionFlag = true;
+                    }
+                } catch (RemedyReadFailedException e) {
+                    log.error(e.getMessage());
+                } finally {
+                    incidentReader.logout(user);
                 }
-
+                if (incidentIngestionFlag) {
+                    System.out.println("Do you also want to export these events as CSV?(y/n)");
+                    Scanner scanner = new Scanner(System.in);
+                    String input = scanner.next();
+                    if (input.equalsIgnoreCase("y")) {
+                        incidentExportToCsvFlag = true;
+                    }
+                }
             }
-        }
 
-        if (readIncidents) {
-            readAndIngest(ARServerForm.INCIDENT_FORM);
         }
-        if (readChange) {
-            readAndIngest(ARServerForm.CHANGE_FORM);
+        return incidentTemplate;
+    }
+
+    private static Template inputChangeChoice() {
+        Template changeTemplate = null;
+        try {
+            changeTemplate = ScriptUtil.prepareTemplate(ARServerForm.CHANGE_FORM);
+            isChangeFileValid = true;
+        } catch (ParsingException e) {
+            log.error(e.getMessage());
+        } catch (ValidationException e) {
+            log.error(e.getMessage());
+        } catch (IOException e) {
+            log.error("The Change Template file couldnot be found, please check the file name and location");
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
+        log.debug("Change template file reading and parsing successful");
+        if (isChangeFileValid) {
+            Configuration config = changeTemplate.getConfig();
+            RemedyReader changeReader = new GenericRemedyReader();
+            ARServerUser user = changeReader.createARServerContext(config.getRemedyHostName(), config.getRemedyPort(), config.getRemedyUserName(), config.getRemedyPassword());
+            boolean hasLoggedIntoRemedy = false;
+            try {
+                hasLoggedIntoRemedy = changeReader.login(user);
+            } catch (RemedyLoginFailedException e) {
+                log.error(e.getMessage());
+            }
+            if (hasLoggedIntoRemedy) {
+                try {
+                    int changesCount = ScriptUtil.getAvailableRecordsCount(user, ARServerForm.CHANGE_FORM, changeTemplate);
+                    System.out.println(changesCount + " Change tickets available, do you want to ingest these to TSIntelligence?(y/n)");
+                    Scanner scanner = new Scanner(System.in);
+                    String input = scanner.next();
+                    if (input.equalsIgnoreCase("y")) {
+                        changeIngestionFlag = true;
+                    }
+                } catch (RemedyReadFailedException e) {
+                    log.error(e.getMessage());
+                } finally {
+                    changeReader.logout(user);
+                }
+                if (changeIngestionFlag) {
+                    System.out.println("Do you also want to export these events as CSV?(y/n)");
+                    Scanner scanner = new Scanner(System.in);
+                    String input = scanner.next();
+                    if (input.equalsIgnoreCase("y")) {
+                        changeExportToCsvFlag = true;
+                    }
+                }
+            }
+
+        }
+        return changeTemplate;
     }
 
     private static void setLoglevel(String module) {
         switch (module) {
             case "ALL":
+            case "all":
                 LogManager.getLogger("com.bmc.truesight").setLevel(Level.ALL);
             case "DEBUG":
+            case "debug":
                 LogManager.getLogger("com.bmc.truesight").setLevel(Level.DEBUG);
                 break;
             case "ERROR":
+            case "error":
                 LogManager.getLogger("com.bmc.truesight").setLevel(Level.ERROR);
                 break;
             case "FATAL":
+            case "fatal":
                 LogManager.getLogger("com.bmc.truesight").setLevel(Level.FATAL);
                 break;
             case "INFO":
+            case "info":
                 LogManager.getLogger("com.bmc.truesight").setLevel(Level.INFO);
                 break;
             case "OFF":
+            case "off":
                 LogManager.getLogger("com.bmc.truesight").setLevel(Level.OFF);
                 break;
             case "TRACE":
+            case "trace":
                 LogManager.getLogger("com.bmc.truesight").setLevel(Level.TRACE);
                 break;
             case "WARN":
+            case "warn":
                 LogManager.getLogger("com.bmc.truesight").setLevel(Level.WARN);
                 break;
             default:
-                log.error("Arguments not recognised, available arguments are <incident> <change> <loglevel>.");
+                log.error("Argument not recognised, available argument is <loglevel>(ex DEBUG).");
+                System.exit(0);
         }
     }
 
-    private static void readAndIngest(ARServerForm form) {
+    private static void readAndIngest(ARServerForm form, Template template) {
 
-        String path = null;
         boolean hasLoggedIntoRemedy = false;
-        String name = "";
-        if (form.equals(ARServerForm.INCIDENT_FORM)) {
-            name = "Incidents";
-        } else if (form.equals(ARServerForm.CHANGE_FORM)) {
-            name = "Changes";
-        }
+        String name = ScriptUtil.getEventTypeByFormNameCaps(form);
         CSVWriter writer = null;
-        try {
-            path = new java.io.File(".").getCanonicalPath();
-            if (form.equals(ARServerForm.INCIDENT_FORM)) {
-                path += Constants.INCIDENT_TEMPLATE_PATH;
-            } else if (form.equals(ARServerForm.CHANGE_FORM)) {
-                path += Constants.CHANGE_TEMPLATE_PATH;
-            }
-
-        } catch (IOException e2) {
-            log.error("The file path couldnot be found ");
-        }
-        // PARSING THE CONFIGURATION FILE
-        Template template = null;
-        TemplatePreParser preParser = new GenericTemplatePreParser();
-        TemplateParser parser = new GenericTemplateParser();
-        try {
-            Template defaultTemplate = preParser.loadDefaults(form);
-            log.debug("{} default template loading sucessfuly finished , default status configured to query is {}", name, defaultTemplate.getConfig().getQueryStatusList());
-            template = parser.readParseConfigFile(defaultTemplate, path);
-            log.debug("{} user template configuration parsing successful , status configured to be queried is {}", name, template.getConfig().getQueryStatusList());
-        } catch (ParsingException ex) {
-            log.error(ex.getMessage());
-            System.exit(0);
-        }
-        log.info("{} file reading and parsing successful", path);
-        // VALIDATION OF THE CONFIGURATION
-        TemplateValidator validator = new GenericTemplateValidator();
-        try {
-            validator.validate(template);
-        } catch (ValidationException ex) {
-            log.error(ex.getMessage());
-            System.exit(0);
-        }
-        log.info("{} configuration file validation successful", path);
-
         Configuration config = template.getConfig();
         RemedyReader reader = new GenericRemedyReader();
-        //BulkEventHttpClient client = new GenericBulkEventHttpClient(config);
         ARServerUser user = reader.createARServerContext(config.getRemedyHostName(), config.getRemedyPort(), config.getRemedyUserName(), config.getRemedyPassword());
         RemedyEventResponse remedyResponse = new RemedyEventResponse();
         List<TSIEvent> lastEventList = new ArrayList<>();
@@ -194,27 +245,21 @@ public class App {
             boolean exceededMaxServerEntries = false;
             log.info("Started reading {} remedy {} starting from index {} , [Start Date: {}, End Date: {}]", new Object[]{chunkSize, name, startFrom, ScriptUtil.dateToString(config.getStartDateTime()), ScriptUtil.dateToString(config.getEndDateTime())});
             Map<String, List<String>> errorsMap = new HashMap<>();
-            OutputInteger totalAvailableCount = new OutputInteger();
             //Reading first Iteration to get the Idea of total available count
-            reader.readRemedyTickets(user, form, template, 1, 1, totalAvailableCount, adapter);
-            System.out.println("Remedy has " + totalAvailableCount.intValue() + " " + name + ", Do you also want to export the events to CSV, The events (Incidents and/or changes) would be exported to CSV files? (y/n)");
-            Scanner scanner = new Scanner(System.in);
-            String input3 = scanner.next();
-            if (input3.equalsIgnoreCase("y")) {
-                exportToCsvFlag = true;
-            }
             String csv = name + "_records_" + config.getStartDateTime().getTime() + "_TO_" + config.getEndDateTime().getTime() + ".csv";
             String[] headers = getFieldHeaders(template);
-            if (exportToCsvFlag) {
+            if ((form == ARServerForm.INCIDENT_FORM && incidentExportToCsvFlag) || (form == ARServerForm.CHANGE_FORM && changeExportToCsvFlag)) {
                 try {
                     writer = new CSVWriter(new FileWriter(csv));
                 } catch (IOException e) {
                     e.printStackTrace();
                     log.error("CSV file creation failed, Do you want to proceed without csv export ?(y/n)");
-                    Scanner scanner1 = new Scanner(System.in);
+                    Scanner scanner = new Scanner(System.in);
                     String input = scanner.next();
                     if (input.equalsIgnoreCase("n")) {
                         System.exit(0);
+                    } else {
+                        resetExportToCSVFlag();
                     }
                 }
                 writer.writeNext(headers);
@@ -255,7 +300,7 @@ public class App {
                     }
                     log.error("following {} ids are larger than allowed limits [{}]", name, String.join(",", eventIds));
                 }
-                if (exportToCsvFlag) {
+                if ((form == ARServerForm.INCIDENT_FORM && incidentExportToCsvFlag) || (form == ARServerForm.CHANGE_FORM && changeExportToCsvFlag)) {
                     for (TSIEvent event : remedyResponse.getValidEventList()) {
                         writer.writeNext(getFieldValues(event, headers));
                     }
@@ -292,7 +337,7 @@ public class App {
 
             }
             log.info("__________________ {} ingestion to truesight intelligence final status: Remedy Record(s) = {}, Valid Record(s) Sent = {}, Successful = {} , Failure = {} ______", new Object[]{name, nMatches.longValue(), validRecords, totalSuccessful, totalFailure});
-            if (exportToCsvFlag) {
+            if ((form == ARServerForm.INCIDENT_FORM && incidentExportToCsvFlag) || (form == ARServerForm.CHANGE_FORM && changeExportToCsvFlag)) {
                 log.info("__________________{} event(s) written to the CSV file {}", validRecords, csv);
             }
             if (totalFailure > 0) {
@@ -300,9 +345,7 @@ public class App {
                 errorsMap.keySet().forEach(msg -> {
                     log.error(msg + " (" + errorsMap.get(msg).size() + "), " + errorsMap.get(msg));
                 });
-
             }
-
         } catch (RemedyLoginFailedException e) {
             log.error("Login Failed : {}", e.getMessage());
         } catch (RemedyReadFailedException e) {
@@ -343,12 +386,11 @@ public class App {
             if (hasLoggedIntoRemedy) {
                 reader.logout(user);
             }
-            if (exportToCsvFlag) {
+            if ((form == ARServerForm.INCIDENT_FORM && incidentExportToCsvFlag) || (form == ARServerForm.CHANGE_FORM && changeExportToCsvFlag)) {
                 try {
                     writer.close();
                 } catch (IOException e) {
                     log.error("Closing CSV Writer failed {}", e.getMessage());
-
                 }
             }
         }
@@ -430,9 +472,13 @@ public class App {
             dt = new Date(Long.parseLong(date) * 1000L);
         } catch (Exception ex) {
             log.debug("Date conversion failed for date [{}]", date);
-            //do nothing 
         }
         return dt;
+    }
+
+    private static void resetExportToCSVFlag() {
+        incidentExportToCsvFlag = false;
+        changeExportToCsvFlag = false;
     }
 
 }

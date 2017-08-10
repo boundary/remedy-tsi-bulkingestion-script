@@ -28,7 +28,7 @@ $ mvn clean install
 $cd dist
 2. Change the incidentTemplate.json/changeTemplate.json configuration (based on description below)
 3. Run jar file
-$java -jar remedy-tsi-bulkingestion-script-0.9.3.jar <incident> <change> <loglevel>
+$java -jar remedy-tsi-bulkingestion-script-0.9.3.jar <loglevel>
 ```
 ## Configuration
    The configuration file contains three major sections.
