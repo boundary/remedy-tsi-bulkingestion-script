@@ -252,8 +252,7 @@ public class App {
                 try {
                     writer = new CSVWriter(new FileWriter(csv));
                 } catch (IOException e) {
-                    e.printStackTrace();
-                    log.error("CSV file creation failed, Do you want to proceed without csv export ?(y/n)");
+                    log.error("CSV file creation failed[{}], Do you want to proceed without csv export ?(y/n)",e.getMessage());
                     Scanner scanner = new Scanner(System.in);
                     String input = scanner.next();
                     if (input.equalsIgnoreCase("n")) {
