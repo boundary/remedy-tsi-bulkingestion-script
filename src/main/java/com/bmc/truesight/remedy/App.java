@@ -51,11 +51,7 @@ public class App {
 
     private final static Logger log = LoggerFactory.getLogger(App.class);
 
-    private static boolean isIncidentFileValid = false;
-    private static boolean incidentIngestionFlag = false;
     private static boolean incidentExportToCsvFlag = false;
-    private static boolean isChangeFileValid = false;
-    private static boolean changeIngestionFlag = false;
     private static boolean changeExportToCsvFlag = false;
 
     public static void main(String[] args) {
@@ -65,16 +61,19 @@ public class App {
         }
         Template incidentTemplate = inputIncidentChoice();
         Template changeTemplate = inputChangeChoice();
-        if (incidentIngestionFlag) {
+        if (incidentTemplate != null) {
             readAndIngest(ARServerForm.INCIDENT_FORM, incidentTemplate);
         }
-        if (changeIngestionFlag) {
+        if (changeTemplate != null) {
             readAndIngest(ARServerForm.CHANGE_FORM, changeTemplate);
         }
 
     }
 
     private static Template inputIncidentChoice() {
+        boolean isIncidentFileValid = false;
+        boolean incidentIngestionFlag = false;
+
         Template incidentTemplate = null;
         try {
             incidentTemplate = ScriptUtil.prepareTemplate(ARServerForm.INCIDENT_FORM);
@@ -84,7 +83,7 @@ public class App {
         } catch (ValidationException e) {
             log.error(e.getMessage());
         } catch (IOException e) {
-            log.error("The Incident template file couldnot be found, please check the file name and location");
+            log.error("The Incident template file could not be found, please check the file name and location");
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -120,14 +119,17 @@ public class App {
                     if (input.equalsIgnoreCase("y")) {
                         incidentExportToCsvFlag = true;
                     }
+                } else {
+                    incidentTemplate = null;
                 }
             }
-
         }
         return incidentTemplate;
     }
 
     private static Template inputChangeChoice() {
+        boolean isChangeFileValid = false;
+        boolean changeIngestionFlag = false;
         Template changeTemplate = null;
         try {
             changeTemplate = ScriptUtil.prepareTemplate(ARServerForm.CHANGE_FORM);
@@ -173,6 +175,8 @@ public class App {
                     if (input.equalsIgnoreCase("y")) {
                         changeExportToCsvFlag = true;
                     }
+                } else {
+                    changeTemplate = null;
                 }
             }
 
@@ -252,7 +256,7 @@ public class App {
                 try {
                     writer = new CSVWriter(new FileWriter(csv));
                 } catch (IOException e) {
-                    log.error("CSV file creation failed[{}], Do you want to proceed without csv export ?(y/n)",e.getMessage());
+                    log.error("CSV file creation failed[{}], Do you want to proceed without csv export ?(y/n)", e.getMessage());
                     Scanner scanner = new Scanner(System.in);
                     String input = scanner.next();
                     if (input.equalsIgnoreCase("n")) {
