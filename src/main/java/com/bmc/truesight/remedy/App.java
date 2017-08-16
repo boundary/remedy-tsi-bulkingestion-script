@@ -86,6 +86,7 @@ public class App {
             log.error("The Incident template file could not be found, please check the file name and location");
         } catch (Exception e) {
             log.error(e.getMessage());
+            incidentTemplate = null;
         }
         log.debug("Incident template file reading and parsing successful");
         if (isIncidentFileValid) {
@@ -97,6 +98,7 @@ public class App {
                 hasLoggedIntoRemedy = incidentReader.login(user);
             } catch (RemedyLoginFailedException e) {
                 log.error(e.getMessage());
+                incidentTemplate = null;
             }
             if (hasLoggedIntoRemedy) {
                 try {
@@ -109,6 +111,7 @@ public class App {
                     }
                 } catch (RemedyReadFailedException e) {
                     log.error(e.getMessage());
+                    incidentTemplate = null;
                 } finally {
                     incidentReader.logout(user);
                 }
@@ -153,6 +156,7 @@ public class App {
                 hasLoggedIntoRemedy = changeReader.login(user);
             } catch (RemedyLoginFailedException e) {
                 log.error(e.getMessage());
+                changeTemplate = null;
             }
             if (hasLoggedIntoRemedy) {
                 try {
@@ -165,6 +169,7 @@ public class App {
                     }
                 } catch (RemedyReadFailedException e) {
                     log.error(e.getMessage());
+                    changeTemplate = null;
                 } finally {
                     changeReader.logout(user);
                 }
@@ -344,9 +349,9 @@ public class App {
                 log.info("__________________{} event(s) written to the CSV file {}", validRecords, csv);
             }
             if (totalFailure > 0) {
-                log.error("__________________ Failures (No of times seen), [Reference Id(s)] ______");
+                log.error("______ Event Count, Failure reason , [Reference Id(s)] ______");
                 errorsMap.keySet().forEach(msg -> {
-                    log.error(msg + " (" + errorsMap.get(msg).size() + "), " + errorsMap.get(msg));
+                    log.error("______ {}    , {},  {}", errorsMap.get(msg).size(), msg, errorsMap.get(msg));
                 });
             }
         } catch (RemedyLoginFailedException e) {
