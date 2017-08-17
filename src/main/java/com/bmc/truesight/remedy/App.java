@@ -1,5 +1,6 @@
 package com.bmc.truesight.remedy;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -400,6 +401,11 @@ public class App {
                 } catch (IOException e) {
                     log.error("Closing CSV Writer failed {}", e.getMessage());
                 }
+            }
+            File file = new File(Constants.REGKEY_FILE_NAME);
+            if (file.exists()) {
+                boolean isDeleted = file.delete();
+                log.debug("{} file deleted = {}", Constants.REGKEY_FILE_NAME, isDeleted);
             }
         }
 
