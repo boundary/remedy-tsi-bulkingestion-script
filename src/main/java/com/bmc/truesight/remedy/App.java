@@ -115,6 +115,7 @@ public class App {
                     incidentTemplate = null;
                 } finally {
                     incidentReader.logout(user);
+                    deleteRegFile();
                 }
                 if (incidentIngestionFlag) {
                     System.out.println("Do you also want to export these events as CSV?(y/n)");
@@ -173,6 +174,7 @@ public class App {
                     changeTemplate = null;
                 } finally {
                     changeReader.logout(user);
+                    deleteRegFile();
                 }
                 if (changeIngestionFlag) {
                     System.out.println("Do you also want to export these events as CSV?(y/n)");
@@ -402,11 +404,7 @@ public class App {
                     log.error("Closing CSV Writer failed {}", e.getMessage());
                 }
             }
-            File file = new File(Constants.REGKEY_FILE_NAME);
-            if (file.exists()) {
-                boolean isDeleted = file.delete();
-                log.debug("{} file deleted = {}", Constants.REGKEY_FILE_NAME, isDeleted);
-            }
+            deleteRegFile();
         }
 
     }
@@ -493,6 +491,14 @@ public class App {
     private static void resetExportToCSVFlag() {
         incidentExportToCsvFlag = false;
         changeExportToCsvFlag = false;
+    }
+
+    private static void deleteRegFile() {
+        File file = new File(Constants.REGKEY_FILE_NAME);
+        if (file.exists()) {
+            boolean isDeleted = file.delete();
+            log.debug("{} file deleted = {}", Constants.REGKEY_FILE_NAME, isDeleted);
+        }
     }
 
 }
