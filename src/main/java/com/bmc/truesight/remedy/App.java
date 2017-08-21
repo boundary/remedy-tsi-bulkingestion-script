@@ -34,6 +34,7 @@ import com.bmc.truesight.saas.remedy.integration.exception.BulkEventsIngestionFa
 import com.bmc.truesight.saas.remedy.integration.exception.ParsingException;
 import com.bmc.truesight.saas.remedy.integration.exception.RemedyLoginFailedException;
 import com.bmc.truesight.saas.remedy.integration.exception.RemedyReadFailedException;
+import com.bmc.truesight.saas.remedy.integration.exception.TsiAuthenticationFailedException;
 import com.bmc.truesight.saas.remedy.integration.exception.ValidationException;
 import com.bmc.truesight.saas.remedy.integration.impl.EventIngestionExecuterService;
 import com.bmc.truesight.saas.remedy.integration.impl.GenericRemedyReader;
@@ -273,7 +274,9 @@ public class App {
                         resetExportToCSVFlag();
                     }
                 }
-                writer.writeNext(headers);
+                if (writer != null) {
+                    writer.writeNext(headers);
+                }
             }
 
             while (readNext) {
@@ -391,6 +394,8 @@ public class App {
                     log.info("Closed Date : {}", new Object[]{ScriptUtil.dateToString(closedDate)});
                 }
             }
+        } catch (TsiAuthenticationFailedException e) {
+            log.error("Error {}", e.getMessage());
         } catch (Exception ex) {
             log.error("Error {}", ex.getMessage());
         } finally {
