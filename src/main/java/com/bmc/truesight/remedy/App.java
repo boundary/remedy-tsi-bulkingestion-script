@@ -132,6 +132,8 @@ public class App {
         } catch (Exception e) {
             log.error(e.getMessage());
             incidentTemplate = null;
+        } finally {
+            deleteRegFile();
         }
         log.debug("Incident template file reading and parsing success state is {}", isIncidentFileValid);
         if (isIncidentFileValid) {
@@ -144,6 +146,8 @@ public class App {
             } catch (RemedyLoginFailedException e) {
                 log.error(e.getMessage());
                 incidentTemplate = null;
+            } finally {
+                deleteRegFile();
             }
             if (hasLoggedIntoRemedy) {
                 try {
@@ -191,6 +195,8 @@ public class App {
             log.error("The Change Template file couldnot be found, please check the file name and location");
         } catch (Exception e) {
             log.error(e.getMessage());
+        } finally {
+            deleteRegFile();
         }
         log.debug("Change template file reading and parsing success state is {}", isChangeFileValid);
         if (isChangeFileValid) {
@@ -203,6 +209,8 @@ public class App {
             } catch (RemedyLoginFailedException e) {
                 log.error(e.getMessage());
                 changeTemplate = null;
+            } finally {
+                deleteRegFile();
             }
             if (hasLoggedIntoRemedy) {
                 try {
