@@ -90,7 +90,7 @@ public class App {
             log.error(e.getMessage());
             incidentTemplate = null;
         }
-        log.debug("Incident template file reading and parsing successful");
+        log.debug("Incident template file reading and parsing success state is {}", isIncidentFileValid);
         if (isIncidentFileValid) {
             Configuration config = incidentTemplate.getConfig();
             RemedyReader incidentReader = new GenericRemedyReader();
@@ -149,7 +149,7 @@ public class App {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        log.debug("Change template file reading and parsing successful");
+        log.debug("Change template file reading and parsing success state is {}", isChangeFileValid);
         if (isChangeFileValid) {
             Configuration config = changeTemplate.getConfig();
             RemedyReader changeReader = new GenericRemedyReader();
