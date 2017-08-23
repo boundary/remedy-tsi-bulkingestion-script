@@ -72,7 +72,7 @@ Payload field and value						Details/Comment
 ```
 
 ### 3) Placeholder Definition 
-There are several Field Definitions/ Placeholder definitions already available by default(see [IncidentDefaultTemplate](https://github.com/boundary/remedy-tsi-integration-lib/blob/master/src/main/resources/incidentDefaultTemplate.json) & [ChangeDefaultTemplate](https://github.com/boundary/remedy-tsi-integration-lib/blob/master/src/main/resources/changeDefaultTemplate.json) ). You can add a custom Field Definition & use it in the properties section of eventDefinition as per requirement.
+There are several Field Definitions/ Placeholder definitions already available by default(see [IncidentDefaultTemplate](https://github.com/vitiwari/remedy-tsi-bulkingestion-script/blob/master/templates/incidentDefaultTemplate.json) & [ChangeDefaultTemplate](https://github.com/vitiwari/remedy-tsi-bulkingestion-script/blob/master/templates/changeDefaultTemplate.json) ). You can add a custom Field Definition & use it in the properties section of eventDefinition as per requirement.
 ```
 "@CUSTOMFIELD": {
 		"fieldId":1000000162,
