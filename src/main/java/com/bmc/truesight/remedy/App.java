@@ -55,14 +55,25 @@ public class App {
 
     private static boolean incidentExportToCsvFlag = false;
     private static boolean changeExportToCsvFlag = false;
+    private static boolean incidentChoice = false;
+    private static boolean changeChoice = false;
 
     public static void main(String[] args) {
         if (args.length > 0) {
-            String logLevel = args[0];
-            setLoglevel(logLevel);
+            applyChoices(args);
         }
-        Template incidentTemplate = inputIncidentChoice();
-        Template changeTemplate = inputChangeChoice();
+        if (!(incidentChoice || changeChoice)) {
+            incidentChoice = getIncidentChoice();
+            changeChoice = getChangeChoice();
+        }
+        Template incidentTemplate = null;
+        if (incidentChoice) {
+            incidentTemplate = inputIncidentChoice();
+        }
+        Template changeTemplate = null;
+        if (changeChoice) {
+            changeTemplate = inputChangeChoice();
+        }
         if (incidentTemplate != null) {
             readAndIngest(ARServerForm.INCIDENT_FORM, incidentTemplate);
         }
@@ -70,6 +81,38 @@ public class App {
             readAndIngest(ARServerForm.CHANGE_FORM, changeTemplate);
         }
 
+    }
+
+    private static boolean getChangeChoice() {
+        System.out.println("Do you want to ingest Remedy change tickets to Truesight Intelligence?(y/n)");
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.next();
+        if (input.equalsIgnoreCase("y")) {
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean getIncidentChoice() {
+        System.out.println("Do you want to ingest Remedy incident tickets to Truesight Intelligence?(y/n)");
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.next();
+        if (input.equalsIgnoreCase("y")) {
+            return true;
+        }
+        return false;
+    }
+
+    private static void applyChoices(String[] args) {
+        for (String input : args) {
+            if (input.equalsIgnoreCase("incident")) {
+                incidentChoice = true;
+            } else if (input.equalsIgnoreCase("change")) {
+                changeChoice = true;
+            } else {
+                setLoglevel(input);
+            }
+        }
     }
 
     private static Template inputIncidentChoice() {
@@ -227,7 +270,7 @@ public class App {
                 LogManager.getLogger("com.bmc.truesight").setLevel(Level.WARN);
                 break;
             default:
-                log.error("Argument not recognised, available argument is <loglevel>(ex DEBUG).");
+                log.error("Argument \"{}\" is not a valid log level, please use a valid log level (ex debug).", module);
                 System.exit(0);
         }
     }
