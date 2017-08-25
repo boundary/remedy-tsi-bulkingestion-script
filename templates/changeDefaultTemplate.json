@@ -1,0 +1,128 @@
+{
+    "config": {
+        "remedyHostName": "<Input ARServer Host Name>",
+        "remedyPort": "",
+        "remedyUserName": "<Input ARServer UserName>",
+        "remedyPassword": "",
+        "tsiEventEndpoint": "https://api.truesight.bmc.com/v1/events",
+        "tsiApiToken": "<Input TSI Api Token>",
+        "conditionFields": [303915500, 3],
+        "queryStatusList": [0, 11],
+        "startDateTime": "<Input Start Date time yyyy-MM-dd HH:mm:ss z>",
+        "endDateTime": "<Input End Datetime yyyy-MM-dd HH:mm:ss z>",
+        "retryConfig": 2,
+        "waitMsBeforeRetry": 5000
+    },
+    "eventDefinition": {
+        "title": "@TITLE",
+        "fingerprintFields": ["ChangeID"],
+        "severity": "@SEVERITY",
+        "status": "@STATUS",
+        "properties": {
+            "Assignee": "@ASSIGNEE",
+            "ChangeID": "@CHANGE_ID",
+            "CI": "@CI",
+            "Priority": "@PRIORITY",
+            "PriorityWeight": "@WEIGHT",
+            "CoordinatorGroup": "@COORDINATOR_GRP",
+            "ChangeLocation": "@CHANGE_LOC",
+            "RiskLevel": "@RISK_LEVEL",
+            "ManagerGroup": "@MANAGER_GROUP",
+            "Submitter": "@SUBMITTER",
+            "ChangeCreatedDate": "@CREATED_AT",
+            "CompletedDate": "@COMPLETED_DATE",
+            "Summary": "@SUMMARY",
+            "Notes": "@NOTES",
+            "app_id": "Remedy TSI Integration"
+        },
+        "eventClass": "Change",
+        "source": {
+            "name": "Remedy",
+            "type": "Remedy",
+            "ref": "Remedy"
+        },
+        "sender": {
+            "name": "Remedy",
+            "type": "Remedy",
+            "ref": "Remedy"
+        }
+    },
+    "@SEVERITY": {
+        "fieldId": 1000000162,
+        "valueMap": {
+            "1000": "Critical",
+            "2000": "High",
+            "3000": "Medium",
+            "4000": "Low"
+        }
+    },
+    "@PRIORITY": {
+        "fieldId": 1000000164,
+        "valueMap": {
+            "0": "Critical",
+            "1": "High",
+            "2": "Medium",
+            "3": "Low"
+        }
+    },
+    "@STATUS": {
+        "fieldId": 7,
+        "valueMap": {
+            "0": "Draft",
+            "1": "Request For Authorization",
+            "2": "Request For Change",
+            "3": "Planning In Progress",
+            "4": "Scheduled For Review",
+            "5": "Scheduled For Approval",
+            "6": "Scheduled",
+            "7": "Implementation In Progress",
+            "8": "Pending",
+            "9": "Rejected",
+            "10": "Completed",
+            "11": "Closed",
+            "12": "Cancelled"
+        }
+    },
+    "@CHANGE_ID": {
+        "fieldId": 1000000182
+    },
+    "@WEIGHT": {
+        "fieldId": 1000000162
+    },
+    "@TITLE": {
+        "fieldId": 1000000000
+    },
+    "@SUMMARY": {
+        "fieldId": 1000000151
+    },
+    "@ASSIGNEE": {
+        "fieldId": 303124400
+    },
+    "@CI": {
+        "fieldId": 301556800
+    },
+    "@CREATED_AT": {
+        "fieldId": 3
+    },
+    "@SUBMITTER": {
+        "fieldId": 2
+    },
+    "@COMPLETED_DATE": {
+        "fieldId": 1000002195
+    },
+    "@NOTES": {
+        "fieldId": 1000000151
+    },
+    "@COORDINATOR_GRP": {
+        "fieldId": 1000003229
+    },
+    "@CHANGE_LOC": {
+        "fieldId": 303935100
+    },
+    "@RISK_LEVEL": {
+        "fieldId": 1000000180
+    },
+    "@MANAGER_GROUP": {
+        "fieldId": 1000000015
+    }
+}

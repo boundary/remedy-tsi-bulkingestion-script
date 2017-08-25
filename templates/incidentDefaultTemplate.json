@@ -1,0 +1,127 @@
+{
+    "config": {
+        "remedyHostName": "<Input ARServer Host Name>",
+        "remedyPort": "",
+        "remedyUserName": "<Input ARServer UserName>",
+        "remedyPassword": "",
+        "tsiEventEndpoint": "https://api.truesight.bmc.com/v1/events",
+        "tsiApiToken": "<Input TSI Api Token>",
+        "conditionFields": [3, 1000000564, 6],
+        "queryStatusList": [0, 1, 5],
+        "startDateTime": "<Input Start Datetime yyyy-MM-dd HH:mm:ss z>", 
+        "endDateTime": "<Input End Datetime yyyy-MM-dd HH:mm:ss z>",
+        "retryConfig": 2,
+        "waitMsBeforeRetry": 5000
+    },
+    "eventDefinition": {
+        "title": "@SUMMARY",
+        "fingerprintFields": ["IncidentNumber"],
+        "severity": "@SEVERITY",
+        "status": "@STATUS",
+        "properties": {
+            "Assignee": "@ASSIGNEE",
+            "IncidentNumber": "@INCIDENT_NUMBER",
+            "CI": "@CI",
+            "Priority": "@PRIORITY",
+            "PriorityWeight": "@WEIGHT",
+            "Company": "@COMPANY",
+            "Customer": "@CUSTOMER",
+            "Summary": "@SUMMARY",
+            "Service": "@SERVICE",
+            "Impact": "@IMPACT",
+            "IncidentType": "@INCIDENT_TYPE",
+            "AssignedGroup": "@ASSIGNED_GROUP",
+            "Submitter": "@SUBMITTER",
+            "IncidentCreatedDate": "@CREATED_AT",
+            "LastModDate": "@LAST_MOD_DATE",
+            "ClosedDate": "@CLOSED_DATE", 
+            "app_id": "Remedy TSI Integration"
+        },
+        "eventClass": "Incident",
+        "source": {
+            "name": "Remedy",
+            "type": "Remedy",
+            "ref": "Remedy"
+        },
+        "sender": {
+            "name": "Remedy",
+            "type": "Remedy",
+            "ref": "Remedy"
+        }
+    },
+    "@SEVERITY": {
+        "fieldId": 1000000162,
+        "valueMap": {
+            "1000": "Critical",
+            "2000": "High",
+            "3000": "Medium",
+            "4000": "Low"
+        }
+    },
+    "@PRIORITY": {
+        "fieldId": 1000000164,
+        "valueMap": {
+            "0": "Critical",
+            "1": "High",
+            "2": "Medium",
+            "3": "Low"
+        }
+    },
+    "@STATUS": {
+        "fieldId": 7,
+        "valueMap": {
+            "0": "New",
+            "1": "Assigned",
+            "2": "In Progress",
+            "3": "Pending",
+            "4": "Resolved",
+            "5": "Closed",
+            "6": "Cancelled"
+        }
+    },
+    "@INCIDENT_NUMBER": {
+        "fieldId": 1000000161
+    },
+    "@WEIGHT": {
+        "fieldId": 1000000169
+    },
+    "@SUMMARY": {
+        "fieldId": 1000000000
+    },
+    "@ASSIGNEE": {
+        "fieldId": 1000000218
+    },
+    "@CI": {
+        "fieldId": 303544200
+    },
+    "@CREATED_AT": {
+        "fieldId": 3
+    },
+    "@SUBMITTER": {
+        "fieldId": 2
+    },
+    "@LAST_MOD_DATE": {
+        "fieldId": 6
+    },
+    "@CLOSED_DATE": {
+        "fieldId": 1000000564
+    },
+    "@COMPANY": {
+        "fieldId": 1000000082
+    },
+    "@CUSTOMER": {
+        "fieldId": 303530000
+    },
+    "@SERVICE": {
+        "fieldId": 303497300
+    },
+    "@IMPACT": {
+        "fieldId": 1000000163
+    },
+    "@INCIDENT_TYPE": {
+        "fieldId": 1000000099
+    },
+    "@ASSIGNED_GROUP": {
+        "fieldId": 1000000217
+    }
+}

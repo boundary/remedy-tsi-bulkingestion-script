@@ -18,17 +18,25 @@ $ git clone https://github.com/boundary/remedy-tsi-bulkingestion-script.git
 $ cd remedy-tsi-bulkingestion-script
 3. Run maven install
 $ mvn clean install
-4. You can find the build jar file as remedy-tsi-bulkingestion-script-0.9.2.jar
+4. You can find the build jar file as remedy-tsi-bulkingestion-script-0.9.3.jar
 ```
 ##### Note : You can find a pre-built jar in dist folder
 
 ## How to run ?
 ```
 1. Copy jar file to the location as dist and change directory as dist.
-$cd dist
+$ cd dist
 2. Change the incidentTemplate.json/changeTemplate.json configuration (based on description below)
 3. Run jar file
-$java -jar remedy-tsi-bulkingestion-script-0.9.2.jar <incident> <change> <loglevel>
+$ java -jar remedy-tsi-bulkingestion-script-0.9.3.jar
+4. Please read the output & provide further required choices.
+```
+```
+NOTE:
+1. You can also provide your choices as command line arguments.
+Ex. $java -jar remedy-tsi-bulkingestion-script-0.9.3.jar <incident> <change>
+2. You can enable the debug mode by having debug as command line parameter 
+Ex. $java -jar remedy-tsi-bulkingestion-script-0.9.3.jar debug
 ```
 ## Configuration
    The configuration file contains three major sections.
@@ -66,7 +74,7 @@ Payload field and value						Details/Comment
 ```
 
 ### 3) Placeholder Definition 
-There are several Field Definitions/ Placeholder definitions already available by default(see [IncidentDefaultTemplate](https://github.com/boundary/remedy-tsi-integration-lib/blob/master/src/main/resources/incidentDefaultTemplate.json) & [ChangeDefaultTemplate](https://github.com/boundary/remedy-tsi-integration-lib/blob/master/src/main/resources/changeDefaultTemplate.json) ). You can add a custom Field Definition & use it in the properties section of eventDefinition as per requirement.
+There are several Field Definitions/ Placeholder definitions already available by default(see [IncidentDefaultTemplate](https://github.com/boundary/remedy-tsi-bulkingestion-script/blob/master/templates/incidentDefaultTemplate.json) & [ChangeDefaultTemplate](https://github.com/boundary/remedy-tsi-bulkingestion-script/blob/master/templates/changeDefaultTemplate.json) ). You can add a custom Field Definition & use it in the properties section of eventDefinition as per requirement.
 ```
 "@CUSTOMFIELD": {
 		"fieldId":1000000162,
