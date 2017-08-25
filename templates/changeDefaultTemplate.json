@@ -29,12 +29,12 @@
             "RiskLevel": "@RISK_LEVEL",
             "ManagerGroup": "@MANAGER_GROUP",
             "Submitter": "@SUBMITTER",
+            "ChangeCreatedDate": "@CREATED_AT",
             "CompletedDate": "@COMPLETED_DATE",
             "Summary": "@SUMMARY",
             "Notes": "@NOTES",
             "app_id": "Remedy TSI Integration"
         },
-        "createdAt": "@CREATED_AT",
         "eventClass": "Change",
         "source": {
             "name": "Remedy",

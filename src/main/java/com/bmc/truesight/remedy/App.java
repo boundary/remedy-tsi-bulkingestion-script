@@ -367,7 +367,9 @@ public class App {
                 }
                 if ((form == ARServerForm.INCIDENT_FORM && incidentExportToCsvFlag) || (form == ARServerForm.CHANGE_FORM && changeExportToCsvFlag)) {
                     for (TSIEvent event : remedyResponse.getValidEventList()) {
-                        writer.writeNext(getFieldValues(event, headers));
+                        if (writer != null) {
+                            writer.writeNext(getFieldValues(event, headers));
+                        }
                     }
                     log.debug("{} events written to the CSV file", remedyResponse.getValidEventList().size());
                 }
@@ -418,10 +420,8 @@ public class App {
                 log.error("Reading tickets from Remedy server failed for StartDateTime, EndDateTime ({},{}). Please try running the script after some time with the same timestamps.", new Object[]{e.getMessage(), ScriptUtil.dateToString(config.getStartDateTime()), ScriptUtil.dateToString(config.getEndDateTime())});
             } else {
                 log.error("Due to some issue Reading tickets from Remedy server failed for StartDateTime, EndDateTime ({},{}). Please try running the script after some time from the last successful timestamp as below.", new Object[]{ScriptUtil.dateToString(config.getStartDateTime()), ScriptUtil.dateToString(config.getEndDateTime())});
-                Date createdDate = convertToDate(lastEventList.get((lastEventList.size() - 1)).getCreatedAt());
                 Date modDate = convertToDate(lastEventList.get((lastEventList.size() - 1)).getProperties().get("LastModDate"));
                 Date closedDate = convertToDate(lastEventList.get((lastEventList.size() - 1)).getProperties().get("ClosedDate"));
-                log.info("Created Date : {}", new Object[]{createdDate});
                 if (lastEventList.get((lastEventList.size() - 1)).getProperties().get("LastModDate") != null) {
                     log.info("Last Modified Date : {}", new Object[]{modDate});
                 }
@@ -434,10 +434,8 @@ public class App {
                 log.error("Ingestion Failed (Reason : {}) for StartDateTime, EndDateTime ({},{}). Please try running the script after some time with the same timestamps.", new Object[]{e.getMessage(), ScriptUtil.dateToString(config.getStartDateTime()), ScriptUtil.dateToString(config.getEndDateTime())});
             } else {
                 log.error("Ingestion Failed (Reason : {}) for StartDateTime, EndDateTime ({},{}). Please try running the script after some time from the last successful timestamp as below.", new Object[]{e.getMessage(), ScriptUtil.dateToString(config.getStartDateTime()), ScriptUtil.dateToString(config.getEndDateTime())});
-                Date createdDate = convertToDate(lastEventList.get((lastEventList.size() - 1)).getCreatedAt());
                 Date modDate = convertToDate(lastEventList.get((lastEventList.size() - 1)).getProperties().get("LastModDate"));
                 Date closedDate = convertToDate(lastEventList.get((lastEventList.size() - 1)).getProperties().get("ClosedDate"));
-                log.info("Created Date : {}", new Object[]{ScriptUtil.dateToString(createdDate)});
                 if (lastEventList.get((lastEventList.size() - 1)).getProperties().get("LastModDate") != null) {
                     log.info("Last Modified Date : {}", new Object[]{ScriptUtil.dateToString(modDate)});
                 }
@@ -455,7 +453,9 @@ public class App {
             }
             if ((form == ARServerForm.INCIDENT_FORM && incidentExportToCsvFlag) || (form == ARServerForm.CHANGE_FORM && changeExportToCsvFlag)) {
                 try {
-                    writer.close();
+                    if (writer != null) {
+                        writer.close();
+                    }
                 } catch (IOException e) {
                     log.error("Closing CSV Writer failed {}", e.getMessage());
                 }
@@ -499,9 +499,6 @@ public class App {
                     break;
                 case "message":
                     values.add(event.getMessage());
-                    break;
-                case "createdAt":
-                    values.add(event.getCreatedAt());
                     break;
                 case "eventClass":
                     values.add(event.getEventClass());
