@@ -35,11 +35,12 @@
             "Notes": "@NOTES",
             "app_id": "Remedy TSI Integration"
         },
+        "createdAt": "@CREATED_AT", 
         "eventClass": "Change",
         "source": {
-            "name": "Remedy",
-            "type": "Remedy",
-            "ref": "Remedy"
+            "name": "#remedyHostName",
+            "type": "host",
+            "ref": "#remedyHostName"
         },
         "sender": {
             "name": "Remedy",
