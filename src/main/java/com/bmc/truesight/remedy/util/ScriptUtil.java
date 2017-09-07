@@ -3,20 +3,26 @@ package com.bmc.truesight.remedy.util;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bmc.arsys.api.ARServerUser;
+import com.bmc.arsys.api.Field;
 import com.bmc.arsys.api.OutputInteger;
+import com.bmc.truesight.remedy.App;
 import com.bmc.truesight.saas.remedy.integration.ARServerForm;
+import com.bmc.truesight.saas.remedy.integration.RemedyReader;
 import com.bmc.truesight.saas.remedy.integration.TemplateParser;
 import com.bmc.truesight.saas.remedy.integration.TemplatePreParser;
 import com.bmc.truesight.saas.remedy.integration.TemplateValidator;
 import com.bmc.truesight.saas.remedy.integration.adapter.RemedyEntryEventAdapter;
+import com.bmc.truesight.saas.remedy.integration.beans.Configuration;
 import com.bmc.truesight.saas.remedy.integration.beans.Template;
 import com.bmc.truesight.saas.remedy.integration.exception.ParsingException;
+import com.bmc.truesight.saas.remedy.integration.exception.RemedyLoginFailedException;
 import com.bmc.truesight.saas.remedy.integration.exception.RemedyReadFailedException;
 import com.bmc.truesight.saas.remedy.integration.exception.ValidationException;
 import com.bmc.truesight.saas.remedy.integration.impl.GenericRemedyReader;
@@ -35,13 +41,14 @@ public class ScriptUtil {
         return DATE_FORMAT.format(date);
     }
 
-    public static int getAvailableRecordsCount(ARServerUser context, ARServerForm form, Template template) throws RemedyReadFailedException {
+    public static int getAvailableRecordsCount(ARServerUser context, ARServerForm form, Template template, RemedyEntryEventAdapter adapter) throws RemedyReadFailedException {
         OutputInteger totalCount = new OutputInteger();
-        new GenericRemedyReader().readRemedyTickets(context, form, template, 1, 1, totalCount, new RemedyEntryEventAdapter());
+        log.debug("Read call made to get available count");
+        new GenericRemedyReader().readRemedyTickets(context, form, template, 1, 1, totalCount, adapter);
         return totalCount.intValue();
     }
 
-    public static Template prepareTemplate(ARServerForm form) throws ParsingException, ValidationException, IOException {
+    public static Template prepareTemplate(ARServerForm form) throws ParsingException, ValidationException, IOException, RemedyLoginFailedException, RemedyReadFailedException {
         String path = null;
         String name = "";
 
@@ -62,10 +69,25 @@ public class ScriptUtil {
         log.debug("{} defaults loading sucessfuly finished , default status configured to query is {}", name, defaultTemplate.getConfig().getQueryStatusList());
         template = parser.readParseConfigFile(defaultTemplate, path);
         log.debug("{} user template configuration parsing successful , status configured to be queried is {}", name, template.getConfig().getQueryStatusList());
-
+        Configuration config = template.getConfig();
+        RemedyReader reader = new GenericRemedyReader();
+        ARServerUser user = reader.createARServerContext(config.getRemedyHostName(), config.getRemedyPort(), config.getRemedyUserName(), config.getRemedyPassword());
+        if (form.equals(ARServerForm.INCIDENT_FORM)) {
+            App.setHasLoggedIntoRemedyIncident(reader.login(user));
+            App.setIncidentUser(user);
+        } else if (form.equals(ARServerForm.CHANGE_FORM)) {
+            App.setHasLoggedIntoRemedyChange(reader.login(user));
+            App.setChangeUser(user);
+        }
+        Map<Integer, Field> fieldmap = reader.getFieldsMap(user, form);
         // VALIDATION OF THE CONFIGURATION
-        TemplateValidator validator = new GenericTemplateValidator();
+        TemplateValidator validator = new GenericTemplateValidator(fieldmap);
         validator.validate(template);
+        if (form.equals(ARServerForm.INCIDENT_FORM)) {
+            App.setIncidentFieldIdMap(fieldmap);
+        } else if (form.equals(ARServerForm.CHANGE_FORM)) {
+            App.setChangeFieldIdMap(fieldmap);
+        }
 
         return template;
     }
