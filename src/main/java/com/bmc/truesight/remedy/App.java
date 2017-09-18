@@ -383,6 +383,11 @@ public class App {
                 } else if (totalRecordsRead >= nMatches.longValue()) {
                     readNext = false;
                 }
+                
+                if (recordsCount == 0){
+                	break;
+                }
+                
                 iteration++;
                 startFrom = totalRecordsRead;
                 if (remedyResponse.getLargeInvalidEventCount() > 0) {

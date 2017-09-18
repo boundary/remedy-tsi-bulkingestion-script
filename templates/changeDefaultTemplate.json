@@ -6,7 +6,7 @@
         "remedyPassword": "",
         "tsiEventEndpoint": "https://api.truesight.bmc.com/v1/events",
         "tsiApiToken": "<Input TSI Api Token>",
-        "conditionFields": [303915500, 3],
+        "conditionFields": [303915500, 3, 6],
         "queryStatusList": [0, 11],
         "startDateTime": "<Input Start Date time yyyy-MM-dd HH:mm:ss z>",
         "endDateTime": "<Input End Datetime yyyy-MM-dd HH:mm:ss z>",
@@ -29,6 +29,7 @@
             "RiskLevel": "@RISK_LEVEL",
             "ManagerGroup": "@MANAGER_GROUP",
             "Submitter": "@SUBMITTER",
+            "LastModDate": "@LAST_MOD_DATE",
             "ChangeCreatedDate": "@CREATED_AT",
             "CompletedDate": "@COMPLETED_DATE",
             "Summary": "@SUMMARY",
@@ -97,7 +98,7 @@
         "fieldId": 1000000151
     },
     "@ASSIGNEE": {
-        "fieldId": 303124400
+        "fieldId": 4
     },
     "@CI": {
         "fieldId": 301556800
@@ -107,6 +108,9 @@
     },
     "@SUBMITTER": {
         "fieldId": 2
+    },
+    "@LAST_MOD_DATE": {
+        "fieldId": 6
     },
     "@COMPLETED_DATE": {
         "fieldId": 1000002195
