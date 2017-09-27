@@ -3,7 +3,6 @@ package com.bmc.truesight.remedy;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bmc.arsys.api.ARServerUser;
+import com.bmc.arsys.api.Field;
 import com.bmc.arsys.api.OutputInteger;
 import com.bmc.truesight.remedy.util.Constants;
 import com.bmc.truesight.remedy.util.ScriptUtil;
@@ -57,6 +57,12 @@ public class App {
     private static boolean changeExportToCsvFlag = false;
     private static boolean incidentChoice = false;
     private static boolean changeChoice = false;
+    private static ARServerUser incidentUser;
+    private static ARServerUser changeUser;
+    private static boolean hasLoggedIntoRemedyIncident = false;
+    private static boolean hasLoggedIntoRemedyChange = false;
+    private static Map<Integer, Field> incidentFieldIdMap;
+    private static Map<Integer, Field> changeFieldIdMap;
 
     public static void main(String[] args) {
         if (args.length > 0) {
@@ -118,7 +124,7 @@ public class App {
     private static Template inputIncidentChoice() {
         boolean isIncidentFileValid = false;
         boolean incidentIngestionFlag = false;
-
+        RemedyReader incidentReader = new GenericRemedyReader();
         Template incidentTemplate = null;
         try {
             incidentTemplate = ScriptUtil.prepareTemplate(ARServerForm.INCIDENT_FORM);
@@ -137,21 +143,20 @@ public class App {
         }
         log.debug("Incident template file reading and parsing success state is {}", isIncidentFileValid);
         if (isIncidentFileValid) {
-            Configuration config = incidentTemplate.getConfig();
-            RemedyReader incidentReader = new GenericRemedyReader();
-            ARServerUser user = incidentReader.createARServerContext(config.getRemedyHostName(), config.getRemedyPort(), config.getRemedyUserName(), config.getRemedyPassword());
-            boolean hasLoggedIntoRemedy = false;
             try {
-                hasLoggedIntoRemedy = incidentReader.login(user);
+                if (!hasLoggedIntoRemedyIncident) {
+                    hasLoggedIntoRemedyIncident = incidentReader.login(incidentUser);
+                }
             } catch (RemedyLoginFailedException e) {
                 log.error(e.getMessage());
                 incidentTemplate = null;
             } finally {
                 deleteRegFile();
             }
-            if (hasLoggedIntoRemedy) {
+            if (hasLoggedIntoRemedyIncident) {
                 try {
-                    int incidentsCount = ScriptUtil.getAvailableRecordsCount(user, ARServerForm.INCIDENT_FORM, incidentTemplate);
+                    RemedyEntryEventAdapter adapter = new RemedyEntryEventAdapter(incidentFieldIdMap);
+                    int incidentsCount = ScriptUtil.getAvailableRecordsCount(incidentUser, ARServerForm.INCIDENT_FORM, incidentTemplate, adapter);
                     System.out.println(incidentsCount + " Incidents available for the input time range, do you want to ingest these to TSIntelligence?(y/n)");
                     Scanner scanner = new Scanner(System.in);
                     String input = scanner.next();
@@ -162,7 +167,9 @@ public class App {
                     log.error(e.getMessage());
                     incidentTemplate = null;
                 } finally {
-                    incidentReader.logout(user);
+                    if (!incidentIngestionFlag && hasLoggedIntoRemedyIncident) {
+                        incidentReader.logout(incidentUser);
+                    }
                     deleteRegFile();
                 }
                 if (incidentIngestionFlag) {
@@ -176,6 +183,10 @@ public class App {
                     incidentTemplate = null;
                 }
             }
+        } else {
+            if (hasLoggedIntoRemedyIncident) {
+                incidentReader.logout(incidentUser);
+            }
         }
         return incidentTemplate;
     }
@@ -184,6 +195,8 @@ public class App {
         boolean isChangeFileValid = false;
         boolean changeIngestionFlag = false;
         Template changeTemplate = null;
+        RemedyReader changeReader = new GenericRemedyReader();
+
         try {
             changeTemplate = ScriptUtil.prepareTemplate(ARServerForm.CHANGE_FORM);
             isChangeFileValid = true;
@@ -200,21 +213,20 @@ public class App {
         }
         log.debug("Change template file reading and parsing success state is {}", isChangeFileValid);
         if (isChangeFileValid) {
-            Configuration config = changeTemplate.getConfig();
-            RemedyReader changeReader = new GenericRemedyReader();
-            ARServerUser user = changeReader.createARServerContext(config.getRemedyHostName(), config.getRemedyPort(), config.getRemedyUserName(), config.getRemedyPassword());
-            boolean hasLoggedIntoRemedy = false;
             try {
-                hasLoggedIntoRemedy = changeReader.login(user);
+                if (!hasLoggedIntoRemedyChange) {
+                    hasLoggedIntoRemedyChange = changeReader.login(changeUser);
+                }
             } catch (RemedyLoginFailedException e) {
                 log.error(e.getMessage());
                 changeTemplate = null;
             } finally {
                 deleteRegFile();
             }
-            if (hasLoggedIntoRemedy) {
+            if (hasLoggedIntoRemedyChange) {
                 try {
-                    int changesCount = ScriptUtil.getAvailableRecordsCount(user, ARServerForm.CHANGE_FORM, changeTemplate);
+                    RemedyEntryEventAdapter adapter = new RemedyEntryEventAdapter(changeFieldIdMap);
+                    int changesCount = ScriptUtil.getAvailableRecordsCount(changeUser, ARServerForm.CHANGE_FORM, changeTemplate, adapter);
                     System.out.println(changesCount + " Change tickets available, do you want to ingest these to TSIntelligence?(y/n)");
                     Scanner scanner = new Scanner(System.in);
                     String input = scanner.next();
@@ -225,7 +237,9 @@ public class App {
                     log.error(e.getMessage());
                     changeTemplate = null;
                 } finally {
-                    changeReader.logout(user);
+                    if (!changeIngestionFlag && hasLoggedIntoRemedyChange) {
+                        changeReader.logout(changeUser);
+                    }
                     deleteRegFile();
                 }
                 if (changeIngestionFlag) {
@@ -240,6 +254,10 @@ public class App {
                 }
             }
 
+        } else {
+            if (hasLoggedIntoRemedyChange) {
+                changeReader.logout(changeUser);
+            }
         }
         return changeTemplate;
     }
@@ -285,18 +303,31 @@ public class App {
 
     private static void readAndIngest(ARServerForm form, Template template) {
 
-        boolean hasLoggedIntoRemedy = false;
         String name = ScriptUtil.getEventTypeByFormNameCaps(form);
         CSVWriter writer = null;
         Configuration config = template.getConfig();
         RemedyReader reader = new GenericRemedyReader();
-        ARServerUser user = reader.createARServerContext(config.getRemedyHostName(), config.getRemedyPort(), config.getRemedyUserName(), config.getRemedyPassword());
+        ARServerUser user = null;
+        String idPropertyName = null;
         RemedyEventResponse remedyResponse = new RemedyEventResponse();
         List<TSIEvent> lastEventList = new ArrayList<>();
+        RemedyEntryEventAdapter adapter = null;
         try {
-            // Start Login
-            hasLoggedIntoRemedy = reader.login(user);
-            RemedyEntryEventAdapter adapter = new RemedyEntryEventAdapter();
+            if (form.equals(ARServerForm.INCIDENT_FORM)) {
+                if (!hasLoggedIntoRemedyIncident) {
+                    hasLoggedIntoRemedyIncident = reader.login(incidentUser);
+                }
+                user = incidentUser;
+                idPropertyName = Constants.PROPERTY_INCIDENTNO;
+                adapter = new RemedyEntryEventAdapter(incidentFieldIdMap);
+            } else if (form.equals(ARServerForm.CHANGE_FORM)) {
+                if (!hasLoggedIntoRemedyChange) {
+                    hasLoggedIntoRemedyChange = reader.login(changeUser);
+                }
+                user = changeUser;
+                idPropertyName = Constants.PROPERTY_CHANGEID;
+                adapter = new RemedyEntryEventAdapter(changeFieldIdMap);
+            }
             int chunkSize = config.getChunkSize();
             int startFrom = 0;
             int iteration = 1;
@@ -307,6 +338,7 @@ public class App {
             int totalSuccessful = 0;
             int validRecords = 0;
             boolean exceededMaxServerEntries = false;
+            List<String> droppedEventIds = new ArrayList<>();
             log.info("Started reading {} remedy {} starting from index {} , [Start Date: {}, End Date: {}]", new Object[]{chunkSize, name, startFrom, ScriptUtil.dateToString(config.getStartDateTime()), ScriptUtil.dateToString(config.getEndDateTime())});
             Map<String, List<String>> errorsMap = new HashMap<>();
             //Reading first Iteration to get the Idea of total available count
@@ -335,6 +367,7 @@ public class App {
                 remedyResponse = reader.readRemedyTickets(user, form, template, startFrom, chunkSize, nMatches, adapter);
                 int recordsCount = remedyResponse.getValidEventList().size() + remedyResponse.getLargeInvalidEventCount();
                 exceededMaxServerEntries = reader.exceededMaxServerEntries(user);
+
                 totalRecordsRead += recordsCount;
                 validRecords += remedyResponse.getValidEventList().size();
                 if (recordsCount < chunkSize && totalRecordsRead < nMatches.intValue() && exceededMaxServerEntries) {
@@ -350,19 +383,19 @@ public class App {
                 } else if (totalRecordsRead >= nMatches.longValue()) {
                     readNext = false;
                 }
+                
+                if (recordsCount == 0){
+                	break;
+                }
+                
                 iteration++;
                 startFrom = totalRecordsRead;
                 if (remedyResponse.getLargeInvalidEventCount() > 0) {
                     List<String> eventIds = new ArrayList<>();
-                    if (form == ARServerForm.INCIDENT_FORM) {
-                        for (TSIEvent event : remedyResponse.getInvalidEventList()) {
-                            eventIds.add(event.getProperties().get(Constants.PROPERTY_INCIDENTNO));
-                        }
-                    } else {
-                        for (TSIEvent event : remedyResponse.getInvalidEventList()) {
-                            eventIds.add(event.getProperties().get(Constants.PROPERTY_INCIDENTNO));
-                        }
+                    for (TSIEvent event : remedyResponse.getInvalidEventList()) {
+                        eventIds.add(event.getProperties().get(idPropertyName));
                     }
+                    droppedEventIds.addAll(eventIds);
                     log.error("following {} ids are larger than allowed limits [{}]", name, String.join(",", eventIds));
                 }
                 if ((form == ARServerForm.INCIDENT_FORM && incidentExportToCsvFlag) || (form == ARServerForm.CHANGE_FORM && changeExportToCsvFlag)) {
@@ -385,11 +418,7 @@ public class App {
                     for (Error error : result.getErrors()) {
                         String id = "";
                         String msg = error.getMessage().trim();
-                        if (form == ARServerForm.INCIDENT_FORM) {
-                            id = remedyResponse.getValidEventList().get(error.getIndex()).getProperties().get(Constants.PROPERTY_INCIDENTNO);
-                        } else {
-                            id = remedyResponse.getValidEventList().get(error.getIndex()).getProperties().get(Constants.PROPERTY_CHANGEID);
-                        }
+                        id = remedyResponse.getValidEventList().get(error.getIndex()).getProperties().get(idPropertyName);
                         if (errorsMap.containsKey(msg)) {
                             List<String> errorsId = errorsMap.get(msg);
                             errorsId.add(id);
@@ -406,6 +435,9 @@ public class App {
             log.info("__________________ {} ingestion to truesight intelligence final status: Remedy Record(s) = {}, Valid Record(s) Sent = {}, Successful = {} , Failure = {} ______", new Object[]{name, nMatches.longValue(), validRecords, totalSuccessful, totalFailure});
             if ((form == ARServerForm.INCIDENT_FORM && incidentExportToCsvFlag) || (form == ARServerForm.CHANGE_FORM && changeExportToCsvFlag)) {
                 log.info("__________________{} event(s) written to the CSV file {}", validRecords, csv);
+            }
+            if (droppedEventIds.size() > 0) {
+                log.error("______Following {} events were invalid & dropped. {}", droppedEventIds.size(), droppedEventIds);
             }
             if (totalFailure > 0) {
                 log.error("______ Event Count, Failure reason , [Reference Id(s)] ______");
@@ -448,8 +480,10 @@ public class App {
         } catch (Exception ex) {
             log.error("Error {}", ex.getMessage());
         } finally {
-            if (hasLoggedIntoRemedy) {
-                reader.logout(user);
+            if (form == ARServerForm.INCIDENT_FORM && hasLoggedIntoRemedyIncident) {
+                reader.logout(incidentUser);
+            } else if (form == ARServerForm.CHANGE_FORM && hasLoggedIntoRemedyChange) {
+                reader.logout(changeUser);
             }
             if ((form == ARServerForm.INCIDENT_FORM && incidentExportToCsvFlag) || (form == ARServerForm.CHANGE_FORM && changeExportToCsvFlag)) {
                 try {
@@ -468,13 +502,13 @@ public class App {
     private static String[] getFieldHeaders(Template template) {
         TSIEvent event = template.getEventDefinition();
         List<String> fields = new ArrayList<>();
-        for (Field field : event.getClass().getDeclaredFields()) {
+        for (java.lang.reflect.Field field : event.getClass().getDeclaredFields()) {
             if (field.getName().equalsIgnoreCase("properties")) {
                 for (String key : event.getProperties().keySet()) {
                     fields.add(key);
                 }
             } else if (field.getName().equals("source") || field.getName().equals("sender")) {
-                for (Field field1 : event.getSource().getClass().getDeclaredFields()) {
+                for (java.lang.reflect.Field field1 : event.getSource().getClass().getDeclaredFields()) {
                     fields.add(field.getName() + "_" + field1.getName());
                 }
             } else {
@@ -552,6 +586,54 @@ public class App {
             boolean isDeleted = file.delete();
             log.debug("{} file deleted = {}", Constants.REGKEY_FILE_NAME, isDeleted);
         }
+    }
+
+    public static ARServerUser getIncidentUser() {
+        return incidentUser;
+    }
+
+    public static void setIncidentUser(ARServerUser incidentUser) {
+        App.incidentUser = incidentUser;
+    }
+
+    public static ARServerUser getChangeUser() {
+        return changeUser;
+    }
+
+    public static void setChangeUser(ARServerUser changeUser) {
+        App.changeUser = changeUser;
+    }
+
+    public static boolean isHasLoggedIntoRemedyIncident() {
+        return hasLoggedIntoRemedyIncident;
+    }
+
+    public static void setHasLoggedIntoRemedyIncident(boolean hasLoggedIntoRemedyIncident) {
+        App.hasLoggedIntoRemedyIncident = hasLoggedIntoRemedyIncident;
+    }
+
+    public static boolean isHasLoggedIntoRemedyChange() {
+        return hasLoggedIntoRemedyChange;
+    }
+
+    public static void setHasLoggedIntoRemedyChange(boolean hasLoggedIntoRemedyChange) {
+        App.hasLoggedIntoRemedyChange = hasLoggedIntoRemedyChange;
+    }
+
+    public static Map<Integer, Field> getIncidentFieldIdMap() {
+        return incidentFieldIdMap;
+    }
+
+    public static void setIncidentFieldIdMap(Map<Integer, Field> incidentFieldIdMap) {
+        App.incidentFieldIdMap = incidentFieldIdMap;
+    }
+
+    public static Map<Integer, Field> getChangeFieldIdMap() {
+        return changeFieldIdMap;
+    }
+
+    public static void setChangeFieldIdMap(Map<Integer, Field> changeFieldIdMap) {
+        App.changeFieldIdMap = changeFieldIdMap;
     }
 
 }

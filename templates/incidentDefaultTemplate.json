@@ -6,7 +6,7 @@
         "remedyPassword": "",
         "tsiEventEndpoint": "https://api.truesight.bmc.com/v1/events",
         "tsiApiToken": "<Input TSI Api Token>",
-        "conditionFields": [3, 1000000564, 6],
+        "conditionFields": [3, 6],
         "queryStatusList": [0, 1, 5],
         "startDateTime": "<Input Start Datetime yyyy-MM-dd HH:mm:ss z>", 
         "endDateTime": "<Input End Datetime yyyy-MM-dd HH:mm:ss z>",
