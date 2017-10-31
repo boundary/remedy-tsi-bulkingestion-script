@@ -1,15 +1,16 @@
 {
-	"config": {
-		"remedyHostName":"<Change to AR hostName>",
-   		"remedyUserName":"<Change to AR UserName>",
-   		"remedyPassword":"<Change to password>",
-   		"tsiApiToken":"<Change to TSI API token>",
-  		"startDateTime":"2017-01-01 00:00:00 UTC",
-  		"endDateTime":"2017-06-29 00:00:00 UTC"
-	},
-	"eventDefinition": {
-		"properties": {
-			"app_id": "Remedy Ingestion script"
-		}
-	}
+    "config": {
+        "remedyHostName": "<Change to AR hostName>",
+        "remedyPort": "",
+        "remedyUserName": "<Change to AR UserName>",
+        "remedyPassword": "<Change to password>",
+        "tsiApiToken": "<Change to TSI API token>",
+        "startDateTime": "2017-01-01 00:00:00 UTC",
+        "endDateTime": "2017-06-29 00:00:00 UTC"
+    },
+    "eventDefinition": {
+        "properties": {
+            "app_id": "Remedy Ingestion script"
+        }
+    }
 }

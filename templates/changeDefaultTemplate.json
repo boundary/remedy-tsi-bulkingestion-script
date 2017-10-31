@@ -15,28 +15,28 @@
     },
     "eventDefinition": {
         "title": "@TITLE",
-        "fingerprintFields": ["ChangeID"],
+        "fingerprintFields": ["Change_ID"],
         "severity": "@SEVERITY",
         "status": "@STATUS",
         "properties": {
             "Assignee": "@ASSIGNEE",
-            "ChangeID": "@CHANGE_ID",
+            "Change_ID": "@CHANGE_ID",
             "CI": "@CI",
             "Priority": "@PRIORITY",
             "PriorityWeight": "@WEIGHT",
-            "CoordinatorGroup": "@COORDINATOR_GRP",
-            "ChangeLocation": "@CHANGE_LOC",
-            "RiskLevel": "@RISK_LEVEL",
-            "ManagerGroup": "@MANAGER_GROUP",
+            "Coordinator_Group": "@COORDINATOR_GRP",
+            "Change_Location": "@CHANGE_LOC",
+            "Risk_Level": "@RISK_LEVEL",
+            "Manager_Group": "@MANAGER_GROUP",
             "Submitter": "@SUBMITTER",
-            "LastModDate": "@LAST_MOD_DATE",
-            "ChangeCreatedDate": "@CREATED_AT",
-            "CompletedDate": "@COMPLETED_DATE",
+            "Last_Modified_Date": "@LAST_MODIFIED_DATE",
+            "Submit_Date": "@SUBMIT_DATE",
+            "Completed_Date": "@COMPLETED_DATE",
             "Summary": "@SUMMARY",
             "Notes": "@NOTES",
             "app_id": "Remedy TSI Integration"
         },
-        "createdAt": "@CREATED_AT", 
+        "createdAt": "@SUBMIT_DATE", 
         "eventClass": "Change",
         "source": {
             "name": "#remedyHostName",
@@ -103,13 +103,13 @@
     "@CI": {
         "fieldId": 301556800
     },
-    "@CREATED_AT": {
+    "@SUBMIT_DATE": {
         "fieldId": 3
     },
     "@SUBMITTER": {
         "fieldId": 2
     },
-    "@LAST_MOD_DATE": {
+    "@LAST_MODIFIED_DATE": {
         "fieldId": 6
     },
     "@COMPLETED_DATE": {

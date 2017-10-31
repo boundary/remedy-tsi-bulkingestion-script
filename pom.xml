@@ -4,7 +4,7 @@
 
     <groupId>com.bmc.truesight</groupId>
     <artifactId>remedy-tsi-bulkingestion-script</artifactId>
-    <version>0.9.5</version>
+    <version>0.9.6</version>
     <packaging>jar</packaging>
 
     <name>remedy-tsi-bulkingestion-script</name>
@@ -23,7 +23,7 @@
         <java.target.version>1.8</java.target.version>
         <maven.sourceplugin.version>2.4</maven.sourceplugin.version>
         <maven.compilerplugin.version>3.6.1</maven.compilerplugin.version>
-        <tsi.integrationlib.version>0.1.5_01</tsi.integrationlib.version>
+        <tsi.integrationlib.version>0.1.6</tsi.integrationlib.version>
         <opencsv.version>3.8</opencsv.version>
     </properties>
     <dependencies>
