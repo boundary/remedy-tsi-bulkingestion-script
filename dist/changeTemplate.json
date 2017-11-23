@@ -10,7 +10,7 @@
     },
     "eventDefinition": {
         "properties": {
-            "app_id": "Remedy Ingestion Script"
+            "app_id": "CHANGE_ME"
         }
     }
 }

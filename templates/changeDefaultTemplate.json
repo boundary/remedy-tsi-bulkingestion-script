@@ -1,15 +1,14 @@
 {
     "config": {
-        "remedyHostName": "<Input ARServer Host Name>",
+        "remedyHostName": "Input ARServer Host Name",
         "remedyPort": "",
-        "remedyUserName": "<Input ARServer UserName>",
+        "remedyUserName": "Input ARServer UserName",
         "remedyPassword": "",
-        "tsiEventEndpoint": "https://api.truesight.bmc.com/v1/events",
-        "tsiApiToken": "<Input TSI Api Token>",
+        "tsiApiToken": "Input TSI Api Token",
         "conditionFields": [3, 6],
-        "queryStatusList": [0, 11],
-        "startDateTime": "<Input Start Date time yyyy-MM-dd HH:mm:ss z>",
-        "endDateTime": "<Input End Datetime yyyy-MM-dd HH:mm:ss z>",
+        "queryStatusList": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        "startDateTime": "Input Start Date time yyyy-MM-dd HH:mm:ss z",
+        "endDateTime": "Input End Datetime yyyy-MM-dd HH:mm:ss z",
         "retryConfig": 2,
         "waitMsBeforeRetry": 5000
     },
@@ -19,115 +18,2131 @@
         "severity": "@SEVERITY",
         "status": "@STATUS",
         "properties": {
+            "app_id": "<CHANGE_ME>",
+            "Approval_Phase_Name": "@APPROVAL_PHASE_NAME",
+            "Approval_Status": "@APPROVAL_STATUS",
+            "Assigned_To": "@ASSIGNED_TO",
+            "Assignee_Groups": "@ASSIGNEE_GROUPS",
             "Assignee": "@ASSIGNEE",
+            "Assignee_Id": "@ASSIGNEE_ID",
+            "Business_Justification": "@BUSINESS_JUSTIFICATION",
+            "CAB_Manager": "@CAB_MANAGER",
+            "CAB_Manager_Login": "@CAB_MANAGER_LOGIN",
+            "CI_Impact": "@CI_IMPACT",
+            "CI_Priority": "@CI_PRIORITY",
+            "Calculation_Unit_Type": "@CALCULATION_UNIT_TYPE",
+            "Categorization_Tier_1": "@CATEGORIZATION_TIER_1",
+            "Categorization_Tier_2": "@CATEGORIZATION_TIER_2",
+            "Categorization_Tier_3": "@CATEGORIZATION_TIER_3",
+            "Category": "@CATEGORY",
             "Change_ID": "@CHANGE_ID",
-            "CI": "@CI",
+            "Change_Impact": "@CHANGE_IMPACT",
+            "Change_Location": "@CHANGE_LOC",
+            "Change_Priority": "@CHANGE_PRIORITY",
+            "Change_Request_Number": "@CHANGE_REQUEST_NUMBER",
+            "Change_Request_Prev_Status": "@CHANGE_REQUEST_PREV_STATUS",
+            "Change_Request_Status": "@CHANGE_REQUEST_STATUS",
+            "Change_Reviewer_Name": "@CHANGE_REVIEWER_NAME",
+            "Change_Target_Date": "@CHANGE_TARGET_DATE",
+            "Change_Type": "@CHANGE_TYPE",
+            "Closed_Date": "@CLOSED_DATE",
+            "Command": "@COMMAND",
+            "Company": "@COMPANY",
+            "Completed_Date": "@COMPLETED_DATE",
+            "Coordinator_Group": "@COORDINATOR_GRP",
+            "CurrentStage": "@CURRENTSTAGE",
+            "Customer_Company": "@CUSTOMER_COMPANY",
+            "Customer_Corporate_ID": "@CUSTOMER_CORPORATE_ID",
+            "Customer_Country_Code": "@CUSTOMER_COUNTRY_CODE",
+            "Customer_Department": "@CUSTOMER_DEPARTMENT",
+            "Customer_First_Name": "@CUSTOMER_FIRST_NAME",
+            "Customer_Last_Name": "@CUSTOMER_LAST_NAME",
+            "Customer_Organization": "@CUSTOMER_ORGANIZATION",
+            "Department": "@DEPARTMENT",
+            "Detailed_Description": "@DETAILED_DESCRIPTION",
+            "Environment": "@ENVIRONMENT",
+            "Impact": "@IMPACT",
+            "Justification_Field": "@JUSTIFICATION_FIELD",
+            "Keyword": "@KEYWORD",
+            "Last_Modified_By": "@LAST_MODIFIED_BY",
+            "Last_Modified_Date": "@LAST_MODIFIED_DATE",
+            "Last_Name": "@LAST_NAME",
+            "Lead_Time": "@LEAD_TIME",
+            "Manager_Group": "@MANAGER_GROUP",
+            "Next_Target_Date": "@NEXT_TARGET_DATE",
+            "Notes": "@NOTES",
+            "Organization": "@ORGANIZATION",
+            "Owner": "@OWNER",
+            "Owner_Group": "@OWNER_GROUP",
+            "Owner_Support_Company": "@OWNER_SUPPORT_COMPANY",
+            "Owner_Support_Organization": "@OWNER_SUPPORT_ORGANIZATION",
             "Priority": "@PRIORITY",
             "PriorityWeight": "@WEIGHT",
-            "Coordinator_Group": "@COORDINATOR_GRP",
-            "Change_Location": "@CHANGE_LOC",
+            "Product_Cat_Tier_1": "@PRODUCT_CAT_TIER_1",
+            "Product_Cat_Tier_2": "@PRODUCT_CAT_TIER_2",
+            "Product_Cat_Tier_3": "@PRODUCT_CAT_TIER_3",
+            "Product_Name": "@PRODUCT_NAME",
+            "Reason_Code": "@REASON_CODE",
+            "Reason_Description": "@REASON_DESCRIPTION",
+            "Reason_For_Change": "@REASON_FOR_CHANGE",
+            "Record_Type": "@RECORD_TYPE",
+            "Region": "@REGION",
+            "Reported_to_Vendor": "@REPORTED_TO_VENDOR",
+            "Request_ID": "@REQUEST_ID",
+            "Request_Number": "@REQUEST_NUMBER",
+            "Request_Type": "@REQUEST_TYPE",
+            "Requested_End_Date": "@REQUESTED_END_DATE",
+            "Requested_Start_Date": "@REQUESTED_START_DATE",
+            "Requester_Contacted": "@REQUESTER_CONTACTED",
+            "Requestor_ID": "@REQUESTOR_ID",
+            "Require_Service": "@REQUIRE_SERVICE",
+            "Resolution_End_Date": "@RESOLUTION_END_DATE",
+            "Response_Target_Date": "@RESPONSE_TARGET_DATE",
+            "Risk_Factor_Count": "@RISK_FACTOR_COUNT",
+            "Risk_Factor_Total": "@RISK_FACTOR_TOTAL",
             "Risk_Level": "@RISK_LEVEL",
-            "Manager_Group": "@MANAGER_GROUP",
+            "SLA_Breach_Exception": "@SLA_BREACH_EXCEPTION",
+            "SLA_Breach_Reason": "@SLA_BREACH_REASON",
+            "SLA_Hold": "@SLA_HOLD",
+            "SLA_Res_Business_Hour_Duration": "@SLA_RES_BUSINESS_HOUR_DURATION",
+            "SLA_Res_Result_Duration": "@SLA_RES_RESULT_DURATION",
+            "SLA_Res_Target_Duration": "@SLA_RES_TARGET_DURATION",
+            "SLA_Resp_Business_Hr_Duration": "@SLA_RESP_BUSINESS_HR_DURATION",
+            "SLA_Resp_Result_Duration": "@SLA_RESP_RESULT_DURATION",
+            "SLA_Resp_Target_Duration": "@SLA_RESP_TARGET_DURATION",
+            "SLA_Response_Status": "@SLA_RESPONSE_STATUS",
+            "SLM_Priority": "@SLM_PRIORITY",
+            "SLM_Status": "@SLM_STATUS",
+            "Scheduled_Date": "@SCHEDULED_DATE",
+            "Scheduled_End_Date": "@SCHEDULED_END_DATE",
+            "Scheduled_Start_Date": "@SCHEDULED_START_DATE",
+            "ServiceCI": "@SERVICECI",
+            "Short_Description": "@SHORT_DESCRIPTION",
+            "Site": "@SITE",
+            "Status_History": "@STATUS_HISTORY",
+            "Status_Reason": "@STATUS_REASON",
+            "Submit": "@SUBMIT",
             "Submitter": "@SUBMITTER",
-            "Last_Modified_Date": "@LAST_MODIFIED_DATE",
             "Submit_Date": "@SUBMIT_DATE",
-            "Completed_Date": "@COMPLETED_DATE",
-            "Summary": "@SUMMARY",
-            "Notes": "@NOTES",
-            "app_id": "Remedy TSI Integration"
+            "Support_Group_ID": "@SUPPORT_GROUP_ID",
+            "Support_Group_ID_2": "@SUPPORT_GROUP_ID_2",
+            "Support_Group_Name": "@SUPPORT_GROUP_NAME",
+            "Support_Group_Name2": "@SUPPORT_GROUP_NAME2",
+            "Support_Organization": "@SUPPORT_ORGANIZATION",
+            "Support_Organization2": "@SUPPORT_ORGANIZATION2",
+            "Support_Staff": "@SUPPORT_STAFF",
+            "Text": "@TEXT",
+            "TicketType": "@TICKETTYPE",
+            "Time_Spent_Min": "@TIME_SPENT_MIN",
+            "Time_to_Approve": "@TIME_TO_APPROVE",
+            "Time_to_Plan": "@TIME_TO_PLAN",
+            "Timing_Reason": "@TIMING_REASON",
+            "TotalImpactedCICount": "@TOTALIMPACTEDCICOUNT",
+            "Total_Esc_Level": "@TOTAL_ESC_LEVEL",
+            "Total_Time_Spent": "@TOTAL_TIME_SPENT",
+            "Work_Log": "@WORK_LOG",
+            "Work_Order_Number": "@WORK_ORDER_NUMBER"
         },
-        "createdAt": "@SUBMIT_DATE", 
+        "createdAt": "@SUBMIT_DATE",
         "eventClass": "Change",
         "source": {
             "name": "#remedyHostName",
             "type": "host",
             "ref": "#remedyHostName"
+        }
+    },
+    "fieldDefinitionMap": {
+        "@SEVERITY": {
+            "fieldId": 1000000162,
+            "valueMap": {
+                "1000": "Critical",
+                "2000": "High",
+                "3000": "Medium",
+                "4000": "Low"
+            }
         },
-        "sender": {
-            "name": "Remedy",
-            "type": "Remedy",
-            "ref": "Remedy"
+        "@PRIORITY": {
+            "fieldId": 1000000164,
+            "valueMap": {
+                "0": "Critical",
+                "1": "High",
+                "2": "Medium",
+                "3": "Low"
+            }
+        },
+        "@STATUS": {
+            "fieldId": 7,
+            "valueMap": {
+                "0": "Draft",
+                "1": "Request For Authorization",
+                "2": "Request For Change",
+                "3": "Planning In Progress",
+                "4": "Scheduled For Review",
+                "5": "Scheduled For Approval",
+                "6": "Scheduled",
+                "7": "Implementation In Progress",
+                "8": "Pending",
+                "9": "Rejected",
+                "10": "Completed",
+                "11": "Closed",
+                "12": "Cancelled"
+            }
+        },
+        "@CHANGE_ID": {
+            "fieldId": 1000000182
+        },
+        "@WEIGHT": {
+            "fieldId": 1000000162
+        },
+        "@TITLE": {
+            "fieldId": 1000000000
+        },
+        "@ASSIGNEE": {
+            "fieldId": 4
+        },
+        "@SUBMIT_DATE": {
+            "fieldId": 3
+        },
+        "@SUBMITTER": {
+            "fieldId": 2
+        },
+        "@LAST_MODIFIED_DATE": {
+            "fieldId": 6
+        },
+        "@COMPLETED_DATE": {
+            "fieldId": 1000002195
+        },
+        "@NOTES": {
+            "fieldId": 1000000151
+        },
+        "@COORDINATOR_GRP": {
+            "fieldId": 1000003229
+        },
+        "@CHANGE_LOC": {
+            "fieldId": 303935100
+        },
+        "@MANAGER_GROUP": {
+            "fieldId": 1000000015
+        },
+        "@TIME_TO_PLAN": {
+            "fieldId": 303912700
+        },
+        "@AUTOCOSTACTUALINSTANCEID": {
+            "fieldId": 301508500
+        },
+        "@COMPANY": {
+            "fieldId": 1000000082
+        },
+        "@OLA_ACK_TARGET_DURATION": {
+            "fieldId": 1000001622
+        },
+        "@PAGETITLE_TXT": {
+            "fieldId": 300367500
+        },
+        "@CHANGE_REQUEST_STATUS": {
+            "fieldId": 7,
+            "valueMap": {
+                "0": "Draft",
+                "1": "Request For Authorization",
+                "2": "Request For Change",
+                "3": "Planning In Progress",
+                "4": "Scheduled For Review",
+                "5": "Scheduled For Approval",
+                "6": "Scheduled",
+                "7": "Implementation In Progress",
+                "8": "Pending",
+                "9": "Rejected",
+                "10": "Completed",
+                "11": "Closed",
+                "12": "Cancelled"
+            }
+        },
+        "@UC_RES_TARGET_DURATION": {
+            "fieldId": 301611000
+        },
+        "@PRODUCT_NAME_(2)": {
+            "fieldId": 1000002268
+        },
+        "@TOTAL_TIME_SPENT": {
+            "fieldId": 300265600
+        },
+        "@BUDGET_COST_(CURRENCY)": {
+            "fieldId": 301512300
+        },
+        "@AUTO-CLOSE_DAYS": {
+            "fieldId": 250000030
+        },
+        "@SLMLOOKUPEVENTTBLKEYWORD": {
+            "fieldId": 301701500
+        },
+        "@ASSIGN_TO_VENDOR": {
+            "fieldId": 1000000987,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@CAB_MANAGER": {
+            "fieldId": 1000000403
+        },
+        "@ASSIGNEE_GROUPS_PARENT": {
+            "fieldId": 60989
+        },
+        "@PROCUREMENT_REQUEST": {
+            "fieldId": 1000004058,
+            "valueMap": {
+                "0": "Y"
+            }
+        },
+        "@IMPACTEDCIASSOCIATIONCREATIONMODE": {
+            "fieldId": 304258470,
+            "valueMap": {
+                "1": "Enabled",
+                "5": "Delete"
+            }
+        },
+        "@SUPPORT_ORGANIZATION2": {
+            "fieldId": 1000000342
+        },
+        "@APPROVALPROCESSLIST": {
+            "fieldId": 304340021
+        },
+        "@ZYESNO": {
+            "fieldId": 250400000
+        },
+        "@VENDOR_CONTACT": {
+            "fieldId": 1000000854
+        },
+        "@REQUEST_AD-HOC": {
+            "fieldId": 1000005855,
+            "valueMap": {
+                "0": "Yes"
+            }
+        },
+        "@PROCESSFLOWSTAGE5": {
+            "fieldId": 301537300
+        },
+        "@CHANGE_REVIEWER_NAME": {
+            "fieldId": 1000000597
+        },
+        "@PROCESSFLOWSTAGE1": {
+            "fieldId": 301536900
+        },
+        "@PROCESSFLOWSTAGE2": {
+            "fieldId": 301537000
+        },
+        "@PROCESSFLOWSTAGE3": {
+            "fieldId": 301537100
+        },
+        "@SLA_RES_TARGET_DURATION": {
+            "fieldId": 1000001556
+        },
+        "@OLA_RES_TARGET_SECONDS": {
+            "fieldId": 1000001613
+        },
+        "@PROJECTEDCHANGESTATUS": {
+            "fieldId": 304045200
+        },
+        "@APPROVAL_PHASE_NAME_UD2": {
+            "fieldId": 1000004438
+        },
+        "@SLA_RESP_RESULT_DURATION": {
+            "fieldId": 1000001577
+        },
+        "@APPROVAL_PHASE_NAME_UD1": {
+            "fieldId": 1000004437
+        },
+        "@REQUEST_TYPE": {
+            "fieldId": 1000004049
+        },
+        "@EARLIEST_START_DATE": {
+            "fieldId": 1000000358
+        },
+        "@ABYDOS_TASKS_GENERATED": {
+            "fieldId": 420050004,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@CI_IMPACT": {
+            "fieldId": 303998100
+        },
+        "@ACTUAL_COST_STATIC_TOTAL": {
+            "fieldId": 302224400
+        },
+        "@STARTSTOP_EFFORTLOGID": {
+            "fieldId": 301667900
+        },
+        "@SCHEDULED_END_DATE": {
+            "fieldId": 1000000362
+        },
+        "@AUTOCOST_BUDGET_CALCULATION_UNIT_TYPE": {
+            "fieldId": 301640900,
+            "valueMap": {
+                "0": "Flat Rate",
+                "1": "Hours",
+                "2": "Minutes"
+            }
+        },
+        "@ZOTHERCHANGESSAMEORDER": {
+            "fieldId": 301345900,
+            "valueMap": {
+                "0": "No",
+                "1": "Yes"
+            }
+        },
+        "@TIME_TO_APPROVE": {
+            "fieldId": 303912800
+        },
+        "@TEMPLATEID": {
+            "fieldId": 301581400
+        },
+        "@OWNER": {
+            "fieldId": 1000000715
+        },
+        "@ABYDOS_USE_WIZARD?": {
+            "fieldId": 420050005,
+            "valueMap": {
+                "0": "No",
+                "1": "Yes"
+            }
+        },
+        "@OLA_RES_BUSINESS_HOUR_SECONDS2": {
+            "fieldId": 301889000
+        },
+        "@COMMAND": {
+            "fieldId": 301284400
+        },
+        "@SLA_RESP_BUSINESS_HR_DURATION": {
+            "fieldId": 1000001576
+        },
+        "@ALLOWCANCEL": {
+            "fieldId": 301567900,
+            "valueMap": {
+                "1000": "Yes",
+                "2000": "No"
+            }
+        },
+        "@SRMSAOIGUID": {
+            "fieldId": 301572000
+        },
+        "@ABYDOS_PROCESS_VERSION": {
+            "fieldId": 420050003
+        },
+        "@ENABLE_ASSIGNMENT_ENGINE": {
+            "fieldId": 301290300,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@ASCHG": {
+            "fieldId": 1000003230
+        },
+        "@CUSTOMER_PHONE_NUMBER": {
+            "fieldId": 1000003306
+        },
+        "@ESCALATED?": {
+            "fieldId": 250000023,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@CURRENTOPERATIONSTATUS": {
+            "fieldId": 304257090,
+            "valueMap": {
+                "0": "Draft",
+                "20": "Completed",
+                "5": "Submitted",
+                "25": "Failed Processing",
+                "10": "Failed Submission",
+                "30": "Cancelled",
+                "15": "In Progress"
+            }
+        },
+        "@BTSSTART_TIME": {
+            "fieldId": 301598700
+        },
+        "@RESPONSE_TARGET_DATE": {
+            "fieldId": 1000002612
+        },
+        "@ABYDOS_TEMPLATE_ID": {
+            "fieldId": 420050100
+        },
+        "@CREATERECORDTYPE2": {
+            "fieldId": 300806400,
+            "valueMap": {
+                "8000": "General Broadcast",
+                "20000": "Problem Investigation",
+                "25000": "Support Group",
+                "27000": "Asset Maintenance",
+                "21000": "Purchase Requisition",
+                "23000": "Request",
+                "13000": "Task",
+                "9000": "Incident",
+                "2000": "Asset Configuration",
+                "7000": "Contract",
+                "26000": "Asset Lease",
+                "1000": "ALL",
+                "28000": "Software Library Item",
+                "15000": "Solution Database",
+                "14000": "Infrastructure Change Template",
+                "29000": "LDAP Object",
+                "10000": "Incident Template",
+                "4000": "CI Unavailability",
+                "18000": "People",
+                "22500": "Release",
+                "17000": "Operational Level Agreement",
+                "30000": "Work Order",
+                "6000": "Configuration Item",
+                "5000": "Configuration Component",
+                "3000": "Broadcast",
+                "24000": "Service Level Agreement",
+                "19000": "People Organization",
+                "16000": "Known Error",
+                "12000": "Infrastructure Change",
+                "22000": "Product"
+            }
+        },
+        "@SERVICECI_RECONID": {
+            "fieldId": 303519300
+        },
+        "@CHGIMPGRPID": {
+            "fieldId": 1000003259
+        },
+        "@BUT_START_CLOCK": {
+            "fieldId": 400000008
+        },
+        "@CHGIMPCPY": {
+            "fieldId": 1000003254
+        },
+        "@AUTO-CLOSE": {
+            "fieldId": 301307200,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@CUSTOMER_LOCAL_PHONE": {
+            "fieldId": 1000003304
+        },
+        "@STATUS_REASON": {
+            "fieldId": 1000000150,
+            "valueMap": {
+                "8000": "Backed Out",
+                "20000": "In Rollback",
+                "25000": "Miscellaneous",
+                "26500": "Approval Error",
+                "27000": "Manager Intervention",
+                "21000": "In Documentation",
+                "13000": "In Verification",
+                "9000": "Final Review Complete",
+                "2000": "Funding Not Available",
+                "11000": "Additional Coding Required",
+                "26000": "Future Enhancement",
+                "1000": "No Longer Required",
+                "28000": "Accepted",
+                "15000": "Insufficient Change Data",
+                "14000": "In Rollout",
+                "29000": "Assigned",
+                "10000": "Final Review Required",
+                "4000": "Resources Not Available",
+                "18000": "In Test",
+                "23000": "Support Group Communication",
+                "17000": "In Development",
+                "30000": "Built",
+                "32000": "Automatically Closed",
+                "6000": "Successful with Issues",
+                "5000": "Successful",
+                "3000": "To Be Re-Scheduled",
+                "24000": "Task Review",
+                "31000": "On Hold",
+                "7000": "Unsuccessful",
+                "19000": "In Build",
+                "16000": "Schedule Conflicts",
+                "12000": "Insufficient Task Data",
+                "22000": "Vendor Purchase"
+            }
+        },
+        "@GENERIC_FIELD": {
+            "fieldId": 14507
+        },
+        "@APPINTERFACEFORM": {
+            "fieldId": 301371100
+        },
+        "@VENDOR_RESPONDED_ON": {
+            "fieldId": 1000003753
+        },
+        "@UC_ACK_BUSINESS_HOUR_SECONDS": {
+            "fieldId": 301610200
+        },
+        "@SLA_BREACH_REASON": {
+            "fieldId": 1000003897
+        },
+        "@PRODUCT_CAT_TIER_2": {
+            "fieldId": 1000001271
+        },
+        "@SLA_BREACH_EXCEPTION": {
+            "fieldId": 1000003898
+        },
+        "@CATEGORIZATION_TIER_2": {
+            "fieldId": 1000000064
+        },
+        "@PRODUCT_CAT_TIER_1": {
+            "fieldId": 1000001270
+        },
+        "@CATEGORIZATION_TIER_1": {
+            "fieldId": 1000000063
+        },
+        "@ABYDOS_PROCESS_STATUS": {
+            "fieldId": 420050002
+        },
+        "@PHASE_GUID": {
+            "fieldId": 1000005951
+        },
+        "@TIME_SPENT_MIN": {
+            "fieldId": 260000129
+        },
+        "@DETAILS...": {
+            "fieldId": 303669700
+        },
+        "@VENDOR_LOGIN_ID": {
+            "fieldId": 1000003779
+        },
+        "@SUBMIT": {
+            "fieldId": 1001
+        },
+        "@TEMPAPPROVALSERVERRESULT": {
+            "fieldId": 301311800
+        },
+        "@REQUEST_ID": {
+            "fieldId": 1
+        },
+        "@BUDGETESTIMATEDTOTALTIME": {
+            "fieldId": 301538300
+        },
+        "@DO_NOT_ARCHIVE": {
+            "fieldId": 304401091,
+            "valueMap": {
+                "0": "Do Not Archive"
+            }
+        },
+        "@VENDOR_LAST_NAME": {
+            "fieldId": 1000003754
+        },
+        "@ACTUAL_END_DATE": {
+            "fieldId": 1000000364
+        },
+        "@REASON_CODE_MANAGER": {
+            "fieldId": 301323900
+        },
+        "@TICKETTYPE": {
+            "fieldId": 301626500,
+            "valueMap": {
+                "0": "Incident",
+                "1": "Change",
+                "2": "Problem Investigation",
+                "3": "Known Error",
+                "4": "Knowledge",
+                "5": "Task",
+                "6": "CI Unavailability",
+                "7": "Purchase Requisition",
+                "8": "Release",
+                "9": "Activity"
+            }
+        },
+        "@VENDOR_ASSIGNEE_GROUPS_PARENT": {
+            "fieldId": 60901
+        },
+        "@ASSIGNEE_ID": {
+            "fieldId": 300271200
+        },
+        "@AUTOCOSTBUDGETINSTANCEID": {
+            "fieldId": 301508400
+        },
+        "@AUTOCOST_BUDGETCALCLASTESTIMATEUSED": {
+            "fieldId": 301503900
+        },
+        "@DEFAULTPROCESSNAME": {
+            "fieldId": 301323600
+        },
+        "@INFRASTRUCTURE_CHANGE_ID": {
+            "fieldId": 1000000182
+        },
+        "@TOTAL_OLA_RESOLUTION_ESC_LEVEL": {
+            "fieldId": 1000000559
+        },
+        "@ACTION_ON_SCHEDULED_DATES_CHANGE": {
+            "fieldId": 1000003332,
+            "valueMap": {
+                "0": "Error Message",
+                "1": "Warning Message",
+                "2": "No Action"
+            }
+        },
+        "@IMPACT": {
+            "fieldId": 1000000163,
+            "valueMap": {
+                "1000": "1-Extensive/Widespread",
+                "2000": "2-Significant/Large",
+                "3000": "3-Moderate/Limited",
+                "4000": "4-Minor/Localized"
+            }
+        },
+        "@UC_ACKNOWLEDGMENT_END_DATE": {
+            "fieldId": 301610500
+        },
+        "@CHANGE_PRIORITY": {
+            "fieldId": 304032900
+        },
+        "@DEPARTMENT": {
+            "fieldId": 200000006
+        },
+        "@SITE": {
+            "fieldId": 260000001
+        },
+        "@UC_ACK_BUSINESS_HR_DURATION": {
+            "fieldId": 301610700
+        },
+        "@TOTAL_FIELDS_COUNT": {
+            "fieldId": 420050008
+        },
+        "@MANUFACTURER_(2)": {
+            "fieldId": 1000002270
+        },
+        "@PREVIOUS_SERVICECI_RECONID": {
+            "fieldId": 303524200
+        },
+        "@WORK_ORDER_NUMBER": {
+            "fieldId": 1000000967
+        },
+        "@SFR_DATE": {
+            "fieldId": 303940200
+        },
+        "@BTN_VIEW_REQUEST_STATUS": {
+            "fieldId": 420050105
+        },
+        "@ACTUALTOTALTIME": {
+            "fieldId": 301640800
+        },
+        "@RETURN_CODE": {
+            "fieldId": 300271000
+        },
+        "@SLMVERSION": {
+            "fieldId": 301470400
+        },
+        "@ABYDOS_PROCESS_NAME": {
+            "fieldId": 420050101
+        },
+        "@DATATAGS": {
+            "fieldId": 301600300
+        },
+        "@ASSIGNMENT_ACCELERATOR_MANAGER": {
+            "fieldId": 301499900,
+            "valueMap": {
+                "1000": "Auto Assign"
+            }
+        },
+        "@ACTUAL_COST_(CURRENCY)": {
+            "fieldId": 300851100
+        },
+        "@DVFTOPOLOGY": {
+            "fieldId": 304082200
+        },
+        "@CHG_TEMPLATE_ID_PREVIOUS": {
+            "fieldId": 1000003805
+        },
+        "@ABYDOS_NOTIFY_TEXT": {
+            "fieldId": 420050001
+        },
+        "@MILESTONE_EXIT_ACTION": {
+            "fieldId": 303539800,
+            "valueMap": {
+                "0": "Warning",
+                "1": "Error",
+                "2": "None"
+            }
+        },
+        "@ACCESSMODE": {
+            "fieldId": 301286500,
+            "valueMap": {
+                "0": "Local",
+                "10": "Remote"
+            }
+        },
+        "@OLA_RES_RESULT_SECONDS": {
+            "fieldId": 1000001615
+        },
+        "@APPROVALAUTHORIZATION_STATUS": {
+            "fieldId": 1000000202
+        },
+        "@WORK_LOG": {
+            "fieldId": 10003061
+        },
+        "@OLA_ACK_BUSINESS_HOUR_SECONDS": {
+            "fieldId": 1000001617
+        },
+        "@RISK_FACTOR_COUNT": {
+            "fieldId": 301390092
+        },
+        "@TOTALIMPACTEDCICOUNT": {
+            "fieldId": 304260090
+        },
+        "@CREATEDFROMPARENTTEMPLATE": {
+            "fieldId": 10002041,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@ALLOW_BUDGET_ENTRIES": {
+            "fieldId": 301534400,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@APPROVAL_PHASE_NAME_ES": {
+            "fieldId": 1000004435
+        },
+        "@APPLOGIN": {
+            "fieldId": 301446300
+        },
+        "@ORGANIZATION": {
+            "fieldId": 1000000010
+        },
+        "@PERCENTAGE_CHILDREN_TASKS_DONE": {
+            "fieldId": 10003012
+        },
+        "@UC_ACK_RESULT_SECONDS": {
+            "fieldId": 301610400
+        },
+        "@CHANGE_TARGET_DATE": {
+            "fieldId": 303924000
+        },
+        "@SITE_REQUEST": {
+            "fieldId": 1000004088,
+            "valueMap": {
+                "0": "Y"
+            }
+        },
+        "@APPROVERSCOUNTFORAUTOAPPROVAL": {
+            "fieldId": 304341891
+        },
+        "@COPIED_FROM_ORIGINAL_ID": {
+            "fieldId": 1000003556
+        },
+        "@VIEW_ACCESSIBLE": {
+            "fieldId": 1000000761,
+            "valueMap": {
+                "0": "Internal",
+                "1": "Public"
+            }
+        },
+        "@RETURN_CODE_MANAGER": {
+            "fieldId": 301323700
+        },
+        "@CALCULATION_UNIT_TYPE": {
+            "fieldId": 260800002,
+            "valueMap": {
+                "0": "Flat Rate",
+                "1": "Hours",
+                "2": "Minutes"
+            }
+        },
+        "@CHGIMP": {
+            "fieldId": 1000003257
+        },
+        "@REQUESTER_CONTACTED": {
+            "fieldId": 1000001296,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@FIRST_NAME": {
+            "fieldId": 1000000019
+        },
+        "@OVERALL_TASK_STATUS": {
+            "fieldId": 10003011,
+            "valueMap": {
+                "0": "No child started",
+                "1": "At least one child started",
+                "2": "All children complete"
+            }
+        },
+        "@BTN_ABYDOS_WIZARD": {
+            "fieldId": 420050104
+        },
+        "@CHANGE_REQUEST_STATUS_BEFORE_SAVE": {
+            "fieldId": 304060200,
+            "valueMap": {
+                "0": "Draft",
+                "1": "Request For Authorization",
+                "2": "Request For Change",
+                "3": "Planning In Progress",
+                "4": "Scheduled For Review",
+                "5": "Scheduled For Approval",
+                "6": "Scheduled",
+                "7": "Implementation In Progress",
+                "8": "Pending",
+                "9": "Rejected",
+                "10": "Completed",
+                "11": "Closed",
+                "12": "Cancelled"
+            }
+        },
+        "@FUTURE_DATASETID": {
+            "fieldId": 301820700
+        },
+        "@REASON_FOR_CHANGE": {
+            "fieldId": 1000000294,
+            "valueMap": {
+                "1000": "Fix/Repair",
+                "2000": "New Functionality",
+                "5000": "Other",
+                "3000": "Maintenance",
+                "4000": "Upgrade"
+            }
+        },
+        "@VENDOR_EMAIL": {
+            "fieldId": 1000003752
+        },
+        "@CUSTOMER_EXTENSION": {
+            "fieldId": 1000003305
+        },
+        "@ASSIGNED_TO": {
+            "fieldId": 4
+        },
+        "@PHONE_NUMBER": {
+            "fieldId": 1000000056
+        },
+        "@SITE_GROUP": {
+            "fieldId": 200000007
+        },
+        "@ASSIGNEE_ID_ASSIGNEE": {
+            "fieldId": 301324400
+        },
+        "@CHANGE_SUBTYPE": {
+            "fieldId": 1000002199
+        },
+        "@Z_PRODUCT_CATEGORIZATION_TIER_1": {
+            "fieldId": 200000003
+        },
+        "@Z_PRODUCT_CATEGORIZATION_TIER_3": {
+            "fieldId": 200000005
+        },
+        "@Z_PRODUCT_CATEGORIZATION_TIER_2": {
+            "fieldId": 200000004
+        },
+        "@CUSTOMER_PERSON_ID": {
+            "fieldId": 1000003296
+        },
+        "@URGENCY": {
+            "fieldId": 1000000162,
+            "valueMap": {
+                "1000": "1-Critical",
+                "2000": "2-High",
+                "3000": "3-Medium",
+                "4000": "4-Low"
+            }
+        },
+        "@SUPPORT_GROUP_NAME": {
+            "fieldId": 1000000015
+        },
+        "@CUSTOMER_LOGIN_ID": {
+            "fieldId": 304313260
+        },
+        "@UC_ACK_TARGET_DURATION": {
+            "fieldId": 301610600
+        },
+        "@UPC_ID": {
+            "fieldId": 1000000498
+        },
+        "@PRODUCT_NAME": {
+            "fieldId": 240001002
+        },
+        "@CATEGORY": {
+            "fieldId": 1000000984,
+            "valueMap": {
+                "0": "Bug",
+                "1": "Enhancement"
+            }
+        },
+        "@MODE": {
+            "fieldId": 1100
+        },
+        "@PROCESS_FLOW_TEXT": {
+            "fieldId": 304039700
+        },
+        "@LOCATION_COMPANY": {
+            "fieldId": 1000000001
+        },
+        "@BTSEND_DATE": {
+            "fieldId": 301598600
+        },
+        "@OWNER_GROUP": {
+            "fieldId": 1000000422
+        },
+        "@PORTNUMBER": {
+            "fieldId": 301446500
+        },
+        "@ACKNOWLEDGMENT_END_DATE": {
+            "fieldId": 1000001318
+        },
+        "@VENDOR_PERSON_ID": {
+            "fieldId": 1000003756
+        },
+        "@RELEASE_ID": {
+            "fieldId": 304370321
+        },
+        "@COST_CATEGORY": {
+            "fieldId": 270002020
+        },
+        "@SLA_RESPONSE_STATUS": {
+            "fieldId": 1000003223,
+            "valueMap": {
+                "0": "No SLA Assigned",
+                "1": "Within the SLA",
+                "2": "Escalated Within the SLA",
+                "3": "SLA Breached"
+            }
+        },
+        "@OLA_ID": {
+            "fieldId": 1000000497
+        },
+        "@REASON_CODE_ASSIGNEE": {
+            "fieldId": 301324000
+        },
+        "@TOTAL_ESC_LEVEL": {
+            "fieldId": 1000000556
+        },
+        "@MISCELLANEOUS_REQUEST": {
+            "fieldId": 1000004059,
+            "valueMap": {
+                "0": "Y"
+            }
+        },
+        "@ABYDOS_AUDITFLAG": {
+            "fieldId": 420050102,
+            "valueMap": {
+                "0": "No",
+                "1": "Yes"
+            }
+        },
+        "@CHANGEREQUESTSTATUSREASONSTRING": {
+            "fieldId": 301464400
+        },
+        "@VENDOR_GROUP": {
+            "fieldId": 1000003663
+        },
+        "@REJECTAPPROVALSTATUSREASON": {
+            "fieldId": 1000003219
+        },
+        "@CLIENTLOCALE": {
+            "fieldId": 303356300
+        },
+        "@TIMING_REASON": {
+            "fieldId": 1000003216,
+            "valueMap": {
+                "1000": "Customer/business need",
+                "2000": "Insufficient lead-time",
+                "3000": "Known error correction",
+                "4000": "Scheduling conflict"
+            }
+        },
+        "@SRINSTANCEID": {
+            "fieldId": 301368700
+        },
+        "@AUTOCOST_ACTUALCALCULATIONUNITTYPE": {
+            "fieldId": 301640700,
+            "valueMap": {
+                "0": "Flat Rate",
+                "1": "Hours",
+                "2": "Minutes"
+            }
+        },
+        "@REQUEST_NUMBER": {
+            "fieldId": 1000000829
+        },
+        "@BEGINSTATUSREASON": {
+            "fieldId": 301279200
+        },
+        "@APPROVAL_DEFINITION_ID": {
+            "fieldId": 1000003235
+        },
+        "@PERFORMANCE_RATING": {
+            "fieldId": 301313100
+        },
+        "@PROCESS_FLOW_NAME": {
+            "fieldId": 304024200
+        },
+        "@CURRENTOPERATIONEXCEPTIONDESCRIPTION": {
+            "fieldId": 304257530
+        },
+        "@CI_PRIORITY": {
+            "fieldId": 301556800
+        },
+        "@VENDOR_RESOLVED_DATE": {
+            "fieldId": 1000003757
+        },
+        "@OLA_ACK_RESULT_DURATION": {
+            "fieldId": 1000001623
+        },
+        "@ZTMP_CHG_ADAPTERSTATUS_BPPM": {
+            "fieldId": 304298390,
+            "valueMap": {
+                "0": "Active",
+                "1": "Inactive"
+            }
+        },
+        "@SRID": {
+            "fieldId": 301572100
+        },
+        "@REQUESTED_END_DATE": {
+            "fieldId": 1000000363
+        },
+        "@BTNSENDEVENT": {
+            "fieldId": 304082300
+        },
+        "@CORPORATE_ID": {
+            "fieldId": 1000000054
+        },
+        "@INSTANCEID": {
+            "fieldId": 179
+        },
+        "@REASON_DESCRIPTION_MANAGER": {
+            "fieldId": 301324100
+        },
+        "@REASON_CODE": {
+            "fieldId": 300270800
+        },
+        "@ASSIGNMENT_ACCELERATOR_ASSIGNEE": {
+            "fieldId": 301499700,
+            "valueMap": {
+                "1000": "My Default Group",
+                "2000": "My Group List",
+                "5000": "Change Manager",
+                "3000": "Favorite Group(s)",
+                "4000": "Auto Assign"
+            }
+        },
+        "@REQUEST_AD-HOC_CREATE_STATUS": {
+            "fieldId": 1000005856
+        },
+        "@HELP": {
+            "fieldId": 300603300
+        },
+        "@CAB_MANAGER_LOGIN": {
+            "fieldId": 1000000408
+        },
+        "@TEXT": {
+            "fieldId": 1000005959
+        },
+        "@OLA_HOLD": {
+            "fieldId": 1000001288,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@ROOTREQUESTNAME(TMS)": {
+            "fieldId": 10000001
+        },
+        "@APPPASSWORD": {
+            "fieldId": 301446400
+        },
+        "@UNKNOWN_USER": {
+            "fieldId": 301550900,
+            "valueMap": {
+                "0": "True",
+                "1": "False"
+            }
+        },
+        "@CHANGE_REQUEST_PREV_STATUS": {
+            "fieldId": 1000001722,
+            "valueMap": {
+                "0": "Draft",
+                "1": "Request For Authorization",
+                "2": "Request For Change",
+                "3": "Planning In Progress",
+                "4": "Scheduled For Review",
+                "5": "Scheduled For Approval",
+                "6": "Scheduled",
+                "7": "Implementation In Progress",
+                "8": "Pending",
+                "9": "Rejected",
+                "10": "Completed",
+                "11": "Closed",
+                "12": "Cancelled"
+            }
+        },
+        "@RESOLUTION_END_DATE": {
+            "fieldId": 1000001320
+        },
+        "@AUTO_END_TIME": {
+            "fieldId": 260000105
+        },
+        "@COPY_INSTANCEID": {
+            "fieldId": 304022600
+        },
+        "@ENABLE_TASK_PHASE_MANAGEMENT": {
+            "fieldId": 301307201,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@PROCESS_FLOW_INSTANCE_ID": {
+            "fieldId": 304025000
+        },
+        "@OLA_ACK_BUSINESS_HR_DURATION": {
+            "fieldId": 1000001624
+        },
+        "@CONDITIONDISPLAY4": {
+            "fieldId": 301593500
+        },
+        "@CONDITIONDISPLAY5": {
+            "fieldId": 301593600
+        },
+        "@STARTSTOP_SUPPORTCOMPANY": {
+            "fieldId": 301689000
+        },
+        "@VENDOR_TICKET_NUMBER": {
+            "fieldId": 1000000652
+        },
+        "@REQUIRE_SERVICE": {
+            "fieldId": 303515500,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@CONDITIONDISPLAY3": {
+            "fieldId": 301593400
+        },
+        "@CHANGE_REQUEST_PREV_STATUS_BEFORE_SAVE": {
+            "fieldId": 304059400,
+            "valueMap": {
+                "0": "Draft",
+                "1": "Request For Authorization",
+                "2": "Request For Change",
+                "3": "Planning In Progress",
+                "4": "Scheduled For Review",
+                "5": "Scheduled For Approval",
+                "6": "Scheduled",
+                "7": "Implementation In Progress",
+                "8": "Pending",
+                "9": "Rejected",
+                "10": "Completed",
+                "11": "Closed",
+                "12": "Cancelled"
+            }
+        },
+        "@ISAUTOAPPROVE": {
+            "fieldId": 304345201,
+            "valueMap": {
+                "0": "Yes"
+            }
+        },
+        "@CONTRACT_ID": {
+            "fieldId": 1000001091
+        },
+        "@IN_PRODUCTION": {
+            "fieldId": 301346300
+        },
+        "@KEYWORD": {
+            "fieldId": 301737200
+        },
+        "@ASSIGNEE_SELECT_FORM": {
+            "fieldId": 301321300
+        },
+        "@CHG_LOCATION_ADDRESS": {
+            "fieldId": 1000000038
+        },
+        "@RETURN_CODE_ASSIGNEE": {
+            "fieldId": 301323800
+        },
+        "@SLM_PRIORITY": {
+            "fieldId": 1000001259,
+            "valueMap": {
+                "0": "Critical",
+                "1": "High",
+                "2": "Medium",
+                "3": "Low"
+            }
+        },
+        "@MODIFY_ALL": {
+            "fieldId": 1004
+        },
+        "@SLMDVF": {
+            "fieldId": 303579500
+        },
+        "@BUT_STOP_CLOCK": {
+            "fieldId": 400000009
+        },
+        "@UC_RES_RESULT_DURATION": {
+            "fieldId": 301611200
+        },
+        "@SLA_ID": {
+            "fieldId": 1000000496
+        },
+        "@OLA_ID2": {
+            "fieldId": 301888900
+        },
+        "@STARTSTOP_ASSIGNEE": {
+            "fieldId": 301689200
+        },
+        "@TOTAL_UC_TIME_ELAPSED": {
+            "fieldId": 301889400
+        },
+        "@REPORTED_TO_VENDOR": {
+            "fieldId": 1000000878
+        },
+        "@ASCPY": {
+            "fieldId": 1000003228
+        },
+        "@SUPPORT_GROUP_ID_2": {
+            "fieldId": 1000000427
+        },
+        "@BUSINESS_JUSTIFICATION": {
+            "fieldId": 301133400,
+            "valueMap": {
+                "0": "Corporate Strategic",
+                "1": "Business Unit Strategic",
+                "2": "Maintenance",
+                "3": "Defect",
+                "4": "Upgrade",
+                "5": "Enhancement",
+                "6": "Customer Commitment",
+                "7": "Sarbanes-Oxley"
+            }
+        },
+        "@RISKTABLEQUAL2": {
+            "fieldId": 301889200
+        },
+        "@ASSIGNEE_MANAGER_LOGIN": {
+            "fieldId": 250000016
+        },
+        "@CATEGORIZATION_TIER_3": {
+            "fieldId": 1000000065
+        },
+        "@OVERRIDE_GROUP": {
+            "fieldId": 420050007,
+            "valueMap": {
+                "0": "Override Group Assignment"
+            }
+        },
+        "@PERSON_ID": {
+            "fieldId": 1000000080
+        },
+        "@VENDOR_FIRST_NAME": {
+            "fieldId": 1000003755
+        },
+        "@SLA_RESP_TARGET_DURATION": {
+            "fieldId": 1000001575
+        },
+        "@APPROVAL_PHASE_NAME_FR": {
+            "fieldId": 1000004439
+        },
+        "@ALLOWNEXT": {
+            "fieldId": 301568000,
+            "valueMap": {
+                "1000": "Yes",
+                "2000": "No"
+            }
+        },
+        "@ACCELERATORITEM1": {
+            "fieldId": 301541900
+        },
+        "@ALLOWPENDING": {
+            "fieldId": 301568500,
+            "valueMap": {
+                "1000": "Yes",
+                "2000": "No"
+            }
+        },
+        "@ACCELERATORITEM5": {
+            "fieldId": 301542300
+        },
+        "@ENVIRONMENT": {
+            "fieldId": 1000001566,
+            "valueMap": {
+                "1000": "Production",
+                "2000": "Model Office",
+                "3000": "Hot Backup",
+                "4000": "Development"
+            }
+        },
+        "@PROCESS_DESIGNER_APPROVER": {
+            "fieldId": 420050009
+        },
+        "@ASSIGNEE_GROUPS": {
+            "fieldId": 112
+        },
+        "@RISKTABLEQUAL3": {
+            "fieldId": 301664900
+        },
+        "@CHGIMPORG": {
+            "fieldId": 1000003255
+        },
+        "@VENDOR_NAME": {
+            "fieldId": 1000000396
+        },
+        "@CHANGE_REQUEST_NUMBER": {
+            "fieldId": 301389647
+        },
+        "@CBOENFORCECHGDEPENDENCY": {
+            "fieldId": 260900151,
+            "valueMap": {
+                "0": "None",
+                "1": "Warning",
+                "2": "Error"
+            }
+        },
+        "@ASGRPID": {
+            "fieldId": 1000003234
+        },
+        "@CUSTOMER_DEPARTMENT": {
+            "fieldId": 1000003301
+        },
+        "@SLM_STATUS": {
+            "fieldId": 1000003009,
+            "valueMap": {
+                "0": "No Service Target Assigned",
+                "1": "Within the Service Target",
+                "2": "Service Target Warning",
+                "3": "Service Targets Breached",
+                "4": "All Service Targets Breached"
+            }
+        },
+        "@OLA_RES_BUSINESS_HOUR_SECONDS": {
+            "fieldId": 1000001614
+        },
+        "@ALLOWGOBACK": {
+            "fieldId": 301569700,
+            "valueMap": {
+                "1000": "Yes",
+                "2000": "No"
+            }
+        },
+        "@SERVICECI": {
+            "fieldId": 303497300
+        },
+        "@PROTOCOL": {
+            "fieldId": 301405400,
+            "valueMap": {
+                "0": "AR",
+                "1": "URL",
+                "2": "Webservices",
+                "3": "Command Line",
+                "4": "Plug-in",
+                "5": "Other"
+            }
+        },
+        "@TOTAL_SLA_RESOLUTION_ESC_LEVEL": {
+            "fieldId": 1000000558
+        },
+        "@SLMLOOKUPTBLKEYWORD": {
+            "fieldId": 301610100
+        },
+        "@BTNSENDCLEAR": {
+            "fieldId": 304082400
+        },
+        "@ABYDOS_SLA_NAME": {
+            "fieldId": 420050103
+        },
+        "@SUPPORT_ORGANIZATION": {
+            "fieldId": 1000000014
+        },
+        "@SLA_HOLD": {
+            "fieldId": 1000000567,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@CONDITIONDISPLAY2": {
+            "fieldId": 301593300
+        },
+        "@LEAD_TIME": {
+            "fieldId": 1000000283
+        },
+        "@CURRENTOPERATION": {
+            "fieldId": 304262470,
+            "valueMap": {
+                "0": "Association",
+                "10": "Enablement",
+                "5": "Cancellation"
+            }
+        },
+        "@STARTSTOP_ASSIGNEDSUPPORTORGANIZATION": {
+            "fieldId": 301689100
+        },
+        "@STATUS-ASSOCIATIONS": {
+            "fieldId": 1000000242,
+            "valueMap": {
+                "0": "Proposed",
+                "1": "Enabled",
+                "2": "Offline",
+                "3": "Obsolete",
+                "4": "Archive",
+                "5": "Delete"
+            }
+        },
+        "@OLA_RES_RESULT_DURATION": {
+            "fieldId": 1000001619
+        },
+        "@SLA_RES_RESULT_DURATION": {
+            "fieldId": 1000001559
+        },
+        "@CHGIMPGRP": {
+            "fieldId": 1000003256
+        },
+        "@VENDOR_ASSIGNEE_GROUPS": {
+            "fieldId": 60900
+        },
+        "@SEARCH_BAR": {
+            "fieldId": 1005
+        },
+        "@VENDOR_GROUP_SD": {
+            "fieldId": 303634500
+        },
+        "@MODIFY": {
+            "fieldId": 1003
+        },
+        "@RISK_FACTOR_TOTAL": {
+            "fieldId": 301390091
+        },
+        "@UC_RES_RESULT_SECONDS": {
+            "fieldId": 301610300
+        },
+        "@ASSIGNEE_SELECT_FORM_MANAGER": {
+            "fieldId": 301324500
+        },
+        "@REASON_DESCRIPTION": {
+            "fieldId": 300270900
+        },
+        "@PRODUCT_REQUEST": {
+            "fieldId": 1000003963,
+            "valueMap": {
+                "0": "Y"
+            }
+        },
+        "@OLA_RES_TARGET_DURATION": {
+            "fieldId": 1000001620
+        },
+        "@NEWBROADCASTCOUNT": {
+            "fieldId": 302889100
+        },
+        "@RFA_DATE": {
+            "fieldId": 303912300
+        },
+        "@PRODUCT_MODEL/VERSION_(2)": {
+            "fieldId": 1000002269
+        },
+        "@CUSTOMER_ORGANIZATION": {
+            "fieldId": 1000003300
+        },
+        "@REASON_DESCRIPTION_ASSIGNEE": {
+            "fieldId": 301324200
+        },
+        "@REJECTEDSTATUSINT": {
+            "fieldId": 1000003222
+        },
+        "@PRODUCTORDERING_KEYWORD": {
+            "fieldId": 304324360
+        },
+        "@ATTACHMENT": {
+            "fieldId": 300615200
+        },
+        "@DESCRIPTION2": {
+            "fieldId": 14506
+        },
+        "@BTSSTART_DATE": {
+            "fieldId": 301598500
+        },
+        "@SEQUENCE": {
+            "fieldId": 260007003
+        },
+        "@CLOSED_DATE": {
+            "fieldId": 303915500
+        },
+        "@TASKS_CANCELLED": {
+            "fieldId": 304016400
+        },
+        "@BUDGET_COST_STATIC_TOTAL": {
+            "fieldId": 302224700
+        },
+        "@ABYDOS_NOTIFY_RECIPIENT": {
+            "fieldId": 420050000,
+            "valueMap": {
+                "0": "Requestor",
+                "1": "Submitter",
+                "2": "Supervisor",
+                "3": "Sent"
+            }
+        },
+        "@QUERY": {
+            "fieldId": 1002
+        },
+        "@APPROVERS_TBL": {
+            "fieldId": 300363500
+        },
+        "@CREATED_FROM_TEMPLATE": {
+            "fieldId": 10003001,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@CHGIMPLOGINID": {
+            "fieldId": 1000003258
+        },
+        "@CUSTOMER_COMPANY": {
+            "fieldId": 1000003299
+        },
+        "@TXT_TASKSANDTASKGROUPS": {
+            "fieldId": 10006209
+        },
+        "@PERMISSIONTYPE": {
+            "fieldId": 400107700,
+            "valueMap": {
+                "10": "Support Group",
+                "20": "Support Group and Company"
+            }
+        },
+        "@SUPPORT_GROUP_NAME2": {
+            "fieldId": 1000000341
+        },
+        "@PRODUCT_CAT_TIER_3": {
+            "fieldId": 1000001272
+        },
+        "@SITE_ID": {
+            "fieldId": 1000000074
+        },
+        "@ZCHANGERELATIONSHIPKEYCHAR": {
+            "fieldId": 260007025
+        },
+        "@ASSIGNEE_SELECT_FORM_ASSIGNEE": {
+            "fieldId": 301324600
+        },
+        "@STAGECONDITION": {
+            "fieldId": 301541000
+        },
+        "@MIDDLE_INITIAL": {
+            "fieldId": 1000000020
+        },
+        "@APPROVAL_STATUS": {
+            "fieldId": 1000003264,
+            "valueMap": {
+                "0": "Pending",
+                "1": "Approved",
+                "2": "Rejected"
+            }
+        },
+        "@FLAG_CREATE_REQUEST": {
+            "fieldId": 301674600,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@SERVICECI_CLASS_ID": {
+            "fieldId": 304302260
+        },
+        "@AUTO-CLOSE_TIME": {
+            "fieldId": 250000031
+        },
+        "@ACCELERATORITEM2": {
+            "fieldId": 301542000
+        },
+        "@REGION": {
+            "fieldId": 200000012
+        },
+        "@REQUESTOR_ID": {
+            "fieldId": 1000000337
+        },
+        "@AUTOCOST_ACTUAL_CALCLASTESTIMATEDUSED": {
+            "fieldId": 300751400
+        },
+        "@CUSTOMER_MIDDLE_NAME": {
+            "fieldId": 1000003887
+        },
+        "@OWNER_SUPPORT_ORGANIZATION": {
+            "fieldId": 301889100
+        },
+        "@ACTUAL_COST_TEMP_FOR_STATIC": {
+            "fieldId": 302225000
+        },
+        "@VENDOR_GROUP_ID": {
+            "fieldId": 1000003664
+        },
+        "@PASSWORD": {
+            "fieldId": 102
+        },
+        "@SLA_RES_BUSINESS_HOUR_DURATION": {
+            "fieldId": 1000001557
+        },
+        "@VENDOR_ORGANIZATION": {
+            "fieldId": 1000003662
+        },
+        "@APPROVAL_PHASE_NAME": {
+            "fieldId": 1000003143
+        },
+        "@CHANGE_REVIEWER_LOGIN": {
+            "fieldId": 1000000598
+        },
+        "@RISK_LEVEL_-_COMPUTED": {
+            "fieldId": 301557300,
+            "valueMap": {
+                "0": "1",
+                "1": "2",
+                "2": "3",
+                "3": "4",
+                "4": "5"
+            }
+        },
+        "@ASORG": {
+            "fieldId": 1000003227
+        },
+        "@SHOW_FOR_PROCESS_ASSIGNEE": {
+            "fieldId": 301326300
+        },
+        "@ACCELERATORITEM3": {
+            "fieldId": 301542100
+        },
+        "@OLA_ACK_TARGET_SECONDS": {
+            "fieldId": 1000001616
+        },
+        "@ALLOWRESTART": {
+            "fieldId": 301569600,
+            "valueMap": {
+                "1000": "Yes",
+                "2000": "No"
+            }
+        },
+        "@CONDITIONDISPLAY1": {
+            "fieldId": 301593200
+        },
+        "@CURRENTSTAGE": {
+            "fieldId": 301541600
+        },
+        "@CUSTOMER_LAST_NAME": {
+            "fieldId": 1000003298
+        },
+        "@SCHEDULED_START_DATE": {
+            "fieldId": 1000000350
+        },
+        "@BTN_RETURNTOCONSOLE": {
+            "fieldId": 304082500
+        },
+        "@ACTIVE_APPROVAL": {
+            "fieldId": 1000003278,
+            "valueMap": {
+                "0": "Yes"
+            }
+        },
+        "@CUSTOMER_FIRST_NAME": {
+            "fieldId": 1000003297
+        },
+        "@COMPANY3": {
+            "fieldId": 1000000251
+        },
+        "@APPROVALDEFINITIONIDLIST": {
+            "fieldId": 304331911
+        },
+        "@ASSIGNEE_ID_MANAGER": {
+            "fieldId": 301324300
+        },
+        "@FINDAPPROVERSON": {
+            "fieldId": 301268400
+        },
+        "@ASGRP": {
+            "fieldId": 1000003229
+        },
+        "@UC_RESOLUTION_END_DATE": {
+            "fieldId": 301610900
+        },
+        "@SFA_DATE": {
+            "fieldId": 303912500
+        },
+        "@OLA_ACK_RESULT_SECONDS": {
+            "fieldId": 1000001618
+        },
+        "@CURRENTSTAGENUMBER": {
+            "fieldId": 301541700
+        },
+        "@VENDOR_PHONE": {
+            "fieldId": 1000000239
+        },
+        "@COLLISION_STATUS": {
+            "fieldId": 303633900,
+            "valueMap": {
+                "0": "None Found",
+                "1": "Detected",
+                "2": "Investigating",
+                "3": "Ignored",
+                "4": "Resolved",
+                "5": "N/A"
+            }
+        },
+        "@ACCESS_REQUEST": {
+            "fieldId": 1000003962,
+            "valueMap": {
+                "0": "Y"
+            }
+        },
+        "@REQUESTED_START_DATE": {
+            "fieldId": 1000000349
+        },
+        "@OLA_ACKNOWLEDGED": {
+            "fieldId": 1000001386,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@APPINSTANCESERVER": {
+            "fieldId": 301368500
+        },
+        "@CUSTOMER_CORPORATE_ID": {
+            "fieldId": 1000003307
+        },
+        "@VISPROCESSACCELERATORITEM": {
+            "fieldId": 301532800
+        },
+        "@RFC_DATE": {
+            "fieldId": 1000002194
+        },
+        "@CHANGE_TYPE": {
+            "fieldId": 1000000181,
+            "valueMap": {
+                "2000": "Change",
+                "5000": "Asset Management",
+                "3000": "Release",
+                "4000": "Asset Configuration",
+                "7000": "Purchase Requisition",
+                "1000": "Project",
+                "8000": "Asset Maintenance",
+                "6000": "Asset Lease",
+                "9000": "Automation System"
+            }
+        },
+        "@CLISRVOFFSET_INT2": {
+            "fieldId": 302221200
+        },
+        "@CLISRVOFFSET_INT1": {
+            "fieldId": 302220800
+        },
+        "@TOTAL_OLA_ACKNOWLEDGEESC_LEVEL": {
+            "fieldId": 1000000557
+        },
+        "@LAST_MODIFIED_BY": {
+            "fieldId": 5
+        },
+        "@MAXRETRIES": {
+            "fieldId": 301010500
+        },
+        "@STATUS_HISTORY": {
+            "fieldId": 15
+        },
+        "@RISK_LEVEL_-_USER_SPECIFIED": {
+            "fieldId": 302199700,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@PEOPLE_GROUP_REQUEST": {
+            "fieldId": 1000004114,
+            "valueMap": {
+                "0": "Y"
+            }
+        },
+        "@CHANGE_TIMING": {
+            "fieldId": 1000000568,
+            "valueMap": {
+                "2000": "Expedited",
+                "5000": "No Impact",
+                "3000": "Latent",
+                "4000": "Normal",
+                "1000": "Emergency",
+                "6000": "Standard"
+            }
+        },
+        "@VENDOR_ASSIGNMENT_STATUS": {
+            "fieldId": 1000003781,
+            "valueMap": {
+                "0": "Assigned",
+                "1": "In Progress",
+                "2": "Completed"
+            }
+        },
+        "@AUTO_START_TIME": {
+            "fieldId": 260000104
+        },
+        "@ASSOCIATION_DESCRIPTION": {
+            "fieldId": 301629100
+        },
+        "@DESCRIPTION": {
+            "fieldId": 1000000000
+        },
+        "@SHOW_FOR_PROCESS_MANAGER": {
+            "fieldId": 301326100
+        },
+        "@CUSTOMER_AREA_CODE": {
+            "fieldId": 1000003303
+        },
+        "@APPROVAL_PHASE_NAME_DE": {
+            "fieldId": 1000004436
+        },
+        "@SCHEDULED_DATE": {
+            "fieldId": 303940100
+        },
+        "@CREATED_FROM_FLAG": {
+            "fieldId": 301667500,
+            "valueMap": {
+                "0": "Change",
+                "1": "Request"
+            }
+        },
+        "@ABORTASSOCIATIONPROCESS": {
+            "fieldId": 304262480
+        },
+        "@ACTIVE_TASKS": {
+            "fieldId": 420050006
+        },
+        "@SLMEVENTLOOKUPTBLKEYWORD": {
+            "fieldId": 301788500
+        },
+        "@CHANGE_IMPACT": {
+            "fieldId": 304033000
+        },
+        "@SRMSREGISTRYINSTANCEID": {
+            "fieldId": 301571900
+        },
+        "@PROCESSFLOWSTAGE4": {
+            "fieldId": 301537200
+        },
+        "@APPROVALPROCESSNAME": {
+            "fieldId": 301322300
+        },
+        "@BUDGET_COST_TEMP_FOR_STATIC": {
+            "fieldId": 302224900
+        },
+        "@IMPACTEDCIASSOCIATEDCOUNT": {
+            "fieldId": 304260100
+        },
+        "@CUSTOMER_INTERNET_E-MAIL": {
+            "fieldId": 1000003302
+        },
+        "@SHOW_FOR_PROCESS": {
+            "fieldId": 301090500
+        },
+        "@TXT_CHILDRENTASKS": {
+            "fieldId": 10003047
+        },
+        "@ASLOGID": {
+            "fieldId": 1000003231
+        },
+        "@DETAILED_DESCRIPTION": {
+            "fieldId": 1000000151
+        },
+        "@ACCELERATORITEM4": {
+            "fieldId": 301542200
+        },
+        "@LOOKUPKEYWORD": {
+            "fieldId": 230000009
+        },
+        "@CUSTOMER_COUNTRY_CODE": {
+            "fieldId": 1000003225
+        },
+        "@RISK_LEVEL": {
+            "fieldId": 1000000180,
+            "valueMap": {
+                "0": "Risk Level 1",
+                "1": "Risk Level 2",
+                "2": "Risk Level 3",
+                "3": "Risk Level 4",
+                "4": "Risk Level 5"
+            }
+        },
+        "@ALLOWAPPROVAL": {
+            "fieldId": 301568600,
+            "valueMap": {
+                "1000": "Yes",
+                "2000": "No"
+            }
+        },
+        "@CHANGE_REQ_PREV_STATUS_REASON": {
+            "fieldId": 1000003349,
+            "valueMap": {
+                "8000": "Backed Out",
+                "20000": "In Rollback",
+                "25000": "Miscellaneous",
+                "26500": "Approval Error",
+                "27000": "Manager Intervention",
+                "21000": "In Documentation",
+                "13000": "In Verification",
+                "9000": "Final Review Complete",
+                "2000": "Funding Not Available",
+                "11000": "Additional Coding Required",
+                "26000": "Future Enhancement",
+                "1000": "No Longer Required",
+                "28000": "Accepted",
+                "15000": "Insufficient Change Data",
+                "14000": "In Rollout",
+                "29000": "Assigned",
+                "10000": "Final Review Required",
+                "4000": "Resources Not Available",
+                "18000": "In Test",
+                "23000": "Support Group Communication",
+                "17000": "In Development",
+                "30000": "Built",
+                "6000": "Successful with Issues",
+                "5000": "Successful",
+                "3000": "To Be Re-Scheduled",
+                "24000": "Task Review",
+                "31000": "On Hold",
+                "7000": "Unsuccessful",
+                "19000": "In Build",
+                "16000": "Schedule Conflicts",
+                "12000": "Insufficient Task Data",
+                "22000": "Vendor Purchase"
+            }
+        },
+        "@BTSEND_TIME": {
+            "fieldId": 301598800
+        },
+        "@CHANGEREQUESTSTATUSSTRING": {
+            "fieldId": 301596600
+        },
+        "@NEXT_TARGET_DATE": {
+            "fieldId": 1000002613
+        },
+        "@SHORT_DESCRIPTION": {
+            "fieldId": 8
+        },
+        "@RECORD_TYPE": {
+            "fieldId": 301467700,
+            "valueMap": {
+                "8000": "General Broadcast",
+                "20000": "Problem Investigation",
+                "25000": "Support Group",
+                "27000": "Asset Maintenance",
+                "21000": "Purchase Requisition",
+                "23000": "Request",
+                "13000": "Task",
+                "9000": "Incident",
+                "2000": "Asset Configuration",
+                "7000": "Contract",
+                "26000": "Asset Lease",
+                "1000": "ALL",
+                "28000": "Software Library Item",
+                "15000": "Solution Database",
+                "14000": "Infrastructure Change Template",
+                "33000": "Work Order",
+                "29000": "LDAP Object",
+                "10000": "Incident Template",
+                "4000": "CI Unavailability",
+                "18000": "People",
+                "22500": "Release",
+                "17000": "Operational Level Agreement",
+                "6000": "Configuration Item",
+                "5000": "Configuration Component",
+                "3000": "Broadcast",
+                "24000": "Service Level Agreement",
+                "19000": "People Organization",
+                "16000": "Known Error",
+                "12000": "Infrastructure Change",
+                "22000": "Product"
+            }
+        },
+        "@PHASEMANAGEMENTVALIDATION": {
+            "fieldId": 303782300,
+            "valueMap": {
+                "0": "No",
+                "1": "Yes"
+            }
+        },
+        "@UC_RES_BUSINESS_HOUR_SECONDS": {
+            "fieldId": 1000003863
+        },
+        "@DELETEIMPACTEDCIS": {
+            "fieldId": 304257100,
+            "valueMap": {
+                "0": "No",
+                "1": "Yes"
+            }
+        },
+        "@STARTSTOP_ASSIGNEDGROUP": {
+            "fieldId": 301688800
+        },
+        "@SLM_PRIORITY2": {
+            "fieldId": 301889300,
+            "valueMap": {
+                "0": "Critical",
+                "1": "High",
+                "2": "Medium",
+                "3": "Low"
+            }
+        },
+        "@UC_ACK_RESULT_DURATION": {
+            "fieldId": 301610800
+        },
+        "@SUPPORT_STAFF": {
+            "fieldId": 1000000025,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@ASSIGNMENT_ACCELERATOR_IMP": {
+            "fieldId": 301500000,
+            "valueMap": {
+                "1000": "My Default Group",
+                "2000": "My Group List",
+                "5000": "Change Coordinator",
+                "3000": "Favorite Group(s)",
+                "4000": "Auto Assign"
+            }
+        },
+        "@STARTSTOP_ASSIGNEDGROUPID": {
+            "fieldId": 301688900
+        },
+        "@ACTUAL_START_DATE": {
+            "fieldId": 1000000348
+        },
+        "@JUSTIFICATION_FIELD": {
+            "fieldId": 14012
+        },
+        "@LAST_NAME": {
+            "fieldId": 1000000018
+        },
+        "@REQUESTED_BY_PERSON_ID": {
+            "fieldId": 1000001021
+        },
+        "@OLA_RES_BUSINESS_HOUR_DURATION": {
+            "fieldId": 1000001621
+        },
+        "@UC_RES_BUSINESS_HOUR_DURATION": {
+            "fieldId": 301611100
+        },
+        "@OLA_HOLD2": {
+            "fieldId": 301888800,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@SUPPORT_GROUP_ID": {
+            "fieldId": 1000000079
+        },
+        "@OWNER_SUPPORT_COMPANY": {
+            "fieldId": 1000000426
         }
-    },
-    "@SEVERITY": {
-        "fieldId": 1000000162,
-        "valueMap": {
-            "1000": "Critical",
-            "2000": "High",
-            "3000": "Medium",
-            "4000": "Low"
-        }
-    },
-    "@PRIORITY": {
-        "fieldId": 1000000164,
-        "valueMap": {
-            "0": "Critical",
-            "1": "High",
-            "2": "Medium",
-            "3": "Low"
-        }
-    },
-    "@STATUS": {
-        "fieldId": 7,
-        "valueMap": {
-            "0": "Draft",
-            "1": "Request For Authorization",
-            "2": "Request For Change",
-            "3": "Planning In Progress",
-            "4": "Scheduled For Review",
-            "5": "Scheduled For Approval",
-            "6": "Scheduled",
-            "7": "Implementation In Progress",
-            "8": "Pending",
-            "9": "Rejected",
-            "10": "Completed",
-            "11": "Closed",
-            "12": "Cancelled"
-        }
-    },
-    "@CHANGE_ID": {
-        "fieldId": 1000000182
-    },
-    "@WEIGHT": {
-        "fieldId": 1000000162
-    },
-    "@TITLE": {
-        "fieldId": 1000000000
-    },
-    "@SUMMARY": {
-        "fieldId": 1000000151
-    },
-    "@ASSIGNEE": {
-        "fieldId": 4
-    },
-    "@CI": {
-        "fieldId": 301556800
-    },
-    "@SUBMIT_DATE": {
-        "fieldId": 3
-    },
-    "@SUBMITTER": {
-        "fieldId": 2
-    },
-    "@LAST_MODIFIED_DATE": {
-        "fieldId": 6
-    },
-    "@COMPLETED_DATE": {
-        "fieldId": 1000002195
-    },
-    "@NOTES": {
-        "fieldId": 1000000151
-    },
-    "@COORDINATOR_GRP": {
-        "fieldId": 1000003229
-    },
-    "@CHANGE_LOC": {
-        "fieldId": 303935100
-    },
-    "@RISK_LEVEL": {
-        "fieldId": 1000000180
-    },
-    "@MANAGER_GROUP": {
-        "fieldId": 1000000015
     }
 }
