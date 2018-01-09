@@ -1,128 +1,1542 @@
 {
     "config": {
-        "remedyHostName": "<Input ARServer Host Name>",
+        "remedyHostName": "Input ARServer Host Name",
         "remedyPort": "",
-        "remedyUserName": "<Input ARServer UserName>",
+        "remedyUserName": "Input ARServer UserName",
         "remedyPassword": "",
-        "tsiEventEndpoint": "https://api.truesight.bmc.com/v1/events",
-        "tsiApiToken": "<Input TSI Api Token>",
+        "tsiApiToken": "Input TSI Api Token",
         "conditionFields": [3, 6],
-        "queryStatusList": [0, 1, 5],
-        "startDateTime": "<Input Start Datetime yyyy-MM-dd HH:mm:ss z>", 
-        "endDateTime": "<Input End Datetime yyyy-MM-dd HH:mm:ss z>",
+        "queryStatusList": [0, 1, 2, 3, 4, 5, 6],
+        "startDateTime": "Input Start Datetime yyyy-MM-dd HH:mm:ss z",
+        "endDateTime": "Input End Datetime yyyy-MM-dd HH:mm:ss z",
         "retryConfig": 2,
         "waitMsBeforeRetry": 5000
     },
     "eventDefinition": {
-        "title": "@SUMMARY",
-        "fingerprintFields": ["IncidentNumber"],
-        "severity": "@SEVERITY",
-        "status": "@STATUS",
+        "title": "@DESCRIPTION",
+        "fingerprintFields": ["Incident_Number"],
         "properties": {
+            "app_id": "<UPDATE_ME>",
+            "Acknowledgment_Start_Date": "@ACKNOWLEDGMENT_START_DATE",
+            "Assign_To_Vendor": "@ASSIGN_TO_VENDOR",
+            "Assigned_Group": "@ASSIGNED_GROUP",
+            "Assigned_Group_ID": "@ASSIGNED_GROUP_ID",
+            "Assigned_Support_Company": "@ASSIGNED_SUPPORT_COMPANY",
+            "Assigned_Support_Organization": "@ASSIGNED_SUPPORT_ORGANIZATION",
             "Assignee": "@ASSIGNEE",
-            "IncidentNumber": "@INCIDENT_NUMBER",
+            "Assignee_Groups": "@ASSIGNEE_GROUPS",
+            "Assignee_Id": "@ASSIGNEE_ID",
+            "Assignee_Login_ID": "@ASSIGNEE_LOGIN_ID",
+            "Categorization_Tier_1": "@CATEGORIZATION_TIER_1",
+            "Categorization_Tier_2": "@CATEGORIZATION_TIER_2",
+            "Categorization_Tier_3": "@CATEGORIZATION_TIER_3",
+            "Category": "@CATEGORY",
             "CI": "@CI",
-            "Priority": "@PRIORITY",
-            "PriorityWeight": "@WEIGHT",
+            "City": "@CITY",
+            "Closed_Date": "@CLOSED_DATE",
+            "Closure_Manufacturer": "@CLOSURE_MANUFACTURER",
+            "Closure_Product_Category_Tier1": "@CLOSURE_PRODUCT_CATEGORY_TIER1",
+            "Closure_Product_Category_Tier2": "@CLOSURE_PRODUCT_CATEGORY_TIER2",
+            "Closure_Product_Category_Tier3": "@CLOSURE_PRODUCT_CATEGORY_TIER3",
+            "Closure_Product_Name": "@CLOSURE_PRODUCT_NAME",
             "Company": "@COMPANY",
+            "Component_ID": "@COMPONENT_ID",
+            "Contact_Client_Type": "@CONTACT_CLIENT_TYPE",
+            "Contact_Company": "@CONTACT_COMPANY",
+            "Cost_Category": "@COST_CATEGORY",
+            "Cost_Center": "@COST_CENTER",
+            "Country": "@COUNTRY",
+            "Country_Code": "@COUNTRY_CODE",
             "Customer": "@CUSTOMER",
-            "Summary": "@SUMMARY",
-            "Service": "@SERVICE",
+            "Customer_Login_ID": "@CUSTOMER_LOGIN_ID",
+            "DataTags": "@DATATAGS",
+            "Department": "@DEPARTMENT",
+            "Description": "@DESCRIPTION",
+            "Desk_Location": "@DESK_LOCATION",
+            "Detailed_Decription": "@DETAILED_DECRIPTION",
+            "Effort_Time_Spent_Minutes": "@EFFORT_TIME_SPENT_MINUTES",
+            "EffortDurationHour": "@EFFORTDURATIONHOUR",
+            "Entry_ID": "@ENTRY_ID",
+            "Escalated": "@ESCALATED",
+            "First_Name": "@FIRST_NAME",
+            "Full_Name": "@FULL_NAME",
+            "Generic_Categorization_Tier_1": "@GENERIC_CATEGORIZATION_TIER_1",
+            "Generic_Categorization_Tier_2": "@GENERIC_CATEGORIZATION_TIER_2",
+            "Generic_Categorization_Tier_3": "@GENERIC_CATEGORIZATION_TIER_3",
             "Impact": "@IMPACT",
-            "IncidentType": "@INCIDENT_TYPE",
-            "AssignedGroup": "@ASSIGNED_GROUP",
+            "Incident_Number": "@INCIDENT_NUMBER",
+            "Individual_Transfers": "@INDIVIDUAL_TRANSFERS",
+            "Infrastructure_Chg_Initiated": "@INFRASTRUCTURE_CHG_INITIATED",
+            "InfrastructureEventType": "@INFRASTRUCTUREEVENTTYPE",
+            "Keyword": "@KEYWORD",
+            "Kickback_Count": "@KICKBACK_COUNT",
+            "Last_Assigned_Date": "@LAST_ASSIGNED_DATE",
+            "Last_Acknowledged_Date": "@LAST_ACKNOWLEDGED_DATE",
+            "Last_Date_Duration_Calculated": "@LAST_DATE_DURATION_CALCULATED",
+            "Last_Kickback_Date": "@LAST_KICKBACK_DATE",
+            "Last_Modified_By": "@LAST_MODIFIED_BY",
+            "Last_Modified_Date": "@LAST_MODIFIED_DATE",
+            "Last_Name": "@LAST_NAME",
+            "Last_Resolved_Date": "@LAST_RESOLVED_DATE",
+            "Last_SLA_Hold_Date": "@LAST_SLA_HOLD_DATE",
+            "Manufacturer": "@MANUFACTURER",
+            "Organization": "@ORGANIZATION",
+            "Owner": "@OWNER",
+            "Owner_Group": "@OWNER_GROUP",
+            "Owner_Group_ID": "@OWNER_GROUP_ID",
+            "Owner_Support_Company": "@OWNER_SUPPORT_COMPANY",
+            "Owner_Support_Organization": "@OWNER_SUPPORT_ORGANIZATION",
+            "Priority": "@PRIORITY",
+            "Priority_Weight": "@PRIORITY_WEIGHT",
+            "Product_Categorization_Tier_1": "@PRODUCT_CATEGORIZATION_TIER_1",
+            "Product_Categorization_Tier_2": "@PRODUCT_CATEGORIZATION_TIER_2",
+            "Product_Categorization_Tier_3": "@PRODUCT_CATEGORIZATION_TIER_3",
+            "Product_Name": "@PRODUCT_NAME",
+            "Region": "@REGION",
+            "Reported_Date": "@REPORTED_DATE",
+            "Reported_Source": "@REPORTED_SOURCE",
+            "Resolution": "@RESOLUTION",
+            "Resolution_Category": "@RESOLUTION_CATEGORY",
+            "Resolution_Category_Tier_2": "@RESOLUTION_CATEGORY_TIER_2",
+            "Resolution_Category_Tier_3": "@RESOLUTION_CATEGORY_TIER_3",
+            "Resolution_Method": "@RESOLUTION_METHOD",
+            "Resolution_Start_Date": "@RESOLUTION_START_DATE",
+            "Responded_Date": "@RESPONDED_DATE",
+            "Short_Description": "@SHORT_DESCRIPTION",
+            "Site": "@SITE",
+            "Site_Group": "@SITE_GROUP",
+            "Site_ID": "@SITE_ID",
+            "SLA_Breach_Exception": "@SLA_BREACH_EXCEPTION",
+            "SLA_Breach_Reason": "@SLA_BREACH_REASON",
+            "SLA_Hold": "@SLA_HOLD",
+            "SLA_Res_Business_Hour_Seconds": "@SLA_RES_BUSINESS_HOUR_SECONDS",
+            "SLA_Responded": "@SLA_RESPONDED",
+            "SLM_Priority": "@SLM_PRIORITY",
+            "SLM_Status": "@SLM_STATUS",
+            "State_Province": "@STATE_PROVINCE",
+            "Status": "@STATUS",
+            "Status_History": "@STATUS_HISTORY",
+            "Status_Reason": "@STATUS_REASON",
+            "Submit_Date": "@SUBMIT_DATE",
             "Submitter": "@SUBMITTER",
-            "IncidentCreatedDate": "@CREATED_AT",
-            "LastModDate": "@LAST_MOD_DATE",
-            "ClosedDate": "@CLOSED_DATE", 
-            "app_id": "Remedy TSI Integration"
+            "Total_Escalation_Level": "@TOTAL_ESCALATION_LEVEL",
+            "Total_OLA_AcknowledgeEsc_Level": "@TOTAL_OLA_ACKNOWLEDGEESC_LEVEL",
+            "Total_OLA_Resolution_Esc_Level": "@TOTAL_OLA_RESOLUTION_ESC_LEVEL",
+            "Total_Time_Spent": "@TOTAL_TIME_SPENT",
+            "Total_Transfers": "@TOTAL_TRANSFERS",
+            "Urgency": "@URGENCY",
+            "VIP": "@VIP",
+            "Web_Incident_ID": "@WEB_INCIDENT_ID",
+            "Zip_Postal_Code": "@ZIP_POSTAL_CODE"
         },
-        "createdAt": "@CREATED_AT", 
+        "createdAt": "@SUBMIT_DATE",
+        "status": "@STATUS",
+        "severity": "@URGENCY",
         "eventClass": "Incident",
         "source": {
             "name": "#remedyHostName",
             "type": "host",
             "ref": "#remedyHostName"
+        }
+    },
+    "fieldDefinitionMap": {
+        "@ABYDOS_AUDITFLAG": {
+            "fieldId": 420050102,
+            "valueMap": {
+                "0": "No",
+                "1": "Yes"
+            }
         },
-        "sender": {
-            "name": "Remedy",
-            "type": "Remedy",
-            "ref": "Remedy"
+        "@ABYDOS_NOTIFY_RECIPIENT": {
+            "fieldId": 420050000,
+            "valueMap": {
+                "0": "Requestor",
+                "1": "Submitter",
+                "2": "Supervisor",
+                "3": "Sent"
+            }
+        },
+        "@ABYDOS_NOTIFY_TEXT": {
+            "fieldId": 420050001
+        },
+        "@ABYDOS_PROCESS_NAME": {
+            "fieldId": 420050101
+        },
+        "@ABYDOS_PROCESS_STATUS": {
+            "fieldId": 420050002
+        },
+        "@ABYDOS_PROCESS_VERSION": {
+            "fieldId": 420050003
+        },
+        "@ABYDOS_SLA_NAME": {
+            "fieldId": 420050103
+        },
+        "@ABYDOS_TASKS_GENERATED": {
+            "fieldId": 420050004,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@ABYDOS_TEMPLATE_ID": {
+            "fieldId": 420050100
+        },
+        "@ABYDOS_USE_WIZARD?": {
+            "fieldId": 420050005,
+            "valueMap": {
+                "0": "No",
+                "1": "Yes"
+            }
+        },
+        "@ACCELERATORITEM1": {
+            "fieldId": 301541900
+        },
+        "@ACCELERATORITEM2": {
+            "fieldId": 301542000
+        },
+        "@ACCELERATORITEM3": {
+            "fieldId": 301542100
+        },
+        "@ACCELERATORITEM4": {
+            "fieldId": 301542200
+        },
+        "@ACCELERATORITEM5": {
+            "fieldId": 301542300
+        },
+        "@ACCESSMODE": {
+            "fieldId": 301286500,
+            "valueMap": {
+                "0": "Local",
+                "10": "Remote"
+            }
+        },
+        "@ACKNOWLEDGMENT_START_DATE": {
+            "fieldId": 1000001317
+        },
+        "@ACTIVE_TASKS": {
+            "fieldId": 420050006
+        },
+        "@ADDITIONAL_LOCATION_DETAILS": {
+            "fieldId": 1000000145
+        },
+        "@APPINSTANCESERVER": {
+            "fieldId": 301368500
+        },
+        "@APPINTERFACEFORM": {
+            "fieldId": 301371100
+        },
+        "@APPLOGIN": {
+            "fieldId": 301446300
+        },
+        "@APPPASSWORD": {
+            "fieldId": 301446400
+        },
+        "@AREA_CODE": {
+            "fieldId": 1000000029
+        },
+        "@ASSIGNED_GROUP": {
+            "fieldId": 1000000217
+        },
+        "@ASSIGNED_GROUP_ID": {
+            "fieldId": 1000000079
+        },
+        "@ASSIGNED_GROUP_SDVIEW": {
+            "fieldId": 303502900
+        },
+        "@ASSIGNED_GROUP_SHIFT_ID": {
+            "fieldId": 1000000300
+        },
+        "@ASSIGNED_GROUP_SHIFT_NAME": {
+            "fieldId": 1000000298
+        },
+        "@ASSIGNED_GROUP_USES_OLA": {
+            "fieldId": 1000000572,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@ASSIGNED_SUPPORT_COMPANY": {
+            "fieldId": 1000000251
+        },
+        "@ASSIGNED_SUPPORT_ORGANIZATION": {
+            "fieldId": 1000000014
+        },
+        "@ASSIGNEE": {
+            "fieldId": 1000000218
+        },
+        "@ASSIGNEE_GROUPS": {
+            "fieldId": 112
+        },
+        "@ASSIGNEE_GROUPS_PARENT": {
+            "fieldId": 60989
+        },
+        "@ASSIGNEE_ID": {
+            "fieldId": 300271200
+        },
+        "@ASSIGNEE_LOGIN_ID": {
+            "fieldId": 4
+        },
+        "@ASSIGNEE_LOGIN_ID2": {
+            "fieldId": 303602000
+        },
+        "@ASSIGNEE_SELECT_FORM": {
+            "fieldId": 301321300
+        },
+        "@ASSIGNMENT_ACCELERATOR": {
+            "fieldId": 301499700,
+            "valueMap": {
+                "1000": "My Default Group",
+                "2000": "My Group List",
+                "5000": "Current Owner",
+                "3000": "Favorite Group(s)",
+                "4000": "Auto Assign"
+            }
+        },
+        "@ASSIGNMENT_METHOD": {
+            "fieldId": 1000001600,
+            "valueMap": {
+                "0": "System Assigned"
+            }
+        },
+        "@ASSIGN_TO_VENDOR": {
+            "fieldId": 1000000987,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@ASSOCIATION_DESCRIPTION": {
+            "fieldId": 301629100
+        },
+        "@ATTACHMENT": {
+            "fieldId": 1000005954
+        },
+        "@AUTO_OPEN_SESSION": {
+            "fieldId": 304384101
+        },
+        "@BIIARS_01": {
+            "fieldId": 301921500
+        },
+        "@BIIARS_02": {
+            "fieldId": 301921600
+        },
+        "@BIIARS_03": {
+            "fieldId": 301921700
+        },
+        "@BIIARS_04": {
+            "fieldId": 301921800
+        },
+        "@BIIARS_05": {
+            "fieldId": 301921900
+        },
+        "@BORPHANEDROOT": {
+            "fieldId": 301920800
+        },
+        "@BROADCASTED_FLAG": {
+            "fieldId": 1000001025,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@BTNSENDCLEAR": {
+            "fieldId": 304082400
+        },
+        "@BTNSENDEVENT": {
+            "fieldId": 304082300
+        },
+        "@BTN_ABYDOS_WIZARD": {
+            "fieldId": 420050104
+        },
+        "@BTN_RETURNTOCONSOLE": {
+            "fieldId": 304082500
+        },
+        "@BTN_VIEW_REQUEST_STATUS": {
+            "fieldId": 420050105
+        },
+        "@BUDGET_COST_(CURRENCY)": {
+            "fieldId": 301512300
+        },
+        "@CATEGORIZATION_TIER_1": {
+            "fieldId": 1000000063
+        },
+        "@CATEGORIZATION_TIER_2": {
+            "fieldId": 1000000064
+        },
+        "@CATEGORIZATION_TIER_3": {
+            "fieldId": 1000000065
+        },
+        "@CATEGORY": {
+            "fieldId": 1000000984,
+            "valueMap": {
+                "0": "Bug",
+                "1": "Enhancement"
+            }
+        },
+        "@CELL_NAME": {
+            "fieldId": 301736700
+        },
+        "@CHANGE_IN_SEQUENCE": {
+            "fieldId": 10002033,
+            "valueMap": {
+                "0": "Yes"
+            }
+        },
+        "@CHAT_SESSION_ID": {
+            "fieldId": 304384081
+        },
+        "@CHECK_CI_RELATED_ONRESOLVED": {
+            "fieldId": 303515600,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@CHECK_CI_RELATED_ONSUBMIT": {
+            "fieldId": 303515500,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@CI": {
+            "fieldId": 303544200
+        },
+        "@CITY": {
+            "fieldId": 1000000004
+        },
+        "@CI_TAG_NUMBER": {
+            "fieldId": 1000000109
+        },
+        "@CLIENTLOCALE": {
+            "fieldId": 303356300
+        },
+        "@CLOSED_DATE": {
+            "fieldId": 1000000564
+        },
+        "@CLOSURE_MANUFACTURER": {
+            "fieldId": 1000003896
+        },
+        "@CLOSURE_PRODUCT_CATEGORY_TIER1": {
+            "fieldId": 1000003891
+        },
+        "@CLOSURE_PRODUCT_CATEGORY_TIER2": {
+            "fieldId": 1000003892
+        },
+        "@CLOSURE_PRODUCT_CATEGORY_TIER3": {
+            "fieldId": 1000003893
+        },
+        "@CLOSURE_PRODUCT_MODEL/VERSION": {
+            "fieldId": 1000003895
+        },
+        "@CLOSURE_PRODUCT_NAME": {
+            "fieldId": 1000003894
+        },
+        "@CLOSURE_SOURCE": {
+            "fieldId": 1000003899,
+            "valueMap": {
+                "1000": "Customer",
+                "2000": "System",
+                "3000": "Support Agent"
+            }
+        },
+        "@COMMAND": {
+            "fieldId": 301284400
+        },
+        "@COMPANY": {
+            "fieldId": 1000000001
+        },
+        "@COMPONENT_ID": {
+            "fieldId": 301734000
+        },
+        "@CONDITIONDISPLAY1": {
+            "fieldId": 301593200
+        },
+        "@CONDITIONDISPLAY2": {
+            "fieldId": 301593300
+        },
+        "@CONDITIONDISPLAY3": {
+            "fieldId": 301593400
+        },
+        "@CONDITIONDISPLAY4": {
+            "fieldId": 301593500
+        },
+        "@CONDITIONDISPLAY5": {
+            "fieldId": 301593600
+        },
+        "@CONTACT_CLIENT_TYPE": {
+            "fieldId": 1000000022,
+            "valueMap": {
+                "2000": "Office-Based Employee",
+                "5000": "Contractor",
+                "3000": "Field-Based Employee",
+                "4000": "Home-Based Employee",
+                "7000": "Customer",
+                "1000": "=== Operating Company Menu ===",
+                "8000": "Prospect",
+                "6000": "======= Customer Menu =======",
+                "10000": "Vendor",
+                "9000": "======== Vendor Menu ========"
+            }
+        },
+        "@CONTACT_COMPANY": {
+            "fieldId": 1000000082
+        },
+        "@CONTACT_SENSITIVITY": {
+            "fieldId": 1000000027,
+            "valueMap": {
+                "0": "Sensitive",
+                "1": "Standard"
+            }
+        },
+        "@CORPORATE_ID": {
+            "fieldId": 1000000054
+        },
+        "@COST_CATEGORY": {
+            "fieldId": 270002020
+        },
+        "@COST_CENTER": {
+            "fieldId": 1000000188
+        },
+        "@COUNTRY": {
+            "fieldId": 1000000002
+        },
+        "@COUNTRY_CODE": {
+            "fieldId": 1000000028
+        },
+        "@CREATED_BY": {
+            "fieldId": 300617700
+        },
+        "@CREATED_FROM_FLAG": {
+            "fieldId": 301667500,
+            "valueMap": {
+                "0": "Incident",
+                "1": "Request"
+            }
+        },
+        "@CREATED_FROM_TEMPLATE": {
+            "fieldId": 10003001,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@CREATERECORDTYPE2": {
+            "fieldId": 300806400,
+            "valueMap": {
+                "8000": "General Broadcast",
+                "20000": "Problem Investigation",
+                "25000": "Support Group",
+                "27000": "Asset Maintenance",
+                "21000": "Purchase Requisition",
+                "23000": "Request",
+                "13000": "Task",
+                "9000": "Incident",
+                "2000": "Asset Configuration",
+                "7000": "Contract",
+                "26000": "Asset Lease",
+                "1000": "ALL",
+                "28000": "Software Library Item",
+                "15000": "Solution Database",
+                "14000": "Infrastructure Change Template",
+                "10000": "Incident Template",
+                "4000": "CI Unavailability",
+                "18000": "People",
+                "22500": "Release",
+                "17000": "Operational Level Agreement",
+                "6000": "Configuration Item",
+                "5000": "Configuration Component",
+                "3000": "Broadcast",
+                "24000": "Service Level Agreement",
+                "19000": "People Organization",
+                "16000": "Known Error",
+                "12000": "Infrastructure Change",
+                "22000": "Product"
+            }
+        },
+        "@CREATE_IMPACTED_AREA_FROM_CUSTOMER'S_LOCATION": {
+            "fieldId": 304384321,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@CURRENTSTAGE": {
+            "fieldId": 301541600
+        },
+        "@CURRENTSTAGENUMBER": {
+            "fieldId": 301541700
+        },
+        "@CUSTOMER": {
+            "fieldId": 303530000
+        },
+        "@CUSTOMER_LOGIN_ID": {
+            "fieldId": 304309540
+        },
+        "@DATATAGS": {
+            "fieldId": 301600300
+        },
+        "@DEPARTMENT": {
+            "fieldId": 200000006
+        },
+        "@DESCRIPTION": {
+            "fieldId": 1000000000
+        },
+        "@DESK_LOCATION": {
+            "fieldId": 1000000035
+        },
+        "@DETAILED_DECRIPTION": {
+            "fieldId": 1000000151
+        },
+        "@DETAILS...": {
+            "fieldId": 303669700
+        },
+        "@DIRECT_CONTACT_AREA_CODE": {
+            "fieldId": 1000005909
+        },
+        "@DIRECT_CONTACT_CITY": {
+            "fieldId": 1000005900
+        },
+        "@DIRECT_CONTACT_COMPANY": {
+            "fieldId": 1000005781
+        },
+        "@DIRECT_CONTACT_CORPORATE_ID": {
+            "fieldId": 303755200
+        },
+        "@DIRECT_CONTACT_COUNTRY": {
+            "fieldId": 1000005898
+        },
+        "@DIRECT_CONTACT_COUNTRY_CODE": {
+            "fieldId": 1000005908
+        },
+        "@DIRECT_CONTACT_DEPARTMENT": {
+            "fieldId": 1000005787
+        },
+        "@DIRECT_CONTACT_DESK_LOCATION": {
+            "fieldId": 1000005903
+        },
+        "@DIRECT_CONTACT_EXTENSION": {
+            "fieldId": 1000005911
+        },
+        "@DIRECT_CONTACT_FIRST_NAME": {
+            "fieldId": 1000005783
+        },
+        "@DIRECT_CONTACT_INTERNET_E-MAIL": {
+            "fieldId": 1000003302
+        },
+        "@DIRECT_CONTACT_LAST_NAME": {
+            "fieldId": 1000005782
+        },
+        "@DIRECT_CONTACT_LOCAL_NUMBER": {
+            "fieldId": 1000005910
+        },
+        "@DIRECT_CONTACT_LOCATION_DETAILS": {
+            "fieldId": 1000005905
+        },
+        "@DIRECT_CONTACT_LOGIN_ID": {
+            "fieldId": 304309530
+        },
+        "@DIRECT_CONTACT_MAIL_STATION": {
+            "fieldId": 1000005904
+        },
+        "@DIRECT_CONTACT_MIDDLE_INITIAL": {
+            "fieldId": 1000005784
+        },
+        "@DIRECT_CONTACT_ORGANIZATION": {
+            "fieldId": 1000005786
+        },
+        "@DIRECT_CONTACT_PERSON_ID": {
+            "fieldId": 1000005791
+        },
+        "@DIRECT_CONTACT_PHONE_NUMBER": {
+            "fieldId": 1000005785
+        },
+        "@DIRECT_CONTACT_REGION": {
+            "fieldId": 1000005788
+        },
+        "@DIRECT_CONTACT_SITE": {
+            "fieldId": 1000005790
+        },
+        "@DIRECT_CONTACT_SITE_GROUP": {
+            "fieldId": 1000005789
+        },
+        "@DIRECT_CONTACT_SITE_ID": {
+            "fieldId": 1000005906
+        },
+        "@DIRECT_CONTACT_STATE/PROVINCE": {
+            "fieldId": 1000005899
+        },
+        "@DIRECT_CONTACT_STREET": {
+            "fieldId": 1000005897
+        },
+        "@DIRECT_CONTACT_TIME_ZONE": {
+            "fieldId": 1000005902
+        },
+        "@DIRECT_CONTACT_ZIP/POSTAL_CODE": {
+            "fieldId": 1000005901
+        },
+        "@DO_NOT_ARCHIVE": {
+            "fieldId": 304401091,
+            "valueMap": {
+                "0": "Do Not Archive"
+            }
+        },
+        "@DR": {
+            "fieldId": 1000001446
+        },
+        "@DVFTOPOLOGY": {
+            "fieldId": 304082200
+        },
+        "@EFFORTDURATIONHOUR": {
+            "fieldId": 303979600
+        },
+        "@EFFORT_TIME_SPENT_MINUTES": {
+            "fieldId": 1000000642
+        },
+        "@EH": {
+            "fieldId": 1000001445
+        },
+        "@ENABLE_ASSIGNMENT_ENGINE": {
+            "fieldId": 301290300,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@ENABLE_CI_RELATED_LOOKUP": {
+            "fieldId": 1000005759,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@ENABLE_CI_WARRANTY_LOOKUP": {
+            "fieldId": 1000005760,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@ENTRY_ID": {
+            "fieldId": 1
+        },
+        "@ESCALATED": {
+            "fieldId": 250000023,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@ESCHAT_SET_AUTO_ASSIGN": {
+            "fieldId": 304384051
+        },
+        "@ESTIMATED_RESOLUTION_DATE": {
+            "fieldId": 1000005261
+        },
+        "@EXTENSION": {
+            "fieldId": 1000000031
+        },
+        "@FIRSTWIPDATE": {
+            "fieldId": 304405171
+        },
+        "@FIRST_NAME": {
+            "fieldId": 1000000019
+        },
+        "@FIRST_NAME2": {
+            "fieldId": 301921000
+        },
+        "@FLAG_CREATE_REQUEST": {
+            "fieldId": 301674600,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@FULL_NAME": {
+            "fieldId": 1000000017
+        },
+        "@GENERIC_CATEGORIZATION_TIER_1": {
+            "fieldId": 1000000744
+        },
+        "@GENERIC_CATEGORIZATION_TIER_2": {
+            "fieldId": 1000000745
+        },
+        "@GENERIC_CATEGORIZATION_TIER_3": {
+            "fieldId": 1000000746
+        },
+        "@GEONET": {
+            "fieldId": 1000000046
+        },
+        "@GLOBAL_OR_CUSTOM_MAPPING": {
+            "fieldId": 301921300
+        },
+        "@GROUP_TRANSFERS": {
+            "fieldId": 1000003761
+        },
+        "@HELP": {
+            "fieldId": 300603300
+        },
+        "@HPD_CI": {
+            "fieldId": 303497400
+        },
+        "@HPD_CI_FORMNAME": {
+            "fieldId": 303790700
+        },
+        "@HPD_CI_RECONID": {
+            "fieldId": 303522900
+        },
+        "@HPD_TEMPLATE_ID": {
+            "fieldId": 301389272
+        },
+        "@HR_ID": {
+            "fieldId": 1000000069
+        },
+        "@IMPACT": {
+            "fieldId": 1000000163,
+            "valueMap": {
+                "1000": "1-Extensive/Widespread",
+                "2000": "2-Significant/Large",
+                "3000": "3-Moderate/Limited",
+                "4000": "4-Minor/Localized"
+            }
+        },
+        "@IMPACT_OR_ROOT": {
+            "fieldId": 301920700
+        },
+        "@INBOUND": {
+            "fieldId": 1000005735
+        },
+        "@INCAUTOCLOSERESOLVED_SEC": {
+            "fieldId": 303595900
+        },
+        "@INCIDENT_ASSOCIATION_TYPE": {
+            "fieldId": 1000000869,
+            "valueMap": {
+                "0": "Original",
+                "1": "Duplicate"
+            }
+        },
+        "@INCIDENT_LOCATION": {
+            "fieldId": 1000000038
+        },
+        "@INCIDENT_NUMBER": {
+            "fieldId": 1000000161
+        },
+        "@INDIVIDUAL_TRANSFERS": {
+            "fieldId": 1000003765
+        },
+        "@INFRASTRUCTUREEVENTTYPE": {
+            "fieldId": 304379051,
+            "valueMap": {
+                "40": "None",
+                "10": "Event",
+                "20": "Causal",
+                "50": "Infrastructure",
+                "30": "Impact"
+            }
+        },
+        "@INFRASTRUCTURE_CHG_INITIATED": {
+            "fieldId": 1000000964
+        },
+        "@INSTANCEID": {
+            "fieldId": 179
+        },
+        "@INTERNET_E-MAIL": {
+            "fieldId": 1000000048
+        },
+        "@KEYWORD": {
+            "fieldId": 301737200
+        },
+        "@KICKBACK_COUNT": {
+            "fieldId": 303898800
+        },
+        "@KMSGUID": {
+            "fieldId": 303758300
+        },
+        "@LASTWIPDATE": {
+            "fieldId": 304405181
+        },
+        "@LAST_ACKNOWLEDGED_DATE": {
+            "fieldId": 1000000562
+        },
+        "@LAST_ASSIGNED_DATE": {
+            "fieldId": 301612200
+        },
+        "@LAST_DATE_DURATION_CALCULATED": {
+            "fieldId": 1000000631
+        },
+        "@LAST_KICKBACK_DATE": {
+            "fieldId": 303901000
+        },
+        "@LAST_MODIFIED_BY": {
+            "fieldId": 5
+        },
+        "@LAST_MODIFIED_DATE": {
+            "fieldId": 6
+        },
+        "@LAST_NAME": {
+            "fieldId": 1000000018
+        },
+        "@LAST_NAME2": {
+            "fieldId": 301921100
+        },
+        "@LAST_RESOLVED_DATE": {
+            "fieldId": 1000000563
+        },
+        "@LAST_SLA_HOLD_DATE": {
+            "fieldId": 1000000565
+        },
+        "@LOADING": {
+            "fieldId": 304183000
+        },
+        "@LOCAL_PHONE": {
+            "fieldId": 1000000030
+        },
+        "@LOGIN_ID": {
+            "fieldId": 301921200
+        },
+        "@LOOKUPKEYWORD": {
+            "fieldId": 230000009
+        },
+        "@MAIL_STATION": {
+            "fieldId": 1000000036
+        },
+        "@MANUFACTURER": {
+            "fieldId": 240001003
+        },
+        "@MAXRETRIES": {
+            "fieldId": 301010500
+        },
+        "@MC_UEID": {
+            "fieldId": 301735100
+        },
+        "@MIDDLE_INITIAL": {
+            "fieldId": 1000000020
+        },
+        "@MODE": {
+            "fieldId": 1100
+        },
+        "@MODIFIED_CHAT_SESSION_ID": {
+            "fieldId": 304384091
+        },
+        "@NEWBROADCASTCOUNT": {
+            "fieldId": 302889100
+        },
+        "@NEXT_TARGET_DATE": {
+            "fieldId": 1000002613
+        },
+        "@OLA_HOLD": {
+            "fieldId": 1000001288,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@ONWER_GROUP_USES_SLA": {
+            "fieldId": 1000000571,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@OPTIONFORCLOSINGINCIDENT": {
+            "fieldId": 301920900
+        },
+        "@ORGANIZATION": {
+            "fieldId": 1000000010
+        },
+        "@ORIGINAL_INCIDENT_NUMBER": {
+            "fieldId": 1000000875
+        },
+        "@ORIGINAL_LAST_MODIFIED_BY": {
+            "fieldId": 301391782
+        },
+        "@ORIGINAL_LAST_MODIFIED_DATE": {
+            "fieldId": 301390090
+        },
+        "@OUTBOUND": {
+            "fieldId": 1000005736
+        },
+        "@OUTBOUNDIDENTIFIER": {
+            "fieldId": 301743800
+        },
+        "@OVERRIDE_GROUP": {
+            "fieldId": 420050007,
+            "valueMap": {
+                "0": "Override Group Assignment"
+            }
+        },
+        "@OWNER": {
+            "fieldId": 1000000715
+        },
+        "@OWNER_GROUP": {
+            "fieldId": 1000000422
+        },
+        "@OWNER_GROUP_ID": {
+            "fieldId": 1000000427
+        },
+        "@OWNER_GROUP_SDVIEW": {
+            "fieldId": 303629800
+        },
+        "@OWNER_LOGIN_ID": {
+            "fieldId": 1000000716
+        },
+        "@OWNER_SUPPORT_COMPANY": {
+            "fieldId": 1000000426
+        },
+        "@OWNER_SUPPORT_ORGANIZATION": {
+            "fieldId": 1000000342
+        },
+        "@PAGETITLE_TXT": {
+            "fieldId": 300367500
+        },
+        "@PATCH_LAST_BUILD_ID": {
+            "fieldId": 1000000942
+        },
+        "@PERMISSIONTYPE": {
+            "fieldId": 400107700,
+            "valueMap": {
+                "10": "Support Group",
+                "20": "Support Group and Company"
+            }
+        },
+        "@PERSON_ID": {
+            "fieldId": 1000000080
+        },
+        "@PHONE_NUMBER": {
+            "fieldId": 1000000056
+        },
+        "@POLICY_NAME": {
+            "fieldId": 301807600
+        },
+        "@POLICY_TYPE": {
+            "fieldId": 304379701
+        },
+        "@PORTNUMBER": {
+            "fieldId": 301446500
+        },
+        "@PREVIOUSSTATUS": {
+            "fieldId": 301540300
+        },
+        "@PREVIOUS_HPD_CI_RECONID": {
+            "fieldId": 303524300
+        },
+        "@PREVIOUS_SERVICECI_RECONID": {
+            "fieldId": 303524200
+        },
+        "@PRIORITY": {
+            "fieldId": 1000000164,
+            "valueMap": {
+                "0": "Critical",
+                "1": "High",
+                "2": "Medium",
+                "3": "Low"
+            }
+        },
+        "@PRIORITY_WEIGHT": {
+            "fieldId": 1000000169
+        },
+        "@PRODUCT_CATEGORIZATION_TIER_1": {
+            "fieldId": 200000003
+        },
+        "@PRODUCT_CATEGORIZATION_TIER_2": {
+            "fieldId": 200000004
+        },
+        "@PRODUCT_CATEGORIZATION_TIER_3": {
+            "fieldId": 200000005
+        },
+        "@PRODUCT_MODEL/VERSION": {
+            "fieldId": 240001005
+        },
+        "@PRODUCT_NAME": {
+            "fieldId": 240001002
+        },
+        "@PROTOCOL": {
+            "fieldId": 301405400,
+            "valueMap": {
+                "0": "AR",
+                "1": "URL",
+                "2": "Webservices",
+                "3": "Command Line",
+                "4": "Plug-in",
+                "5": "Other"
+            }
+        },
+        "@QUERY": {
+            "fieldId": 1002
+        },
+        "@RE-OPENED_DATE": {
+            "fieldId": 1000000566
+        },
+        "@REASON_CODE": {
+            "fieldId": 300270800
+        },
+        "@REASON_DESCRIPTION": {
+            "fieldId": 300270900
+        },
+        "@RECORD_TYPE": {
+            "fieldId": 301467700,
+            "valueMap": {
+                "8000": "General Broadcast",
+                "20000": "Problem Investigation",
+                "25000": "Support Group",
+                "27000": "Asset Maintenance",
+                "21000": "Purchase Requisition",
+                "23000": "Request",
+                "13000": "Task",
+                "9000": "Incident",
+                "2000": "Asset Configuration",
+                "7000": "Contract",
+                "26000": "Asset Lease",
+                "1000": "ALL",
+                "28000": "Software Library Item",
+                "15000": "Solution Database",
+                "14000": "Infrastructure Change Template",
+                "33000": "Work Order",
+                "10000": "Incident Template",
+                "4000": "CI Unavailability",
+                "18000": "People",
+                "22500": "Release",
+                "17000": "Operational Level Agreement",
+                "6000": "Configuration Item",
+                "5000": "Configuration Component",
+                "3000": "Broadcast",
+                "24000": "Service Level Agreement",
+                "19000": "People Organization",
+                "16000": "Known Error",
+                "12000": "Infrastructure Change",
+                "22000": "Product"
+            }
+        },
+        "@REGION": {
+            "fieldId": 200000012
+        },
+        "@REPORTED_DATE": {
+            "fieldId": 1000000560
+        },
+        "@REPORTED_SOURCE": {
+            "fieldId": 1000000215,
+            "valueMap": {
+                "4000": "Fax",
+                "8000": "Walk In",
+                "4200": "Self Service",
+                "6000": "Phone",
+                "11000": "BMC Impact Manager Event",
+                "9000": "Web",
+                "2000": "Email",
+                "5000": "Systems Management",
+                "1000": "Direct Input",
+                "7000": "Voice Mail",
+                "3000": "External Escalation",
+                "10000": "Other"
+            }
+        },
+        "@REPORTED_TO_VENDOR": {
+            "fieldId": 1000000878
+        },
+        "@REPRODUCEABLE_FLAG": {
+            "fieldId": 1000000985,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@REQUIRED_RESOLUTION_DATETIME": {
+            "fieldId": 1000005661
+        },
+        "@RESOLUTION": {
+            "fieldId": 1000000156
+        },
+        "@RESOLUTION_CATEGORY": {
+            "fieldId": 1000002488
+        },
+        "@RESOLUTION_CATEGORY_TIER_2": {
+            "fieldId": 1000003889
+        },
+        "@RESOLUTION_CATEGORY_TIER_3": {
+            "fieldId": 1000003890
+        },
+        "@RESOLUTION_METHOD": {
+            "fieldId": 1000003888
+        },
+        "@RESOLUTION_START_DATE": {
+            "fieldId": 1000001319
+        },
+        "@RESPONDED_DATE": {
+            "fieldId": 1000000561
+        },
+        "@RETURN_CODE": {
+            "fieldId": 300271000
+        },
+        "@ROOTREQUESTNAME": {
+            "fieldId": 10000001
+        },
+        "@ROOT_COMPONENT_ID_LIST": {
+            "fieldId": 301827100
+        },
+        "@ROOT_INCIDENT_ID_LIST": {
+            "fieldId": 301827300
+        },
+        "@SATISFACTION_RATING": {
+            "fieldId": 1000003988
+        },
+        "@SEARCH_BAR": {
+            "fieldId": 1005
+        },
+        "@SERVICE": {
+            "fieldId": 303544300
+        },
+        "@SERVICECI": {
+            "fieldId": 303497300
+        },
+        "@SERVICECI_CLASS": {
+            "fieldId": 304302260
+        },
+        "@SERVICECI_RECONID": {
+            "fieldId": 303519300
+        },
+        "@SERVICE_ENTITLEMENT_METHOD": {
+            "fieldId": 1000005793,
+            "valueMap": {
+                "0": "None",
+                "1": "Customer Based",
+                "2": "CI Based",
+                "3": "CI Based - Enforce CI Tag"
+            }
+        },
+        "@SERVICE_TYPE": {
+            "fieldId": 1000000099,
+            "valueMap": {
+                "0": "User Service Restoration",
+                "1": "User Service Request",
+                "2": "Infrastructure Restoration",
+                "3": "Infrastructure Event"
+            }
+        },
+        "@SET_RESOLVE": {
+            "fieldId": 304409261,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@SHIFTS_FLAG": {
+            "fieldId": 1000000296,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@SHORT_DESCRIPTION": {
+            "fieldId": 8
+        },
+        "@SHOW_FOR_PROCESS": {
+            "fieldId": 301090500
+        },
+        "@SITE": {
+            "fieldId": 260000001
+        },
+        "@SITE_GROUP": {
+            "fieldId": 200000007
+        },
+        "@SITE_ID": {
+            "fieldId": 1000000074
+        },
+        "@SLA_BREACH_EXCEPTION": {
+            "fieldId": 1000003898
+        },
+        "@SLA_BREACH_REASON": {
+            "fieldId": 1000003897
+        },
+        "@SLA_HOLD": {
+            "fieldId": 1000000567,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@SLA_RESPONDED": {
+            "fieldId": 1000001296,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@SLA_RES_BUSINESS_HOUR_SECONDS": {
+            "fieldId": 1000001555
+        },
+        "@SLMDVF": {
+            "fieldId": 303579500
+        },
+        "@SLMEVENTLOOKUPTBLKEYWORD": {
+            "fieldId": 301788500
+        },
+        "@SLMLOOKUPTBLKEYWORD": {
+            "fieldId": 301610100
+        },
+        "@SLM_PRIORITY": {
+            "fieldId": 1000001259,
+            "valueMap": {
+                "0": "Critical",
+                "1": "High",
+                "2": "Medium",
+                "3": "Low"
+            }
+        },
+        "@SLM_STATUS": {
+            "fieldId": 1000003009,
+            "valueMap": {
+                "0": "No Service Target Assigned",
+                "1": "Within the Service Target",
+                "2": "Service Target Warning",
+                "3": "Service Targets Breached",
+                "4": "All Service Targets Breached"
+            }
+        },
+        "@SRATTACHMENT": {
+            "fieldId": 300615200
+        },
+        "@SRID": {
+            "fieldId": 301572100
+        },
+        "@SRINSTANCEID": {
+            "fieldId": 301368700
+        },
+        "@SRMSAOIGUID": {
+            "fieldId": 301572000
+        },
+        "@SRMS_REGISTRY_INSTANCE_ID": {
+            "fieldId": 301571900
+        },
+        "@STAGECONDITION": {
+            "fieldId": 301541000
+        },
+        "@STATE_PROVINCE": {
+            "fieldId": 1000000003
+        },
+        "@STATUS": {
+            "fieldId": 7,
+            "valueMap": {
+                "0": "New",
+                "1": "Assigned",
+                "2": "In Progress",
+                "3": "Pending",
+                "4": "Resolved",
+                "5": "Closed",
+                "6": "Cancelled"
+            }
+        },
+        "@STATUS-PPL": {
+            "fieldId": 1000000118,
+            "valueMap": {
+                "0": "Proposed",
+                "1": "Enabled",
+                "2": "Offline",
+                "3": "Obsolete",
+                "4": "Archive",
+                "5": "Delete"
+            }
+        },
+        "@STATUS_HISTORY": {
+            "fieldId": 15
+        },
+        "@STATUS_INCIDENT": {
+            "fieldId": 301809900
+        },
+        "@STATUS_REASON": {
+            "fieldId": 1000000150,
+            "valueMap": {
+                "8000": "Client Action Required",
+                "20000": "No longer a Causal CI",
+                "21000": "Pending Causal Incident Resolution",
+                "13000": "Client Hold",
+                "9000": "Infrastructure Change",
+                "2000": "Local Site Action Required",
+                "11000": "Future Enhancement",
+                "1000": "Infrastructure Change Created",
+                "15000": "Customer Follow-Up Required",
+                "14000": "Monitoring Incident",
+                "10000": "Request",
+                "4000": "Registration Approval",
+                "18000": "Resolved by Original Incident",
+                "17000": "No Further Action Required",
+                "6000": "Support Contact Hold",
+                "5000": "Supplier Delivery",
+                "3000": "Purchase Order Approval",
+                "7000": "Third Party Vendor Action Reqd",
+                "19000": "Automated Resolution Reported",
+                "16000": "Temporary Corrective Action",
+                "12000": "Pending Original Incident",
+                "22000": "Resolved by Causal Incident"
+            }
+        },
+        "@STATUS_REASON2": {
+            "fieldId": 301810000
+        },
+        "@STREET": {
+            "fieldId": 1000000037
+        },
+        "@SUBMITTER": {
+            "fieldId": 2
+        },
+        "@SUBMIT_DATE": {
+            "fieldId": 3
+        },
+        "@SUPPORT_GROUP_ROLE": {
+            "fieldId": 1000005970
+        },
+        "@TEMPLATEGUID": {
+            "fieldId": 303497500
+        },
+        "@TEMPLATEID": {
+            "fieldId": 301572200
+        },
+        "@TEXT": {
+            "fieldId": 1000005959
+        },
+        "@TICKETTYPE": {
+            "fieldId": 301626500,
+            "valueMap": {
+                "0": "Incident",
+                "1": "Change",
+                "2": "Problem Investigation",
+                "3": "Known Error",
+                "4": "Knowledge",
+                "5": "Task",
+                "6": "CI Unavailability",
+                "7": "Purchase Requisition",
+                "8": "Release",
+                "9": "Activity"
+            }
+        },
+        "@TIMEOFEVENT": {
+            "fieldId": 304404731
+        },
+        "@TIME_ZONE": {
+            "fieldId": 1000000541
+        },
+        "@TOTAL_COST_(CURRENCY)": {
+            "fieldId": 300851100
+        },
+        "@TOTAL_ESCALATION_LEVEL": {
+            "fieldId": 1000000558
+        },
+        "@TOTAL_FIELDS_COUNT": {
+            "fieldId": 420050008
+        },
+        "@TOTAL_OLA_ACKNOWLEDGEESC_LEVEL": {
+            "fieldId": 1000000557
+        },
+        "@TOTAL_OLA_RESOLUTION_ESC_LEVEL": {
+            "fieldId": 1000000559
+        },
+        "@TOTAL_TIME_SPENT": {
+            "fieldId": 1000000731
+        },
+        "@TOTAL_TRANSFERS": {
+            "fieldId": 1000003764
+        },
+        "@UNKNOWNUSER": {
+            "fieldId": 301550900,
+            "valueMap": {
+                "0": "True",
+                "1": "False"
+            }
+        },
+        "@URGENCY": {
+            "fieldId": 1000000162,
+            "valueMap": {
+                "1000": "1-Critical",
+                "2000": "2-High",
+                "3000": "3-Medium",
+                "4000": "4-Low"
+            }
+        },
+        "@USER_ID_PERMISSIONS": {
+            "fieldId": 60903
+        },
+        "@USE_CASE": {
+            "fieldId": 301921400
+        },
+        "@VENDOR_ASSIGNEE_GROUPS": {
+            "fieldId": 60900
+        },
+        "@VENDOR_ASSIGNEE_GROUPS_PARENT": {
+            "fieldId": 60901
+        },
+        "@VENDOR_ASSIGNMENT_STATUS": {
+            "fieldId": 1000003781,
+            "valueMap": {
+                "0": "Assigned",
+                "1": "In Progress",
+                "2": "Completed"
+            }
+        },
+        "@VENDOR_CONTACT": {
+            "fieldId": 1000000854
+        },
+        "@VENDOR_EMAIL": {
+            "fieldId": 1000003752
+        },
+        "@VENDOR_FIRST_NAME": {
+            "fieldId": 1000003755
+        },
+        "@VENDOR_GROUP": {
+            "fieldId": 1000003663
+        },
+        "@VENDOR_GROUP_ID": {
+            "fieldId": 1000003664
+        },
+        "@VENDOR_GROUP_SD": {
+            "fieldId": 303634500
+        },
+        "@VENDOR_LAST_NAME": {
+            "fieldId": 1000003754
+        },
+        "@VENDOR_LOGIN_ID": {
+            "fieldId": 1000003779
+        },
+        "@VENDOR_NAME": {
+            "fieldId": 1000000396
+        },
+        "@VENDOR_ORGANIZATION": {
+            "fieldId": 1000003662
+        },
+        "@VENDOR_PERSON_ID": {
+            "fieldId": 1000003756
+        },
+        "@VENDOR_PHONE": {
+            "fieldId": 1000000239
+        },
+        "@VENDOR_RESOLVED_DATE": {
+            "fieldId": 1000003757
+        },
+        "@VENDOR_RESPONDED_ON": {
+            "fieldId": 1000003753
+        },
+        "@VENDOR_TICKET_NUMBER": {
+            "fieldId": 1000000652
+        },
+        "@VIEW_ACCESSIBLE": {
+            "fieldId": 1000000761,
+            "valueMap": {
+                "0": "Internal",
+                "1": "Public"
+            }
+        },
+        "@VIP": {
+            "fieldId": 1000000026,
+            "valueMap": {
+                "0": "Yes",
+                "1": "No"
+            }
+        },
+        "@WEB_INCIDENT_ID": {
+            "fieldId": 1000001165
+        },
+        "@ZIP_POSTAL_CODE": {
+            "fieldId": 1000000039
         }
-    },
-    "@SEVERITY": {
-        "fieldId": 1000000162,
-        "valueMap": {
-            "1000": "Critical",
-            "2000": "High",
-            "3000": "Medium",
-            "4000": "Low"
-        }
-    },
-    "@PRIORITY": {
-        "fieldId": 1000000164,
-        "valueMap": {
-            "0": "Critical",
-            "1": "High",
-            "2": "Medium",
-            "3": "Low"
-        }
-    },
-    "@STATUS": {
-        "fieldId": 7,
-        "valueMap": {
-            "0": "New",
-            "1": "Assigned",
-            "2": "In Progress",
-            "3": "Pending",
-            "4": "Resolved",
-            "5": "Closed",
-            "6": "Cancelled"
-        }
-    },
-    "@INCIDENT_NUMBER": {
-        "fieldId": 1000000161
-    },
-    "@WEIGHT": {
-        "fieldId": 1000000169
-    },
-    "@SUMMARY": {
-        "fieldId": 1000000000
-    },
-    "@ASSIGNEE": {
-        "fieldId": 1000000218
-    },
-    "@CI": {
-        "fieldId": 303544200
-    },
-    "@CREATED_AT": {
-        "fieldId": 3
-    },
-    "@SUBMITTER": {
-        "fieldId": 2
-    },
-    "@LAST_MOD_DATE": {
-        "fieldId": 6
-    },
-    "@CLOSED_DATE": {
-        "fieldId": 1000000564
-    },
-    "@COMPANY": {
-        "fieldId": 1000000082
-    },
-    "@CUSTOMER": {
-        "fieldId": 303530000
-    },
-    "@SERVICE": {
-        "fieldId": 303497300
-    },
-    "@IMPACT": {
-        "fieldId": 1000000163
-    },
-    "@INCIDENT_TYPE": {
-        "fieldId": 1000000099
-    },
-    "@ASSIGNED_GROUP": {
-        "fieldId": 1000000217
     }
 }
