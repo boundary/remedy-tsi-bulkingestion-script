@@ -308,7 +308,7 @@ public class RetryService {
                 idPropertyName = Constants.PROPERTY_CHANGE_ID;
                 adapter = new RemedyEntryEventAdapter(App.changeFieldIdMap);
             }
-            int chunkSize = config.getChunkSize();
+            int chunkSize = config.getRetryChunkSize(); 
             int startFrom = 0;
             int iteration = 1;
             int totalRecordsRead = 0;
@@ -373,6 +373,7 @@ public class RetryService {
                         eventIds.add(event.getInvalidEvent().getProperties().get(idPropertyName));
                     });
                     droppedEvents.addAll(remedyResponse.getInvalidEventList());
+                    totalFailure += remedyResponse.getInvalidEventList().size();
                     LOG.debug("following {} ids are larger than allowed limits [{}]", name, String.join(",", eventIds));
                 }
                 if ((form == ARServerForm.INCIDENT_FORM && App.incidentExportToCsvFlag) || (form == ARServerForm.CHANGE_FORM && App.changeExportToCsvFlag)) {
@@ -428,13 +429,13 @@ public class RetryService {
         } catch (RemedyLoginFailedException e) {
             LOG.error("Login Failed : {}", e.getMessage());
         } catch (RemedyReadFailedException e) {
-            LOG.error("Reading tickets from Remedy server failed for ids {}. Please try running the script after some time.", ids);
+            LOG.error("{}, failed ids are [{}].", e.getMessage(), ids);
         } catch (BulkEventsIngestionFailedException e) {
-            LOG.error("Ingestion Failed (Reason : {}) for ids.", e.getMessage(), ids);
+            LOG.error("Ingestion Failed (Reason : {}) for ids [{}].", e.getMessage(), ids);
         } catch (TsiAuthenticationFailedException e) {
-            LOG.error("Error {}", e.getMessage());
+            LOG.error("Exception in ingestion, {}", e.getMessage());
         } catch (Exception ex) {
-            LOG.error("Error {}", ex.getMessage());
+            LOG.error("Exception {}", ex.getMessage());
         } finally {
             if (form == ARServerForm.INCIDENT_FORM && App.hasLoggedIntoRemedyIncident) {
                 reader.logout(App.incidentUser);

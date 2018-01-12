@@ -53,7 +53,7 @@
             "Department": "@DEPARTMENT",
             "Description": "@DESCRIPTION",
             "Desk_Location": "@DESK_LOCATION",
-            "Detailed_Decription": "@DETAILED_DECRIPTION",
+            "Detailed_Description": "@DETAILED_DESCRIPTION",
             "Effort_Time_Spent_Minutes": "@EFFORT_TIME_SPENT_MINUTES",
             "EffortDurationHour": "@EFFORTDURATIONHOUR",
             "Entry_ID": "@ENTRY_ID",
@@ -586,10 +586,10 @@
         "@DESK_LOCATION": {
             "fieldId": 1000000035
         },
-        "@DETAILED_DECRIPTION": {
+        "@DETAILED_DESCRIPTION": {
             "fieldId": 1000000151
         },
-        "@DETAILS...": {
+        "@DETAILS": {
             "fieldId": 303669700
         },
         "@DIRECT_CONTACT_AREA_CODE": {
