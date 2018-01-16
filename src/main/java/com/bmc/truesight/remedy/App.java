@@ -449,6 +449,7 @@ public class App {
                         eventIds.add(event.getInvalidEvent().getProperties().get(idPropertyName));
                     });
                     droppedEvents.addAll(remedyResponse.getInvalidEventList());
+                    totalFailure += remedyResponse.getInvalidEventList().size();
                     log.debug("following {} ids are larger than allowed limits [{}]", name, String.join(",", eventIds));
                 }
                 if ((form == ARServerForm.INCIDENT_FORM && incidentExportToCsvFlag) || (form == ARServerForm.CHANGE_FORM && changeExportToCsvFlag)) {
@@ -490,7 +491,7 @@ public class App {
                 log.info("__________________{} event(s) written to the CSV file {}", validRecords, csv);
             }
             if (droppedEvents.size() > 0) {
-                log.error("______Following {} events were invalid & dropped. Please remove the offending properties from the field mapping and run the script again with \"retry\" argument", droppedEvents.size());
+                log.error("______Following {} events have size more than allowed limit(32000 bytes), Please remove the offending properties from the field mapping and run the script again with \"retry\" argument.", droppedEvents.size());
 
                 RetryService.writeCSVFailure(name, droppedEvents, idPropertyName);
 

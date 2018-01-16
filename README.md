@@ -8,36 +8,28 @@ This Script ingests historical Remedy incidents and change tickets into TSI. Bas
 
 ## Prerequisite 
 ```
-Java Sdk 1.8
-maven (*Only required if you want to build the code)
+1. Java Sdk 1.8
+2. Maven*
+3. Remedy Api Java sdk*
+(*Only required if you want to contribute and build the code)
 ```
-## How to build ? 
-```
-1. Clone this repository.
-$ git clone https://github.com/boundary/remedy-tsi-bulkingestion-script.git
-2. Change the directory.
-$ cd remedy-tsi-bulkingestion-script
-3. Run maven install
-$ mvn clean install
-4. You can find the build jar file as remedy-tsi-bulkingestion-script-0.9.7.jar
-```
-##### Note : You can find a pre-built jar in dist folder
 
 ## How to run ?
 ```
-1. Copy jar file to the location as dist and change directory as dist.
+1. There is a pre-built jar shared at location dist. Please navigate to this directory.
 $ cd dist
-2. Change the incidentTemplate.json/changeTemplate.json configuration (based on description below)
+2. The incidentTemplate.json & changeTemplate.Json are the user input files.
+  Change the incidentTemplate.json/changeTemplate.json configuration (based on description below)
 3. Run jar file
-$ java -jar remedy-tsi-bulkingestion-script-0.9.7.jar
+$ java -jar remedy-tsi-bulkingestion-script-0.9.8.jar
 4. Please read the output & provide further required choices.
 ```
 ```
 NOTE:
 1. You can also provide your choices as command line arguments.
-Ex. $java -jar remedy-tsi-bulkingestion-script-0.9.7.jar <incident> <change> <exportincident> <exportchange> <silent> <retry> <loglevel>
+Ex. $java -jar remedy-tsi-bulkingestion-script-0.9.8.jar <incident> <change> <exportincident> <exportchange> <silent> <retry> <loglevel>
 2. You can enable the debug mode by having debug as command line parameter 
-Ex. $java -jar remedy-tsi-bulkingestion-script-0.9.7.jar debug
+Ex. $java -jar remedy-tsi-bulkingestion-script-0.9.8.jar debug
 3. The arguments can be used in any combination and any order.
 ```
  Each argument has a following meaning and effect.
@@ -52,6 +44,25 @@ Ex. $java -jar remedy-tsi-bulkingestion-script-0.9.7.jar debug
    |retry		     | The script dumps a csv file with the invalid events, retry argument makes the script to read from the csv and try again to ingest these events.|
    |loglevel ex debug| This sets the logging level									|
 
+## How to build this project? 
+```
+Step 1: Obtain the Remedy Java API SDK jar.
+Step 2: Add the jar to local m2 repository.
+$ mvn install:install-file -DgroupId=com.bmc.arsys.api -DartifactId=api80_build002 -Dversion=8.0 -Dpackaging=jar -Dfile=<directorylocation>\api80_build002-8.0.jar -DgeneratePom=true
+Step 3: Clone the integration library 
+$ git clone https://github.com/boundary/remedy-tsi-integration-lib.
+Step 4: Build it with Maven.
+$ mvn clean compile install
+Step 5: Clone this repository.
+$ git clone https://github.com/boundary/remedy-tsi-bulkingestion-script.git
+Step 6: Change the directory.
+$ cd remedy-tsi-bulkingestion-script
+Step 7: Run maven install.
+$ mvn clean install
+Step 8: You can find the build jar file as target/remedy-tsi-bulkingestion-script-0.9.8.jar
+
+##### Note : You can also find a pre-built jar in dist folder
+```
 ## Configuration
    The configuration file contains three major sections.
 
@@ -91,7 +102,7 @@ Payload field and value						Details/Comment
 
 There are several Field Definitions/ Placeholder definitions already available by default(see [IncidentDefaultTemplate](https://github.com/boundary/remedy-tsi-bulkingestion-script/blob/master/templates/incidentDefaultTemplate.json) & [ChangeDefaultTemplate](https://github.com/boundary/remedy-tsi-bulkingestion-script/blob/master/templates/changeDefaultTemplate.json) ).
 
-### 3) How to add a Field definition and map the property to eventDefinition?
+## How to add a Field definition and map the property to eventDefinition?
 
 Add a definition as a property of the "fieldDefinitionMap"
 ```
@@ -108,10 +119,10 @@ Add a definition as a property of the "fieldDefinitionMap"
 		},
 ```
 
-```
+
 Use the definition key as a value of the property of eventDefinition.properties.
 Example
-
+```
 {
 "eventDefinition": {						  
 		"properties": {
@@ -150,3 +161,7 @@ Answer: There is a set of default fields(ref- ./templates/incidentDefaultTemplat
 Q3. How can I add/remove/change the properties mapped in the template?
 
 Answer: If the user template has more property than app_id, then script loads & uses only the properties mapped in the User Template. It completely ignores/overwrites the default property mapping. So if you want to add/remove/update the property mapping, you can take the default templates(see in ./template/*) as sample and copy the JSON content to the user template after making required changes.
+
+Q4. I want to contribute to the project. How do I obtain the Remedy Api Sdk jar ?
+
+Answer: You can contact Remedy or Truesight Intelligence team to get this dependency.
