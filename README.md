@@ -1,17 +1,15 @@
-# remedy-tsi-bulkingestion-script
+# Remedy Truesight Intelligence Bulk Ingestion
+
 Script for ingestion of historical Remedy Incidents and Change tickets into Truesight Intelligence as events.
 
 ## Description.
 
 This Script ingests historical Remedy incidents and change tickets into TSI. Based on the configuration present in the template(see in dist), this script reads the Remedy Incident & Change Tickets and after converting into a TSI event (based on definitions in  `eventDefinition`), it ingests the events to TSI.
 
-
 ## Prerequisite 
 ```
 1. Java Sdk 1.8
-2. Maven*
-3. Remedy Api Java sdk*
-(*Only required if you want to contribute and build the code)
+
 ```
 
 ## How to run ?
@@ -21,15 +19,15 @@ $ cd dist
 2. The incidentTemplate.json & changeTemplate.Json are the user input files.
   Change the incidentTemplate.json/changeTemplate.json configuration (based on description below)
 3. Run jar file
-$ java -jar remedy-tsi-bulkingestion-script-0.9.8.jar
+$ java -jar remedy-tsi-bulkingestion-script-1.0.0.jar
 4. Please read the output & provide further required choices.
 ```
 ```
 NOTE:
 1. You can also provide your choices as command line arguments.
-Ex. $java -jar remedy-tsi-bulkingestion-script-0.9.8.jar <incident> <change> <exportincident> <exportchange> <silent> <retry> <loglevel>
+Ex. $java -jar remedy-tsi-bulkingestion-script-1.0.0.jar <incident> <change> <exportincident> <exportchange> <retry> <loglevel>
 2. You can enable the debug mode by having debug as command line parameter 
-Ex. $java -jar remedy-tsi-bulkingestion-script-0.9.8.jar debug
+Ex. $java -jar remedy-tsi-bulkingestion-script-1.0.0.jar debug
 3. The arguments can be used in any combination and any order.
 ```
  Each argument has a following meaning and effect.
@@ -40,29 +38,9 @@ Ex. $java -jar remedy-tsi-bulkingestion-script-0.9.8.jar debug
    |Change			 | The script ingests the change tickets.			   	   	|
    |exportincident   | The script exports the ingested incidents into a CSV file.     |
    |exportchange     | The script exports the ingested change tickets into a CSV file.|
-   |silent    		 | This argument will start the script in silent mode. It would start the ingestion based on the other arguments and does not prompt the user for further inputs.|
    |retry		     | The script dumps a csv file with the invalid events, retry argument makes the script to read from the csv and try again to ingest these events.|
-   |loglevel ex debug| This sets the logging level									|
+   |loglevel          | This sets the logging level	for example info, error, debug		|
 
-## How to build this project? 
-```
-Step 1: Obtain the Remedy Java API SDK jar.
-Step 2: Add the jar to local m2 repository.
-$ mvn install:install-file -DgroupId=com.bmc.arsys.api -DartifactId=api80_build002 -Dversion=8.0 -Dpackaging=jar -Dfile=<directorylocation>\api80_build002-8.0.jar -DgeneratePom=true
-Step 3: Clone the integration library 
-$ git clone https://github.com/boundary/remedy-tsi-integration-lib.
-Step 4: Build it with Maven.
-$ mvn clean compile install
-Step 5: Clone this repository.
-$ git clone https://github.com/boundary/remedy-tsi-bulkingestion-script.git
-Step 6: Change the directory.
-$ cd remedy-tsi-bulkingestion-script
-Step 7: Run maven install.
-$ mvn clean install
-Step 8: You can find the build jar file as target/remedy-tsi-bulkingestion-script-0.9.8.jar
-
-##### Note : You can also find a pre-built jar in dist folder
-```
 ## Configuration
    The configuration file contains three major sections.
 
@@ -102,9 +80,8 @@ Payload field and value						Details/Comment
 
 There are several Field Definitions/ Placeholder definitions already available by default(see [IncidentDefaultTemplate](https://github.com/boundary/remedy-tsi-bulkingestion-script/blob/master/templates/incidentDefaultTemplate.json) & [ChangeDefaultTemplate](https://github.com/boundary/remedy-tsi-bulkingestion-script/blob/master/templates/changeDefaultTemplate.json) ).
 
-## How to add a Field definition and map the property to eventDefinition?
-
-Add a definition as a property of the "fieldDefinitionMap"
+#### How to add a Field definition and map the property to eventDefinition?
+Copy the contents from the [IncidentDefaultTemplate](https://github.com/boundary/remedy-tsi-bulkingestion-script/blob/master/templates/incidentDefaultTemplate.json) & [ChangeDefaultTemplate](https://github.com/boundary/remedy-tsi-bulkingestion-script/blob/master/templates/changeDefaultTemplate.json) from the templates folder into incidentTemplate/changeTemplate in the dist folder and then add a definition as a property of the "fieldDefinitionMap" as below.
 ```
 "fieldDefinitionMap":{
 	....
@@ -144,9 +121,25 @@ Example
 	}
 }
 ```
-> 1. The placeholder definition contains the Remedy `fieldId` , which defines that this fieldId's value from Remedy entry will be used in place of this placeholder.
+> 1. The placeholder definition contains the Remedy `fieldId`, which defines that this fieldId's value from Remedy entry will be used in place of this placeholder.
 
 > 2. If valueMap is present in the definition (If it is a selection field) its value would be used from valueMap otherwise the Remedy value will be used.
+
+#### Getting Remedy field IDs
+
+Use one of the following methods to get the Remedy field IDs:<br>
+
+1. **To get field IDs using a SQL script**<br>
+If you know the schema that is being used in the Remedy forms used to collect the Incident and Change requests, create a SQL script based on the following example. For more information on the Remedy data dictionary, see The AR System data dictionary.
+```
+select schemaId from arschema where name='HPD:Help Desk'
+select fieldId,fieldName from field where schemaId=1439 order by fieldName
+select enumId, value from field_enum_values where schemaId=1439 and fieldId=1000000162
+```
+2. ***To get field IDs using your browser's developer tools***<br>
+a. Use the BMC Remedy Developer Studio to open the form that contains the fields you want to get into TrueSight Intelligence. For more information, see [About BMC Remedy Developer Studio](https://docs.bmc.com/docs/display/ars91/About+BMC+Remedy+Developer+Studio).<br>
+b. Navigate to the Properties tab to view the fields used in the form and open your browser's developer tools (typically accessed via the F12 function key)<br>
+c. This section contains all the Remedy field Definitions. You can pick a definition to map a property or add one more custom definition having Remedy field Ids and value mapping.
 
 ## Frequently Asked Questions
 
@@ -162,6 +155,3 @@ Q3. How can I add/remove/change the properties mapped in the template?
 
 Answer: If the user template has more property than app_id, then script loads & uses only the properties mapped in the User Template. It completely ignores/overwrites the default property mapping. So if you want to add/remove/update the property mapping, you can take the default templates(see in ./template/*) as sample and copy the JSON content to the user template after making required changes.
 
-Q4. I want to contribute to the project. How do I obtain the Remedy Api Sdk jar ?
-
-Answer: You can contact Remedy or Truesight Intelligence team to get this dependency.
